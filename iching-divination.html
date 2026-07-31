@@ -6,290 +6,189 @@
 <title>易经数字占卜 — 傅佩荣三位数起卦法</title>
 <style>
   :root {
-    --bg: #faf7f2;
+    --bg: #f5f5f7;
     --card-bg: #ffffff;
-    --text: #2c2416;
-    --text-secondary: #5c5347;
-    --accent: #8b4513;
-    --accent-light: #d4a574;
-    --border: #e8e0d5;
-    --tag-bg: #f5ede0;
-    --shadow: 0 2px 16px rgba(44,36,22,0.06);
-    --radius: 12px;
-    --result-bg: #fdfaf5;
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #86868b;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --accent-light: #e8f0fe;
+    --border: #d2d2d7;
+    --border-light: #e8e8ed;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow: 0 4px 16px rgba(0,0,0,0.06);
+    --radius-sm: 10px; --radius: 18px;
+    --font-display: -apple-system, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
+    --font-body: -apple-system, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    --transition: 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.75;
-    min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse at 20% 10%, rgba(139,69,19,0.03) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 90%, rgba(212,165,116,0.04) 0%, transparent 60%);
-  }
-  .container { max-width: 820px; margin: 0 auto; padding: 32px 20px 60px; }
-
-  .header { text-align: center; padding: 44px 0 32px; }
-  .header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 8px; }
-  .header .subtitle { font-size: 0.95rem; color: var(--text-secondary); }
-  .header .divider { width: 60px; height: 2px; background: var(--accent-light); margin: 16px auto 0; border-radius: 1px; }
-
-  .card {
-    background: var(--card-bg); border-radius: var(--radius); padding: 28px 32px;
-    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 24px;
-  }
-  .card-title {
-    font-size: 1.05rem; font-weight: 700; color: var(--accent);
-    margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .card-title .icon { font-size: 1.3rem; }
-
-  .input-row { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
-  .input-group { display: flex; flex-direction: column; gap: 6px; }
-  .input-group label { font-size: 0.88rem; font-weight: 600; color: var(--text-secondary); text-align: center; }
-  .input-group label .symbol { font-size: 1.1rem; }
-  .input-group input {
-    width: 130px; padding: 14px 16px; font-size: 1.15rem; font-family: inherit;
-    text-align: center; border: 1.5px solid var(--border); border-radius: 10px;
-    background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s;
-  }
-  .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,69,19,0.08); }
-  .input-group input::placeholder { color: #c4b8a8; font-size: 0.85rem; }
-  .input-group .range-hint { font-size: 0.72rem; color: #b0a590; text-align: center; }
-
-  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 22px; }
-  .btn {
-    padding: 12px 36px; font-size: 1rem; font-family: inherit; font-weight: 600;
-    border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.03em;
-  }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #6b3410; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(139,69,19,0.25); }
-  .btn-reset { background: var(--card-bg); color: var(--text-secondary); border: 1.5px solid var(--border); }
-  .btn-reset:hover { background: var(--tag-bg); }
-
-  .toast {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-    background: #c0392b; color: #fff; padding: 12px 28px; border-radius: 8px;
-    font-size: 0.92rem; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s;
-    pointer-events: none; box-shadow: 0 4px 20px rgba(192,57,43,0.3);
-  }
-  .toast.show { opacity: 1; }
-
-  .calc-steps { counter-reset: step; }
-  .step {
-    display: flex; align-items: flex-start; gap: 14px; padding: 14px 0;
-    border-bottom: 1px dashed var(--border);
-  }
-  .step:last-child { border-bottom: none; }
-  .step-num {
-    counter-increment: step; width: 32px; height: 32px; min-width: 32px;
-    background: var(--accent); color: #fff; border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700;
-  }
-  .step-content { font-size: 0.93rem; }
-  .step-content .formula { font-family: "SF Mono", "Menlo", monospace; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; font-size: 0.88rem; }
-  .step-content .highlight { color: var(--accent); font-weight: 700; }
-
-  .hexa-display { text-align: center; padding: 20px 0; }
-  .hexa-symbol { font-size: 6rem; line-height: 1.2; letter-spacing: 0.1em; margin-bottom: 8px; }
-  .hexa-name { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
-  .hexa-detail { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
-  .hexa-moving { display: inline-block; background: #c0392b; color: #fff; padding: 3px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; margin-top: 8px; }
-
-  .changed-row { display: flex; align-items: center; justify-content: center; gap: 32px; margin: 20px 0; flex-wrap: wrap; }
-  .changed-arrow { font-size: 2rem; color: var(--accent-light); }
-  .changed-mini { text-align: center; }
-  .changed-mini .symbol { font-size: 3rem; }
-  .changed-mini .name { font-size: 0.95rem; color: var(--text-secondary); margin-top: 4px; }
-
-  .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; }
-  .tab {
-    padding: 10px 18px; font-size: 0.9rem; font-family: inherit; cursor: pointer;
-    border: none; background: none; color: var(--text-secondary); font-weight: 500;
-    border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s;
-  }
-  .tab:hover { color: var(--accent); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  .quote-block { background: var(--result-bg); border-left: 4px solid var(--accent-light); padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 16px; }
-  .quote-original { font-size: 1rem; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
-  .quote-translation { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; }
-
-  .dimension-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 600px) { .dimension-grid { grid-template-columns: 1fr; } }
-  .dimension-card {
-    background: var(--result-bg); border: 1px solid var(--border); border-radius: 10px;
-    padding: 20px; transition: box-shadow 0.2s;
-  }
-  .dimension-card:hover { box-shadow: 0 2px 12px rgba(44,36,22,0.06); }
-  .dimension-card .dim-icon { font-size: 1.5rem; margin-bottom: 6px; }
-  .dimension-card .dim-title { font-weight: 700; color: var(--accent); margin-bottom: 8px; font-size: 0.95rem; }
-  .dimension-card .dim-text { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.8; }
-
-  .disclaimer { text-align: center; font-size: 0.82rem; color: #b0a590; line-height: 1.8; padding: 20px 0; }
-  .disclaimer strong { color: var(--text-secondary); }
-
-  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
-  .shake { animation: shake 0.3s ease; }
-
-  @media (max-width: 500px) {
-    .container { padding: 20px 14px 40px; }
-    .card { padding: 20px 16px; }
-    .header h1 { font-size: 1.6rem; }
-    .hexa-symbol { font-size: 4rem; }
-    .hexa-name { font-size: 1.3rem; }
-    .input-group input { width: 100px; padding: 12px; font-size: 1rem; }
-    .tabs { gap: 2px; }
-    .tab { padding: 8px 12px; font-size: 0.82rem; }
-    .changed-row { gap: 16px; }
-    .changed-arrow { font-size: 1.4rem; }
-  }
-
-  /* Bagua Diagram */
-  .bagua-container {
-    display: flex; justify-content: center; padding: 10px 0 20px;
-  }
-  .bagua-wrapper {
-    position: relative; width: 260px; height: 260px;
-  }
-  .bagua-wrapper svg { width: 100%; height: 100%; }
-  .bagua-center {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: 80px; height: 80px; border-radius: 50%; font-size: 2rem;
-    display: flex; align-items: center; justify-content: center;
-  }
-  @media (max-width: 500px) {
-    .bagua-wrapper { width: 210px; height: 210px; }
-    .bagua-center { width: 60px; height: 60px; font-size: 1.5rem; }
-  }
-
-  /* Taboos */
-  .taboos-list { list-style: none; padding: 0; }
-  .taboos-list li {
-    padding: 8px 0 8px 28px; font-size: 0.88rem; color: var(--text-secondary);
-    border-bottom: 1px dotted var(--border); position: relative;
-  }
-  .taboos-list li::before {
-    content: '⚡'; position: absolute; left: 0; top: 8px; font-size: 0.85rem;
-  }
-  .taboos-list li strong { color: var(--accent); }
-  .taboos-list li:last-child { border-bottom: none; }
-
-  /* Commentary */
-  .commentary-section { margin-bottom: 20px; }
-  .commentary-section h4 {
-    font-size: 0.95rem; color: var(--accent); margin-bottom: 8px;
-    padding-bottom: 4px; border-bottom: 1px solid var(--border);
-  }
-  .commentary-section p, .commentary-section .text-block {
-    font-size: 0.88rem; color: var(--text-secondary); line-height: 1.85; margin-bottom: 12px;
-  }
-  .source-tag {
-    display: inline-block; font-size: 0.72rem; color: #b0a590;
-    background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; margin-left: 6px;
-  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+  .container{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+  .hero{text-align:center;padding:80px 0 48px}
+  .hero h1{font-family:var(--font-display);font-size:3rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);margin-bottom:8px}
+  .hero .subtitle{font-size:1.1rem;color:var(--text-secondary);font-weight:400}
+  .hero .divider{width:40px;height:2px;background:var(--accent);margin:20px auto 0;border-radius:2px}
+  .card{background:var(--card-bg);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow-sm);border:1px solid var(--border-light);margin-bottom:20px;transition:box-shadow var(--transition)}
+  .card:hover{box-shadow:var(--shadow)}
+  .card-title{font-family:var(--font-display);font-size:1.25rem;font-weight:600;color:var(--text);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+  .card-title .icon{font-size:1.4rem}
+  .input-instruction{text-align:center;color:var(--text-secondary);font-size:0.9rem;margin-bottom:24px;line-height:1.7}
+  .input-row{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;justify-content:center}
+  .input-group{display:flex;flex-direction:column;gap:8px}
+  .input-group label{font-size:0.8rem;font-weight:600;color:var(--text-secondary);text-align:center;letter-spacing:0.04em}
+  .input-group input{width:130px;padding:16px;font-size:1.25rem;font-family:var(--font-body);text-align:center;border:none;border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;transition:all var(--transition);font-weight:500;letter-spacing:0.04em}
+  .input-group input:focus{background:var(--card-bg);box-shadow:0 0 0 4px rgba(0,113,227,0.15),var(--shadow-sm)}
+  .input-group input::placeholder{color:var(--text-tertiary);font-size:0.85rem;font-weight:400}
+  .input-group .range-hint{font-size:0.7rem;color:var(--text-tertiary);text-align:center;font-weight:500}
+  .btn-row{display:flex;gap:12px;justify-content:center;margin-top:24px}
+  .btn{padding:14px 40px;font-size:0.95rem;font-family:var(--font-body);font-weight:600;border:none;border-radius:999px;cursor:pointer;transition:all var(--transition);letter-spacing:-0.01em}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-hover);transform:scale(1.02);box-shadow:0 4px 16px rgba(0,113,227,0.3)}
+  .btn-reset{background:var(--bg);color:var(--accent)}
+  .btn-reset:hover{background:var(--accent-light)}
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1d1d1f;color:#fff;padding:12px 24px;border-radius:999px;font-size:0.85rem;font-weight:500;z-index:1000;opacity:0;transition:opacity 0.3s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+  .toast.show{opacity:1}
+  .calc-steps{counter-reset:step}
+  .step{display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:1px solid var(--border-light)}
+  .step:last-child{border-bottom:none}
+  .step-num{counter-increment:step;width:36px;height:36px;min-width:36px;background:var(--accent-light);color:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700}
+  .step-content{font-size:0.9rem;line-height:1.7}
+  .step-content .formula{font-family:"SF Mono","Menlo",monospace;background:var(--bg);padding:3px 10px;border-radius:6px;font-size:0.85rem}
+  .step-content .highlight{color:var(--accent);font-weight:700}
+  .hexa-display{text-align:center;padding:16px 0}
+  .hexa-symbol{font-size:6rem;line-height:1.2;letter-spacing:0.05em}
+  .hexa-name{font-family:var(--font-display);font-size:1.8rem;font-weight:700}
+  .hexa-detail{font-size:0.88rem;color:var(--text-secondary);margin-top:4px}
+  .hexa-moving{display:inline-block;background:#e53e3e;color:#fff;padding:4px 16px;border-radius:999px;font-size:0.8rem;font-weight:600;margin-top:10px}
+  .changed-row{display:flex;align-items:center;justify-content:center;gap:32px;margin:20px 0;flex-wrap:wrap}
+  .changed-arrow{font-size:2rem;color:var(--text-tertiary)}
+  .changed-mini{text-align:center}
+  .changed-mini .symbol{font-size:2.8rem}
+  .changed-mini .name{font-size:0.88rem;color:var(--text-secondary);margin-top:4px;font-weight:500}
+  .tabs{display:flex;gap:0;border-bottom:2px solid var(--border-light);margin-bottom:24px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{padding:12px 20px;font-size:0.85rem;font-family:var(--font-body);cursor:pointer;border:none;background:none;color:var(--text-secondary);font-weight:500;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all var(--transition)}
+  .tab:hover{color:var(--accent)}
+  .tab.active{color:var(--text);border-bottom-color:var(--text);font-weight:600}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+  .quote-block{background:var(--bg);border-radius:var(--radius-sm);padding:20px 24px;margin-bottom:16px}
+  .quote-original{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:8px}
+  .quote-translation{font-size:0.9rem;color:var(--text-secondary);line-height:1.8}
+  .dimension-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:600px){.dimension-grid{grid-template-columns:1fr}}
+  .dimension-card{background:var(--bg);border-radius:var(--radius-sm);padding:20px;transition:transform var(--transition)}
+  .dimension-card:hover{transform:translateY(-2px)}
+  .dimension-card .dim-icon{font-size:1.5rem;margin-bottom:8px}
+  .dimension-card .dim-title{font-weight:600;margin-bottom:8px;font-size:0.92rem;color:var(--text)}
+  .dimension-card .dim-text{font-size:0.85rem;color:var(--text-secondary);line-height:1.75}
+  .lines-table{width:100%;border-collapse:separate;border-spacing:0 4px}
+  .lines-table td{padding:12px 16px;font-size:0.88rem;vertical-align:top;border-radius:8px}
+  .lines-table .line-name{font-weight:600;white-space:nowrap;width:60px;color:var(--text-secondary);font-size:0.82rem}
+  .lines-table .line-original{font-weight:500;color:var(--text)}
+  .lines-table .line-translation{color:var(--text-secondary)}
+  .lines-table tr:hover td{background:var(--bg)}
+  .lines-table tr.moving-line td{background:#fff5f5}
+  .lines-table tr.moving-line .line-name{color:#e53e3e}
+  .commentary-section{margin-bottom:20px}
+  .commentary-section h4{font-size:0.95rem;font-weight:600;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border-light)}
+  .commentary-section p,.commentary-section .text-block{font-size:0.88rem;color:var(--text-secondary);line-height:1.85;margin-bottom:12px}
+  .source-tag{display:inline-block;font-size:0.68rem;color:var(--text-tertiary);background:var(--bg);padding:2px 8px;border-radius:4px;margin-left:4px}
+  .xiaoxiang-list{list-style:none;padding:0}
+  .xiaoxiang-list li{padding:10px 0 10px 20px;font-size:0.88rem;color:var(--text-secondary);border-bottom:1px solid var(--border-light);position:relative;line-height:1.7}
+  .xiaoxiang-list li::before{content:'';position:absolute;left:0;top:16px;width:6px;height:6px;border-radius:50%;background:var(--border)}
+  .xiaoxiang-list li:last-child{border-bottom:none}
+  .xiaoxiang-list li strong{color:var(--text);font-size:0.85rem}
+  .disclaimer{text-align:center;font-size:0.78rem;color:var(--text-tertiary);line-height:1.8;padding:16px 0}
+  .disclaimer strong{color:var(--text-secondary)}
+  .bagua-container{display:flex;justify-content:center;padding:12px 0 16px}
+  .bagua-wrapper{position:relative;width:360px;height:auto}
+  .bagua-wrapper img{width:100%;height:auto}
+  @media(max-width:500px){.bagua-wrapper{width:280px}}
+  .taboos-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:500px){.taboos-grid{grid-template-columns:1fr}}
+  .taboo-item{background:var(--bg);border-radius:var(--radius-sm);padding:16px;font-size:0.84rem;color:var(--text-secondary);line-height:1.65}
+  .taboo-item strong{color:var(--text);display:block;margin-bottom:4px;font-size:0.88rem}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:500px){.about-grid{grid-template-columns:1fr}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .shake{animation:shake 0.3s ease}
+  @media(max-width:500px){.container{padding:24px 16px 60px}.hero{padding:48px 0 32px}.hero h1{font-size:2rem}.card{padding:24px 20px}.hexa-symbol{font-size:4rem}.hexa-name{font-size:1.4rem}.input-group input{width:100px;padding:14px;font-size:1.1rem}.tab{padding:10px 14px;font-size:0.8rem}.changed-row{gap:16px}.changed-arrow{font-size:1.4rem}}
 </style>
 </head>
+
 <body>
 
 <div class="toast" id="toast"></div>
 
 <div class="container">
-  <div class="header">
-    <h1>☯ 易经数字占卜</h1>
+  <div class="hero">
+    <h1>易经数字占卜</h1>
     <p class="subtitle">傅佩荣三位数起卦法 · 先天八卦取余定卦</p>
     <div class="divider"></div>
   </div>
 
-  <div class="card" style="text-align:center;">
-    <div class="card-title"><span class="icon">☯</span> 先天八卦方位图</div>
-    <div class="bagua-container">
-      <div class="bagua-wrapper" id="baguaSvg"></div>
-    </div>
-    <p style="font-size:0.78rem;color:#b0a590;margin-top:4px;">上乾下坤 · 左离右坎 · 兑巽震艮居四隅</p>
+  <div class="card">
+    <div class="card-title">先天八卦方位图</div>
+    <div class="bagua-container"><div class="bagua-wrapper"><img src="11111.png" alt="先天八卦方位图" style="width:100%;height:100%;object-fit:contain;"></div></div>
   </div>
 
   <div class="card" id="inputCard">
-    <div class="card-title"><span class="icon">🎲</span> 起卦做法：心里默想希望知道未来哪些走势、问题，之后请输入三个任意三位数（100–999）。</div>
+    <div class="card-title">起卦</div>
+    <p class="input-instruction">心里默想希望知道未来的走势与问题，然后输入三个任意三位数</p>
     <div class="input-row">
-      <div class="input-group">
-        <label>数一 <span class="symbol">①</span></label>
-        <input type="text" id="num1" placeholder="如 431" maxlength="3" inputmode="numeric">
-        <span class="range-hint">定下卦</span>
-      </div>
-      <div class="input-group">
-        <label>数二 <span class="symbol">②</span></label>
-        <input type="text" id="num2" placeholder="如 379" maxlength="3" inputmode="numeric">
-        <span class="range-hint">定上卦</span>
-      </div>
-      <div class="input-group">
-        <label>数三 <span class="symbol">③</span></label>
-        <input type="text" id="num3" placeholder="如 847" maxlength="3" inputmode="numeric">
-        <span class="range-hint">定动爻</span>
-      </div>
+      <div class="input-group"><label>数一 ①</label><input type="text" id="num1" placeholder="431" maxlength="3" inputmode="numeric"><span class="range-hint">定下卦</span></div>
+      <div class="input-group"><label>数二 ②</label><input type="text" id="num2" placeholder="379" maxlength="3" inputmode="numeric"><span class="range-hint">定上卦</span></div>
+      <div class="input-group"><label>数三 ③</label><input type="text" id="num3" placeholder="847" maxlength="3" inputmode="numeric"><span class="range-hint">定动爻</span></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-primary" onclick="doDivination()">✦ 起 卦</button>
-      <button class="btn btn-reset" onclick="doReset()">↺ 重 置</button>
+      <button class="btn btn-reset" onclick="doReset()">↺ 重置</button>
+    </div>
+  </div>
+
+  <div id="results" style="display:none;">
+    <div class="card" id="stepsCard"><div class="card-title">运算拆解</div><div class="calc-steps" id="calcSteps"></div></div>
+    <div class="card" id="hexaCard"><div class="card-title">卦象</div><div class="hexa-display" id="hexaDisplay"></div><div class="changed-row" id="changedRow"></div></div>
+    <div class="card" id="interpretCard">
+      <div class="tabs">
+        <button class="tab active" data-tab="judgment">卦辞详解</button>
+        <button class="tab" data-tab="expert">专家详解</button>
+        <button class="tab" data-tab="dimensions">四项断语</button>
+        <button class="tab" data-tab="changed">之卦（变卦）</button>
+      </div>
+      <div class="tab-content active" id="tab-judgment"></div>
+      <div class="tab-content" id="tab-expert"></div>
+      <div class="tab-content" id="tab-dimensions"></div>
+      <div class="tab-content" id="tab-changed"></div>
+    </div>
+    <div class="disclaimer" id="disclaimerArea"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">数字起卦禁忌</div>
+    <div class="taboos-grid">
+      <div class="taboo-item"><strong>心神不定不占</strong>情绪波动剧烈、心绪烦乱时卦象易失真。</div>
+      <div class="taboo-item"><strong>不反复占问</strong>既已得卦不宜反复追问。《蒙卦》云"再三渎，渎则不告"。同一问题至少间隔三个月。</div>
+      <div class="taboo-item"><strong>不诚不占</strong>怀疑或戏谑心态起卦，结果无参考价值。</div>
+      <div class="taboo-item"><strong>违法悖德不占</strong>占卜应为正道提供指引。</div>
+      <div class="taboo-item"><strong>酒后不占</strong>心神不清时起卦不准。</div>
+      <div class="taboo-item"><strong>子时不占</strong>（23:00–1:00）传统认为阴阳交替卦象不稳。</div>
+      <div class="taboo-item"><strong>三位数只测小事</strong>数字卦以简驭繁，适合日常小事占问。重大决策建议用大衍筮法（蓍草法）占断。</div>
+      <div class="taboo-item" style="grid-column:1/-1;"><strong>极端天气不占</strong>雷雨大风等天地气机紊乱之时起卦易受干扰。</div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">⚠️</span> 数字起卦禁忌须知</div>
-    <ul class="taboos-list">
-      <li><strong>心神不定不占：</strong>情绪波动剧烈、心绪烦乱时不宜起卦，卦象容易失真。</li>
-      <li><strong>同一问题不反复占：</strong>既已得卦，不宜反复追问同一事。《蒙卦》云"初筮告，再三渎，渎则不告"。</li>
-      <li><strong>不诚不占：</strong>抱着怀疑或戏谑心态起卦，结果无参考价值。起卦前应静心专注。</li>
-      <li><strong>涉及违法悖德之事不占：</strong>占卜应为正道提供指引，不可用于谋算不正当之事。</li>
-      <li><strong>酒后不占：</strong>心神不清明时起卦不准，酒精会影响判断力和专注度。</li>
-      <li><strong>子时不占（23:00 – 1:00）：</strong>传统认为子时阴阳交替、天地之气未定，卦象易有偏差。</li>
-      <li><strong>极端天气不占：</strong>雷雨大风等天地气机紊乱之时，起卦易受干扰。</li>
-    </ul>
-  </div>
-
-  <div id="results" style="display:none;">
-
-    <div class="card" id="stepsCard">
-      <div class="card-title"><span class="icon">📐</span> 运算拆解</div>
-      <div class="calc-steps" id="calcSteps"></div>
+    <div class="card-title">关于傅佩荣三位数数字占卜法</div>
+    <div class="about-grid">
+      <div style="font-size:0.84rem;color:var(--text-secondary);line-height:1.75;"><strong>起卦原理</strong><br>随意报出三个三位数，第一个数定下卦、第二个数定上卦、第三个数定动爻。分别除以 8（或 6）取余数，按先天八卦数对应卦象。此法源自傅佩荣教授对易经占筮的简化，保留了传统大衍之数法的核心逻辑。</div>
+      <div style="font-size:0.84rem;color:var(--text-secondary);line-height:1.75;"><strong>先天八卦数</strong><br>乾一☰、兑二☱、离三☲、震四☳、巽五☴、坎六☵、艮七☶、坤八☷<br>除 8 余 0 取坤卦；除 6 余 0 取第六爻动。</div>
     </div>
-
-    <div class="card" id="hexaCard">
-      <div class="card-title"><span class="icon">☯</span> 卦象</div>
-      <div class="hexa-display" id="hexaDisplay"></div>
-      <div class="changed-row" id="changedRow"></div>
-    </div>
-
-    <div class="card" id="interpretCard">
-      <div class="tabs">
-        <button class="tab active" data-tab="judgment">📖 卦辞·彖传</button>
-        <button class="tab" data-tab="expert">🔍 专家详解</button>
-        <button class="tab" data-tab="line">✏️ 动爻爻辞</button>
-        <button class="tab" data-tab="dimensions">🎯 四项断语</button>
-        <button class="tab" data-tab="changed">🔄 变卦参考</button>
-      </div>
-      <div class="tab-content active" id="tab-judgment"></div>
-      <div class="tab-content" id="tab-expert"></div>
-      <div class="tab-content" id="tab-line"></div>
-      <div class="tab-content" id="tab-dimensions"></div>
-      <div class="tab-content" id="tab-changed"></div>
-    </div>
-
-    <div class="disclaimer" style="margin-top: 8px;" id="disclaimerArea"></div>
-  </div>
-
-  <div class="card" style="margin-top: 8px;">
-    <div class="card-title"><span class="icon">📚</span> 关于傅佩荣三位数数字占卜法</div>
-    <div class="disclaimer" style="text-align: left; font-size: 0.85rem;">
-      <p style="margin-bottom: 8px;"><strong>起卦原理：</strong>随意报出三个三位数，第一个数定下卦、第二个数定上卦、第三个数定动爻。分别除以 8（或 6）取余数，按先天八卦数对应卦象。此法源自傅佩荣教授对易经占筮的简化，保留了传统大衍之数法的核心逻辑。</p>
-      <p style="margin-bottom: 8px;"><strong>先天八卦数：</strong>乾一 ☰、兑二 ☱、离三 ☲、震四 ☳、巽五 ☴、坎六 ☵、艮七 ☶、坤八 ☷（除 8 余 0 取坤卦）。</p>
-      <p style="margin-bottom: 8px;"><strong>动爻规则：</strong>数三除以 6 取余数，余 1-5 分别对应初爻至五爻，余 0 对应第六爻（上爻）动。</p>
-      <p><strong>⚖️ 理性提示：</strong>易经占卜为中华传统文化遗产，本工具所展示卦辞、爻辞及断语仅供文化参考与心理指引，不构成任何形式的绝对宿命判定。生活中的重大决策，请结合理性思考与现实情况综合判断，不可盲信占卜结果。</p>
+    <div class="disclaimer" style="text-align:left;padding:12px 0 0;margin-top:12px;border-top:1px solid var(--border-light);">
+      <strong>⚖️ 理性提示：</strong>易经占卜为中华传统文化遗产，本工具仅供文化参考与心理指引，不构成绝对宿命判定。本质不是算命预知，是借助易经原文哲理帮自己理性梳理选择、规避风险，仅供参考。译文主要来源：中华书局《周易》（杨天才、张善文译注），参考傅佩荣《易经入门》、倪海厦《天纪》、曾仕强《易经的智慧》。
     </div>
   </div>
 </div>
@@ -299,135 +198,24 @@
 // 先天八卦图 SVG 渲染
 // ═══════════════════════════════════════
 (function drawBagua() {
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const container = document.getElementById('baguaSvg');
-  const size = 260;
-  const cx = size / 2, cy = size / 2, R = 115;
-
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
-  svg.setAttribute('width', size);
-  svg.setAttribute('height', size);
-
-  // Outer circle
-  const outer = document.createElementNS(svgNS, 'circle');
-  outer.setAttribute('cx', cx); outer.setAttribute('cy', cy); outer.setAttribute('r', R);
-  outer.setAttribute('fill', 'none'); outer.setAttribute('stroke', '#8b4513');
-  outer.setAttribute('stroke-width', '2');
-  svg.appendChild(outer);
-
-  // Bagua positions (先天八卦方位): 乾上 坤下 离左 坎右 兑左上 巽右上 震左下 艮右下
-  const positions = [
-    { name:'乾', sym:'☰', angle:-90, num:1, elem:'金' },
-    { name:'兑', sym:'☱', angle:-45, num:2, elem:'金' },
-    { name:'离', sym:'☲', angle:0, num:3, elem:'火' },
-    { name:'震', sym:'☳', angle:45, num:4, elem:'木' },
-    { name:'坤', sym:'☷', angle:90, num:8, elem:'土' },
-    { name:'艮', sym:'☶', angle:135, num:7, elem:'土' },
-    { name:'坎', sym:'☵', angle:180, num:6, elem:'水' },
-    { name:'巽', sym:'☴', angle:-135, num:5, elem:'木' },
-  ];
-
-  // Eight radiating lines
-  positions.forEach(p => {
-    const rad = p.angle * Math.PI / 180;
-    const x2 = cx + (R - 18) * Math.cos(rad);
-    const y2 = cy - (R - 18) * Math.sin(rad);
-    const line = document.createElementNS(svgNS, 'line');
-    line.setAttribute('x1', cx); line.setAttribute('y1', cy);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-    line.setAttribute('stroke', '#e8e0d5'); line.setAttribute('stroke-width', '1');
-    svg.appendChild(line);
-  });
-
-  // Trigram labels
-  positions.forEach(p => {
-    const rad = p.angle * Math.PI / 180;
-    const lx = cx + (R - 30) * Math.cos(rad);
-    const ly = cy - (R - 30) * Math.sin(rad);
-    const g = document.createElementNS(svgNS, 'g');
-
-    // Symbol
-    const text = document.createElementNS(svgNS, 'text');
-    text.setAttribute('x', lx); text.setAttribute('y', ly);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dominant-baseline', 'central');
-    text.setAttribute('font-size', '22');
-    text.setAttribute('fill', '#2c2416');
-    text.textContent = p.sym;
-    g.appendChild(text);
-
-    // Name below
-    const nameText = document.createElementNS(svgNS, 'text');
-    nameText.setAttribute('x', lx); nameText.setAttribute('y', ly + 18);
-    nameText.setAttribute('text-anchor', 'middle');
-    nameText.setAttribute('font-size', '10');
-    nameText.setAttribute('fill', '#8b4513');
-    nameText.setAttribute('font-weight', '600');
-    nameText.textContent = p.name + '(' + p.num + ')';
-    g.appendChild(nameText);
-
-    svg.appendChild(g);
-  });
-
-  // Center Taiji symbol
-  const taijiR = 30;
-  const tG = document.createElementNS(svgNS, 'g');
-
-  // White half circle (left)
-  const wh = document.createElementNS(svgNS, 'path');
-  const d = `M ${cx} ${cy - taijiR} A ${taijiR} ${taijiR} 0 0 0 ${cx} ${cy + taijiR} A ${taijiR/2} ${taijiR/2} 0 0 1 ${cx} ${cy} A ${taijiR/2} ${taijiR/2} 0 0 0 ${cx} ${cy - taijiR}`;
-  wh.setAttribute('d', d);
-  wh.setAttribute('fill', '#2c2416');
-  tG.appendChild(wh);
-
-  // Black half circle (right) with white filling
-  const bl = document.createElementNS(svgNS, 'circle');
-  bl.setAttribute('cx', cx); bl.setAttribute('cy', cy); bl.setAttribute('r', taijiR);
-  bl.setAttribute('fill', '#faf7f2');
-  bl.setAttribute('stroke', '#2c2416'); bl.setAttribute('stroke-width', '1.5');
-  tG.appendChild(bl);
-
-  // Black dot (upper)
-  const dot1 = document.createElementNS(svgNS, 'circle');
-  dot1.setAttribute('cx', cx); dot1.setAttribute('cy', cy - taijiR/2);
-  dot1.setAttribute('r', 3.5); dot1.setAttribute('fill', '#2c2416');
-  tG.appendChild(dot1);
-
-  // White dot (lower)
-  const dot2 = document.createElementNS(svgNS, 'circle');
-  dot2.setAttribute('cx', cx); dot2.setAttribute('cy', cy + taijiR/2);
-  dot2.setAttribute('r', 3.5); dot2.setAttribute('fill', '#faf7f2');
-  tG.appendChild(dot2);
-
-  // Rebuild yin-yang properly: use simple approach with two halves
-  // Clear previous inner
-  while (tG.firstChild) tG.removeChild(tG.firstChild);
-
-  const c2 = document.createElementNS(svgNS, 'circle');
-  c2.setAttribute('cx', cx); c2.setAttribute('cy', cy); c2.setAttribute('r', taijiR);
-  c2.setAttribute('fill', '#faf7f2'); c2.setAttribute('stroke', '#8b4513'); c2.setAttribute('stroke-width', '1');
-  tG.appendChild(c2);
-
-  // Yin-yang: use two interlocking teardrops via path
-  const yinPath = document.createElementNS(svgNS, 'path');
-  yinPath.setAttribute('d', `M ${cx} ${cy - taijiR} A ${taijiR} ${taijiR} 0 0 1 ${cx} ${cy + taijiR} A ${taijiR/2} ${taijiR/2} 0 0 1 ${cx} ${cy} A ${taijiR/2} ${taijiR/2} 0 0 0 ${cx} ${cy - taijiR}`);
-  yinPath.setAttribute('fill', '#2c2416');
-  tG.appendChild(yinPath);
-
-  // Center dots
-  const d1 = document.createElementNS(svgNS, 'circle');
-  d1.setAttribute('cx', cx); d1.setAttribute('cy', cy - taijiR/2); d1.setAttribute('r', 4);
-  d1.setAttribute('fill', '#faf7f2');
-  tG.appendChild(d1);
-
-  const d2 = document.createElementNS(svgNS, 'circle');
-  d2.setAttribute('cx', cx); d2.setAttribute('cy', cy + taijiR/2); d2.setAttribute('r', 4);
-  d2.setAttribute('fill', '#2c2416');
-  tG.appendChild(d2);
-
-  svg.appendChild(tG);
-  container.appendChild(svg);
+  var svgNS = 'http://www.w3.org/2000/svg', ctr = document.getElementById('baguaSvg');
+  if (!ctr) return;
+  var s = 360, cx = s/2, cy = s/2, R = 148, svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + s + ' ' + s); svg.setAttribute('width', s); svg.setAttribute('height', s);
+  var o = document.createElementNS(svgNS, 'circle'); o.setAttribute('cx', cx); o.setAttribute('cy', cy); o.setAttribute('r', R);
+  o.setAttribute('fill', '#f5f5f7'); o.setAttribute('stroke', '#d2d2d7'); o.setAttribute('stroke-width', '1'); svg.appendChild(o);
+  var ir = document.createElementNS(svgNS, 'circle'); ir.setAttribute('cx', cx); ir.setAttribute('cy', cy); ir.setAttribute('r', R-36);
+  ir.setAttribute('fill', 'none'); ir.setAttribute('stroke', '#e8e8ed'); ir.setAttribute('stroke-width', '0.5'); svg.appendChild(ir);
+  var pos = [{s:'☰',a:-90,l:'乾'},{s:'☱',a:-45,l:'兑'},{s:'☲',a:0,l:'离'},{s:'☳',a:45,l:'震'},{s:'☴',a:135,l:'巽'},{s:'☵',a:180,l:'坎'},{s:'☶',a:-135,l:'艮'},{s:'☷',a:90,l:'坤'}];
+  pos.forEach(function(p){var r=p.a*Math.PI/180,lx=cx+(R-26)*Math.cos(r),ly=cy-(R-26)*Math.sin(r);
+    var t=document.createElementNS(svgNS,'text');t.setAttribute('x',lx);t.setAttribute('y',ly-4);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');t.setAttribute('font-size','28');t.setAttribute('fill','#1d1d1f');t.setAttribute('font-weight','500');t.textContent=p.s;svg.appendChild(t);
+    var l=document.createElementNS(svgNS,'text');l.setAttribute('x',lx);l.setAttribute('y',ly+20);l.setAttribute('text-anchor','middle');l.setAttribute('font-size','11');l.setAttribute('fill','#86868b');l.setAttribute('font-weight','600');l.setAttribute('font-family','-apple-system,PingFang SC,sans-serif');l.textContent=p.l;svg.appendChild(l);});
+  var tR=42,lh=document.createElementNS(svgNS,'path');lh.setAttribute('d','M '+cx+' '+(cy-tR)+' A '+tR+' '+tR+' 0 0 1 '+cx+' '+(cy+tR)+' Z');lh.setAttribute('fill','#1d1d1f');svg.appendChild(lh);
+  var tc=document.createElementNS(svgNS,'circle');tc.setAttribute('cx',cx);tc.setAttribute('cy',cy-tR/2);tc.setAttribute('r',tR/2);tc.setAttribute('fill','#f5f5f7');svg.appendChild(tc);
+  var bc=document.createElementNS(svgNS,'circle');bc.setAttribute('cx',cx);bc.setAttribute('cy',cy+tR/2);bc.setAttribute('r',tR/2);bc.setAttribute('fill','#1d1d1f');svg.appendChild(bc);
+  var tb=document.createElementNS(svgNS,'circle');tb.setAttribute('cx',cx);tb.setAttribute('cy',cy);tb.setAttribute('r',tR);tb.setAttribute('fill','none');tb.setAttribute('stroke','#d2d2d7');tb.setAttribute('stroke-width','1');svg.appendChild(tb);
+  [{x:cx-tR/2,y:cy,f:'#1d1d1f'},{x:cx+tR/2,y:cy,f:'#f5f5f7'}].forEach(function(d){var e=document.createElementNS(svgNS,'circle');e.setAttribute('cx',d.x);e.setAttribute('cy',d.y);e.setAttribute('r',4.5);e.setAttribute('fill',d.f);svg.appendChild(e);});
+  ctr.appendChild(svg);
 })();
 
 // ═══════════════════════════════════════
@@ -1049,6 +837,74 @@ const DIMENSION_READINGS = {
 // 译文主要来源：中华书局《周易》（杨天才、张善文译注）
 // 补充参考：傅佩荣《易经入门》、倪海厦《天纪》、曾仕强《易经的智慧》
 // ═══════════════════════════════════════
+
+const XIANGZHUAN_DATA = {
+'1-1':{dx:'天行健，君子以自强不息。',dxt:'天道运行刚健有力，君子观此卦象，应当效法天道，自强不息。',xx:['潜龙勿用，阳在下也。','见龙在田，德施普也。','终日乾乾，反复道也。','或跃在渊，进无咎也。','飞龙在天，大人造也。','亢龙有悔，盈不可久也。'],xxt:['阳气还沉在下位。','德行已经可以普遍施予。','反复践行天道。','前进没有灾祸。','大人有所作为之时。','满盈的状态不可长久。']},
+'8-8':{dx:'地势坤，君子以厚德载物。',dxt:'大地的气势宽厚和顺，君子应当增厚美德来承载万物。',xx:['履霜坚冰，阴始凝也。','六二之动，直以方也。','含章可贞，以时发也。','括囊无咎，慎不害也。','黄裳元吉，文在中也。','龙战于野，其道穷也。'],xxt:['阴气刚开始凝结。','正直而又端方。','等待时机而发挥。','谨慎就不会受害。','文采蕴藏在内。','道路走到穷尽处。']},
+'6-4':{dx:'云雷屯，君子以经纶。',dxt:'乌云和雷声交加，君子应当经纬天下、治理国家。',xx:['虽磐桓，志行正也。','六二之难，乘刚也。','即鹿无虞，以从禽也。','求而往，明也。','屯其膏，施未光也。','泣血涟如，何可长也。'],xxt:['志向行为端正。','凌驾在阳刚之上。','盲目追逐猎物。','有所追求而前往是明智的。','恩惠还没有光大。','这种状态怎能长久。']},
+'7-6':{dx:'山下出泉，蒙。君子以果行育德。',dxt:'山下流出泉水，君子应当以果断的行动来培育品德。',xx:['利用刑人，以正法也。','子克家，刚柔接也。','勿用取女，行不顺也。','困蒙之吝，独远实也。','童蒙之吉，顺以巽也。','利用御寇，上下顺也。'],xxt:['端正法则。','刚柔相互交接。','行为不顺正道。','远离了实学。','柔顺而谦逊。','上下顺势而为。']},
+'6-1':{dx:'云上于天，需。君子以饮食宴乐。',dxt:'云气上升聚集在天上，君子应当在等待时饮食宴乐、养精蓄锐。',xx:['需于郊，不犯难行也。','需于沙，衍在中也。','需于泥，灾在外也。','需于血，顺以听也。','酒食贞吉，以中正也。','不速之客来，敬之终吉。'],xxt:['不冒犯险难前行。','宽衍居中。','灾难在外面。','顺应和听从。','处于中正之位。','恭敬对待终得吉。']},
+'1-6':{dx:'天与水违行，讼。君子以作事谋始。',dxt:'天与水运行方向相反，君子做事的开始就要周密谋划。',xx:['不永所事，讼不可长也。','不克讼，归逋窜也。','食旧德，从上吉也。','复即命，渝安贞，不失也。','讼元吉，以中正也。','以讼受服，亦不足敬也。'],xxt:['争讼不可延续。','回去躲避逃窜。','顺从在上者是吉利的。','改变态度安于守正。','持守中正之道。','不值得尊敬。']},
+'8-6':{dx:'地中有水，师。君子以容民畜众。',dxt:'大地中蕴藏着水，君子应当包容人民、蓄养大众。',xx:['师出以律，失律凶也。','在师中吉，承天宠也。','师或舆尸，大无功也。','左次无咎，未失常也。','长子帅师，以中行也。','大君有命，以正功也。'],xxt:['失去纪律就凶险。','承受上天恩宠。','完全没有功绩。','没有失去常道。','行中道。','公正论功行赏。']},
+'6-8':{dx:'地上有水，比。先王以建万国，亲诸侯。',dxt:'大地上有水亲密无间，先王据此建立万国亲近诸侯。',xx:['比之初六，有它吉也。','比之自内，不自失也。','比之匪人，不亦伤乎。','外比于贤，以从上也。','显比之吉，位正中也。','比之无首，无所终也。'],xxt:['有其他吉利。','不会失去自我。','也是伤害。','顺从在上者。','位置中正。','不会有什么结果。']},
+'5-1':{dx:'风行天上，小畜。君子以懿文德。',dxt:'风在天上吹行，君子应当美化文采和品德修养。',xx:['复自道，其义吉也。','牵复在中，亦不自失也。','夫妻反目，不能正室也。','有孚惕出，上合志也。','有孚挛如，不独富也。','既雨既处，德积载也。'],xxt:['道理上是吉利的。','没有失去自我。','不能端正家室。','与在上者志向相合。','不独自富裕。','德行积蓄承载。']},
+'1-2':{dx:'上天下泽，履。君子以辩上下，定民志。',dxt:'上边是天下面是泽，君子应当辨别上下尊卑、安定民心。',xx:['素履之往，独行愿也。','幽人贞吉，中不自乱也。','眇能视，不足以有明也。','愬愬终吉，志行也。','夬履贞厉，位正当也。','元吉在上，大有庆也。'],xxt:['独自践行志愿。','内心持中不自乱。','不足以看清。','志向能够实行。','位置正当过于自信。','大有喜庆。']},
+'8-1':{dx:'天地交，泰。后以财成天地之道，辅相天地之宜，以左右民。',dxt:'天地相互交合，君主据此裁节成就天地之道、辅助化生、引导民众。',xx:['拔茅征吉，志在外也。','包荒得尚于中行，以光大也。','无平不陂，天地际也。','翩翩不富，皆失实也。','以祉元吉，中以行愿也。','城复于隍，其命乱也。'],xxt:['志向在外面。','心胸光明广大。','天地的边际。','失去了实际。','居中实现愿望。','天命已经乱了。']},
+'1-8':{dx:'天地不交，否。君子以俭德辟难，不可荣以禄。',dxt:'天地不相交合，君子收敛德行避开灾难，不可追求荣华利禄。',xx:['拔茅贞吉，志在君也。','大人否亨，不乱群也。','包羞，位不当也。','有命无咎，志行也。','大人之吉，位正当也。','否终则倾，何可长也。'],xxt:['志向在于国君。','不混同于众人。','位置不当。','志向能够实行。','位置正当。','怎能长久。']},
+'1-3':{dx:'天与火，同人。君子以类族辨物。',dxt:'天与火相互亲和，君子据此分析族群类别、辨别事物异同。',xx:['出门同人，又谁咎也。','同人于宗，吝道也。','伏戎于莽，敌刚也。','乘其墉，义弗克也。','同人之先，以中直也。','同人于郊，志未得也。'],xxt:['有谁会责怪呢。','导致吝惜的做法。','敌人刚强。','从道义上还不能攻克。','中正刚直。','志向未能实现。']},
+'3-1':{dx:'火在天上，大有。君子以遏恶扬善，顺天休命。',dxt:'火在天上照耀万物，君子遏止邪恶发扬善行、顺应天道美善之命。',xx:['大有初九，无交害也。','大车以载，积中不败也。','公用亨于天子，小人害也。','匪其彭无咎，明辩皙也。','厥孚交如，信以发志也。','大有上吉，自天祐也。'],xxt:['没有相互交害。','积累了中道所以不败。','小人担当不起就是害。','明辨清晰。','用信义启发志向。','来自上天护佑。']},
+'8-7':{dx:'地中有山，谦。君子以裒多益寡，称物平施。',dxt:'大地中有高山，君子取多余补不足、权衡事物公平施予。',xx:['谦谦君子，卑以自牧也。','鸣谦贞吉，中心得也。','劳谦君子，万民服也。','无不利撝谦，不违则也。','利用侵伐，征不服也。','鸣谦，志未得也。'],xxt:['以谦卑修养自己。','内心有所得。','万民都钦服。','不违背法则。','征讨不服的人。','志向还没有实现。']},
+'4-8':{dx:'雷出地奋，豫。先王以作乐崇德，殷荐之上帝，以配祖考。',dxt:'雷从地面奋起，先王制作音乐崇尚功德、进献上帝配享祖先。',xx:['初六鸣豫，志穷凶也。','不终日贞吉，以中正也。','盱豫有悔，位不当也。','由豫大有得，志大行也。','六五贞疾，乘刚也。','冥豫在上，何可长也。'],xxt:['志向穷尽凶险。','中正。','位置不当。','志向得以大行。','凌驾阳刚之上。','怎能长久。']},
+'2-4':{dx:'泽中有雷，随。君子以向晦入宴息。',dxt:'泽中有雷声，君子在黄昏时进入家中安然休息。',xx:['官有渝，从正吉也。','系小子，弗兼与也。','系丈夫，志舍下也。','随有获，其义凶也。','孚于嘉吉，位正中也。','拘系之，上穷也。'],xxt:['跟从正道吉利。','不能兼顾。','志在舍弃下位。','道理上有凶险。','居于正中位置。','穷途末路了。']},
+'7-5':{dx:'山下有风，蛊。君子以振民育德。',dxt:'山下有风，君子据此振作民众精神、培育品德。',xx:['干父之蛊，意承考也。','干母之蛊，得中道也。','干父之蛊，终无咎也。','裕父之蛊，往未得也。','干父用誉，承以德也。','不事王侯，志可则也。'],xxt:['继承先人事业。','得到了中道。','最终没有灾祸。','不会有什么收获。','以德来继承。','志向值得效法。']},
+'8-2':{dx:'泽上有地，临。君子以教思无穷，容保民无疆。',dxt:'泽上有大地，君子教导思虑无穷、包容保护人民没有止境。',xx:['咸临贞吉，志行正也。','咸临吉无不利，未顺命也。','甘临，位不当也。','至临无咎，位当也。','大君之宜，行中之谓也。','敦临之吉，志在内也。'],xxt:['志向行为端正。','尚未完全顺从天命。','位置不当。','位置恰当。','行中道。','志向在于内部。']},
+'5-8':{dx:'风行地上，观。先王以省方观民设教。',dxt:'风在大地上吹行，先王据此巡视四方观察民情、设置教化。',xx:['初六童观，小人道也。','窥观女贞，亦可丑也。','观我生进退，未失道也。','观国之光，尚宾也。','观我生，观民也。','观其生，志未平也。'],xxt:['小人物的方式。','也是可丑的。','没有迷失正路。','崇尚宾客之道。','观察民情。','心态还没有平和。']},
+'3-4':{dx:'雷电噬嗑，先王以明罚敕法。',dxt:'雷电交加咬合，先王据此严明刑罚、整饬法令。',xx:['屦校灭趾，不行也。','噬肤灭鼻，乘刚也。','遇毒，位不当也。','利艰贞吉，未光也。','贞厉无咎，得当也。','何校灭耳，聪不明也。'],xxt:['使人不能行走。','凌驾在阳刚之上。','位置不当。','尚未光大。','处置得当。','听不明白。']},
+'7-3':{dx:'山下有火，贲。君子以明庶政，无敢折狱。',dxt:'山下有火映照，君子明察政事但不敢以文饰来断案。',xx:['舍车而徒，义弗乘也。','贲其须，与上兴也。','永贞之吉，终莫之陵也。','六四当位，疑也。','六五之吉，有喜也。','白贲无咎，上得志也。'],xxt:['按道义不应乘车。','与在上者共同兴起。','无人能凌驾其上。','心有疑虑。','有喜庆之事。','在上者实现了志向。']},
+'7-8':{dx:'山附于地，剥。上以厚下安宅。',dxt:'山附在大地上，在上位者据此加厚基础、安固根基。',xx:['剥床以足，以灭下也。','剥床以辨，未有与也。','剥之无咎，失上下也。','剥床以肤，切近灾也。','以宫人宠，终无尤也。','君子得舆，民所载也。'],xxt:['摧毁根基。','没有援助。','脱离了上下关系。','危险迫近。','最终没有过错。','民众愿意承载。']},
+'8-4':{dx:'雷在地中，复。先王以至日闭关，商旅不行，后不省方。',dxt:'雷在地下阳气回复，先王在冬至日闭关静养。',xx:['不远之复，以修身也。','休复之吉，以下仁也。','频复之厉，义无咎也。','中行独复，以从道也。','敦复无悔，中以自考也。','迷复之凶，反君道也。'],xxt:['用以修身。','礼贤下士。','从道理上无咎。','追随正道。','用中道自我反省。','背离为君之道。']},
+'1-4':{dx:'天下雷行，物与无妄。先王以茂对时育万物。',dxt:'天下雷声震动，万物不敢妄为，先王勉力顺应天时养育万物。',xx:['无妄之往，得志也。','不耕获，未富也。','行人得牛，邑人灾也。','可贞无咎，固有之也。','无妄之药，不可试也。','无妄之行，穷之灾也。'],xxt:['实现了志向。','不能致富。','邑人却遭了殃。','本来就有道理。','不可乱试。','到了穷尽处的灾祸。']},
+'7-1':{dx:'天在山中，大畜。君子以多识前言往行，以畜其德。',dxt:'天包容在山中，君子多记取前人言论行事来积蓄品德。',xx:['有厉利已，不犯灾也。','舆说輹，中无尤也。','利有攸往，上合志也。','六四元吉，有喜也。','六五之吉，有庆也。','何天之衢，道大行也。'],xxt:['不冒犯灾难。','居中无过。','与上面志向相合。','有喜庆之事。','有值得庆贺的事。','道大行于天下。']},
+'7-4':{dx:'山下有雷，颐。君子以慎言语，节饮食。',dxt:'山下有雷声，万物萌发待养，君子谨慎言语、节制饮食。',xx:['观我朵颐，亦不足贵也。','六二征凶，行失类也。','十年勿用，道大悖也。','颠颐之吉，上施光也。','居贞之吉，顺以从上也。','由颐厉吉，大有庆也。'],xxt:['不值得珍贵。','行动失去同类。','与大道严重违背。','上位者施予光明。','顺从上面。','大获喜庆。']},
+'2-5':{dx:'泽灭木，大过。君子以独立不惧，遁世无闷。',dxt:'泽水淹没树木，君子独立而不畏惧、隐居不烦闷。',xx:['藉用白茅，柔在下也。','老夫女妻，过以相与也。','栋桡之凶，不可以有辅也。','栋隆之吉，不桡乎下也。','枯杨生华，何可久也。','过涉之凶，不可咎也。'],xxt:['柔顺在下。','过越互相给予。','不可有辅佐。','不向下弯曲。','怎能长久。','不可责怪。']},
+'6-6':{dx:'水洊至，习坎。君子以常德行，习教事。',dxt:'水重重而来，君子经常修持德行、熟习教化之事。',xx:['习坎入坎，失道凶也。','求小得，未出中也。','来之坎坎，终无功也。','樽酒簋贰，刚柔际也。','坎不盈，中未大也。','上六失道，凶三岁也。'],xxt:['迷失道路凶险。','还没有走出中道。','最终没有功绩。','刚柔交界诚意。','中道尚未光大。','凶险将持续。']},
+'3-3':{dx:'明两作，离。大人以继明照于四方。',dxt:'光明重复升起，大人用持续的光明照耀四方。',xx:['履错之敬，以辟咎也。','黄离元吉，得中道也。','日昃之离，何可久也。','突如其来如，无所容也。','六五之吉，离王公也。','王用出征，以正邦也。'],xxt:['避免灾祸。','得到中道。','怎能长久。','没有容身之处。','依附于王公。','匡正邦国。']},
+'2-7':{dx:'山上有泽，咸。君子以虚受人。',dxt:'山上有泽，君子以谦虚之心接纳他人。',xx:['咸其拇，志在外也。','虽凶居吉，顺不害也。','咸其股，亦不处也。','贞吉悔亡，未感害也。','咸其脢，志末也。','咸其辅颊舌，滕口说也。'],xxt:['志向在外面。','柔顺不被害。','停不下来了。','没有感受到伤害。','志向只在末节。','只是口中说说。']},
+'4-5':{dx:'雷风，恒。君子以立不易方。',dxt:'雷与风相伴而行，君子树立操守而不改变方向。',xx:['浚恒之凶，始求深也。','九二悔亡，能久中也。','不恒其德，无所容也。','久非其位，安得禽也。','妇人贞吉，从一而终也。','振恒在上，大无功也。'],xxt:['开始要求太深。','长久守中。','无处容身。','怎能捕到禽兽。','从一而终。','大无功绩。']},
+'1-7':{dx:'天下有山，遁。君子以远小人，不恶而严。',dxt:'天下有山，山高天远，君子远离小人、不去憎恶但要保持威严。',xx:['遁尾之厉，不往何灾也。','执用黄牛，固志也。','系遁之厉，有疾惫也。','君子好遁，小人否也。','嘉遁贞吉，以正志也。','肥遁无不利，无所疑也。'],xxt:['不前往哪来灾祸。','巩固心志。','有病疲。','小人做不到。','志向端正。','没有疑虑。']},
+'4-1':{dx:'雷在天上，大壮。君子以非礼弗履。',dxt:'雷在天上震动，君子不合礼法的事不去践行。',xx:['壮于趾，其孚穷也。','九二贞吉，以中也。','小人用壮，君子罔也。','藩决不羸，尚往也。','丧羊于易，位不当也。','不能退不能遂，不详也。'],xxt:['诚信到了穷尽处。','居中。','君子不用强力。','崇尚进取。','位置不当。','不祥。']},
+'3-8':{dx:'明出地上，晋。君子以自昭明德。',dxt:'光明出现在大地上，君子自我彰显光明之德。',xx:['晋如摧如，独行正也。','受兹介福，以中正也。','众允之志，上行也。','鼫鼠贞厉，位不当也。','失得勿恤，往有庆也。','维用伐邑，道未光也。'],xxt:['独自践行正道。','居中守正。','向上运行。','位置不当。','前往有喜庆。','道尚未光大。']},
+'8-3':{dx:'明入地中，明夷。君子以莅众，用晦而明。',dxt:'光明进入地中，君子莅临众人时以表暗昧隐藏内在光明。',xx:['君子于行，义不食也。','六二之吉，顺以则也。','南狩之志，乃大得也。','入于左腹，获心意也。','箕子之贞，明不可息也。','初登于天，照四国也。'],xxt:['按道义不应求禄。','柔顺遵循法则。','将有大收获。','获取核心信息。','光明不可熄灭。','曾照耀四方。']},
+'5-3':{dx:'风自火出，家人。君子以言有物而行有恒。',dxt:'风从火中生出，君子说话有根据、行动有恒心。',xx:['闲有家，志未变也。','六二之吉，顺以巽也。','家人嗃嗃，未失也。','富家大吉，顺在位也。','王假有家，交相爱也。','威如之吉，反身之谓也。'],xxt:['志向还没有改变。','柔顺而谦逊。','没有失去规矩。','柔顺居于正位。','互相亲爱。','反身自省。']},
+'3-2':{dx:'上火下泽，睽。君子以同而异。',dxt:'上面是火下面是泽，君子在求同中存异。',xx:['见恶人，以辟咎也。','遇主于巷，未失道也。','见舆曳，位不当也。','交孚无咎，志行也。','厥宗噬肤，往有庆也。','遇雨之吉，群疑亡也。'],xxt:['避免灾祸。','没有迷失道路。','位置不当。','志向得以实行。','前往有喜庆。','众人疑虑消失。']},
+'6-7':{dx:'山上有水，蹇。君子以反身修德。',dxt:'山上有水，险阻难行，君子反求于自身、修养品德。',xx:['往蹇来誉，宜待也。','王臣蹇蹇，终无尤也。','往蹇来反，内喜之也。','往蹇来连，当位实也。','大蹇朋来，以中节也。','往蹇来硕，志在内也。'],xxt:['适宜等待。','最终无过。','内部人会喜欢。','位置恰当有实力。','合乎中道节制。','志向在里面。']},
+'4-6':{dx:'雷雨作，解。君子以赦过宥罪。',dxt:'雷雨兴起、解除困难，君子据此赦免过失、宽宥罪过。',xx:['刚柔之际，义无咎也。','九二贞吉，得中道也。','负且乘，亦可丑也。','解而拇，未当位也。','君子有解，小人退也。','公用射隼，以解悖也。'],xxt:['道理上无咎。','得到中道。','也是可丑的。','还未处在合适位。','小人就会退去。','解除悖逆。']},
+'7-2':{dx:'山下有泽，损。君子以惩忿窒欲。',dxt:'山下有泽，君子据此克制愤怒、杜绝贪欲。',xx:['已事遄往，尚合志也。','九二利贞，中以为志也。','一人行，三则疑也。','损其疾，亦可喜也。','六五元吉，自上祐也。','弗损益之，大得志也。'],xxt:['崇尚与上志相合。','以中道为志。','三人会猜疑。','也是可喜的事。','来自上天护佑。','大得志向。']},
+'5-4':{dx:'风雷，益。君子以见善则迁，有过则改。',dxt:'风与雷相互增益，君子见到善行就去学习、有了过错就改正。',xx:['元吉无咎，下不厚事也。','或益之，自外来也。','益用凶事，固有之也。','告公从，以益志也。','有孚惠心，勿问之矣。','莫益之，偏辞也。'],xxt:['在下不做过分之事。','从外面来。','本来就有的应对。','增益志向。','不用问也知是大吉。','偏颇的言辞。']},
+'2-1':{dx:'泽上于天，夬。君子以施禄及下，居德则忌。',dxt:'泽水蒸发升到天上，君子施予福禄给下面、自居有德就招忌讳。',xx:['不胜而往，咎也。','有戎勿恤，得中道也。','君子夬夬，终无咎也。','其行次且，位不当也。','中行无咎，中未光也。','无号之凶，终不可长也。'],xxt:['这就是灾祸。','得到中道。','最终无咎。','位置不当。','中道还未光大。','终究不可长久。']},
+'1-5':{dx:'天下有风，姤。后以施命诰四方。',dxt:'天下有风吹行、万物相遇，君主据此发布命令告示四方。',xx:['系于金柅，柔道牵也。','包有鱼，义不及宾也。','其行次且，行未牵也。','无鱼之凶，远民也。','九五含章，中正也。','姤其角，上穷吝也。'],xxt:['柔道受到牵制。','按道义不可招待宾客。','行动还没被牵制。','远离了民众。','中正。','穷途末路。']},
+'2-8':{dx:'泽上于地，萃。君子以除戎器，戒不虞。',dxt:'泽水汇聚在地上，君子修治兵器、戒备不测之变。',xx:['乃乱乃萃，其志乱也。','引吉无咎，中未变也。','往无咎，上巽也。','大吉无咎，位不当也。','萃有位，志未光也。','赍咨涕洟，未安上也。'],xxt:['心志混乱。','中道还没有改变。','在上巽顺。','位置还不恰当。','志向还没光大。','不安于上位。']},
+'8-5':{dx:'地中生木，升。君子以顺德，积小以高大。',dxt:'地中生出树木，君子顺应美德、从小积累逐渐高大。',xx:['允升大吉，上合志也。','九二之孚，有喜也。','升虚邑，无所疑也。','王用亨于岐山，顺事也。','贞吉升阶，大得志也。','冥升在上，消不富也。'],xxt:['与上志相合。','有喜庆之事。','心无挂碍。','顺应天道做事。','大得志向。','消退不再富有。']},
+'2-6':{dx:'泽无水，困。君子以致命遂志。',dxt:'泽中没有水、干涸受困，君子不惜生命来完成志向。',xx:['入于幽谷，幽不明也。','困于酒食，中有庆也。','据于蒺藜，乘刚也。','来徐徐，志在下也。','劓刖，志未得也。','困于葛藟，未当也。'],xxt:['幽暗不明。','居中而有喜庆。','凌驾阳刚之上。','志向在下面。','志向还没实现。','行为不当。']},
+'6-5':{dx:'木上有水，井。君子以劳民劝相。',dxt:'木上有水被人汲上来，君子慰劳民众、勉励互助。',xx:['井泥不食，下也。','井谷射鲋，无与也。','井渫不食，行恻也。','井甃无咎，修井也。','寒泉之食，中正也。','元吉在上，大成也。'],xxt:['在下面。','没有人来帮助。','路人感到悲伤。','修整水井。','中正。','大功告成。']},
+'2-3':{dx:'泽中有火，革。君子以治历明时。',dxt:'泽中有火、水火相革，君子修治历法、明辨时序。',xx:['巩用黄牛，不可以有为也。','己日革之，行有嘉也。','革言三就，又何之矣。','改命之吉，信志也。','大人虎变，其文炳也。','君子豹变，其文蔚也。'],xxt:['不可以有所作为。','行动有嘉美。','何必犹豫。','信任自己的志向。','纹采光辉灿烂。','纹采细密美好。']},
+'3-5':{dx:'木上有火，鼎。君子以正位凝命。',dxt:'木上有火烹饪，君子端正位置、完成使命。',xx:['鼎颠趾，未悖也。','鼎有实，慎所之也。','鼎耳革，失其义也。','覆公餗，信如何也。','鼎黄耳，中以为实也。','玉铉在上，刚柔节也。'],xxt:['还没有违背道理。','谨慎去哪里。','失去鼎的功用。','还有什么信任可言。','居中而内有实力。','刚柔配合得当。']},
+'4-4':{dx:'洊雷，震。君子以恐惧修省。',dxt:'雷声重叠震动，君子怀着恐惧之心来修身反省。',xx:['震来虩虩，恐致福也。','震来厉，乘刚也。','震苏苏，位不当也。','震遂泥，未光也。','震往来厉，危行也。','震索索，中未得也。'],xxt:['恐惧带来福祉。','凌驾阳刚之上。','位置不当。','尚未光大。','在危险中行动。','尚未得中道。']},
+'7-7':{dx:'兼山，艮。君子以思不出其位。',dxt:'两座山重叠，君子思虑不超出自己职位的范围。',xx:['艮其趾，未失正也。','不拯其随，未退听也。','艮其限，危薰心也。','艮其身，止诸躬也。','艮其辅，以中正也。','敦艮之吉，以厚终也。'],xxt:['没有失去正道。','还没有退而听从。','危险熏烤内心。','自我约束。','居中守正。','以敦厚来终结。']},
+'5-7':{dx:'山上有木，渐。君子以居贤德善俗。',dxt:'山上有树木慢慢生长，君子居守贤德、改善风俗。',xx:['小子之厉，义无咎也。','饮食衎衎，不素饱也。','夫征不复，离群丑也。','或得其桷，顺以巽也。','终莫之胜吉，得所愿也。','其羽可用为仪吉，不可乱也。'],xxt:['从道理上无咎。','不是白白吃饱的。','远离了群体同类。','柔顺而谦逊。','实现了愿望。','秩序不可混乱。']},
+'4-2':{dx:'泽上有雷，归妹。君子以永终知敝。',dxt:'泽上有雷，君子要长久到终了、预知其中破败。',xx:['归妹以娣，以恒也。','利幽人之贞，未变常也。','归妹以须，未当也。','愆期之志，有待而行也。','其位在中，以贵行也。','上六无实，承虚筐也。'],xxt:['保持恒常。','未改常道。','地位不当。','有所等待才行动。','以尊贵来行事。','承接空筐子。']},
+'4-3':{dx:'雷电皆至，丰。君子以折狱致刑。',dxt:'雷电一起到来，盛大光明，君子据此断案施刑。',xx:['虽旬无咎，过旬灾也。','有孚发若，信以发志也。','丰其沛，不可大事也。','丰其蔀，位不当也。','六五之吉，有庆誉也。','丰其屋，天际翔也。'],xxt:['过了十天就有灾。','用信义启发志向。','不可做大事。','位置不当。','有喜庆和赞誉。','在天际翱翔。']},
+'3-7':{dx:'山上有火，旅。君子以明慎用刑而不留狱。',dxt:'山上有火、旅人举火赶路，君子明察谨慎用刑而不拖延案件。',xx:['旅琐琐，志穷灾也。','得童仆贞，终无尤也。','旅焚其次，亦以伤矣。','旅于处，未得位也。','终以誉命，上逮也。','以旅在上，其义焚也。'],xxt:['志向穷尽招灾。','最终没有过错。','也已经受伤了。','未得位置。','上位者提拔。','要被焚烧的。']},
+'5-5':{dx:'随风，巽。君子以申命行事。',dxt:'风随风而行，君子反复申明教令来推行政事。',xx:['进退，志疑也。','纷若之吉，得中也。','频巽之吝，志穷也。','田获三品，有功也。','九五之吉，位正中也。','巽在床下，上穷也。'],xxt:['心志犹疑。','得到中道。','志向穷尽。','有功。','位置中正。','穷途末路。']},
+'2-2':{dx:'丽泽，兑。君子以朋友讲习。',dxt:'两个湖泽相连，君子与朋友讲习学问。',xx:['和兑之吉，行未疑也。','孚兑之吉，信志也。','来兑之凶，位不当也。','九四之喜，有庆也。','孚于剥，位正当也。','上六引兑，未光也。'],xxt:['行动没有疑惑。','信任自己的志向。','位置不当。','值得庆贺。','位置正当。','还没有光大。']},
+'5-6':{dx:'风行水上，涣。先王以享于帝立庙。',dxt:'风吹行在水面上，涣散当前困境，先王据此祭祀上帝、建立宗庙。',xx:['初六之吉，顺也。','涣奔其机，得愿也。','涣其躬，志在外也。','涣其群元吉，光大也。','王居无咎，正位也。','涣其血，远害也。'],xxt:['柔顺。','实现愿望。','志向在外面。','光明而广大。','位置正当。','远离祸害。']},
+'6-2':{dx:'泽上有水，节。君子以制数度，议德行。',dxt:'泽上面有水需要节制，君子制定礼数法度、评议道德品行。',xx:['不出户庭，知通塞也。','不出门庭凶，失时极也。','不节之嗟，又谁咎也。','安节之亨，承上道也。','甘节之吉，居位中也。','苦节贞凶，其道穷也。'],xxt:['知道哪里通畅阻塞。','严重失去时机。','又能怪谁。','承顺在上者的道。','居于中位。','道路穷尽。']},
+'5-2':{dx:'泽上有风，中孚。君子以议狱缓死。',dxt:'泽上有风，君子据此刻意审核狱讼、延缓死刑。',xx:['初九虞吉，志未变也。','其子和之，中心愿也。','或鼓或罢，位不当也。','马匹亡，绝类上也。','有孚挛如，位正当也。','翰音登于天，何可长也。'],xxt:['志向未变。','发自内心的愿望。','位置不当。','断绝同类向上。','位置正当。','怎能长久。']},
+'4-7':{dx:'山上有雷，小过。君子以行过乎恭，丧过乎哀，用过乎俭。',dxt:'山上有雷、稍有过越，君子行为稍过恭敬、服丧稍过悲哀、用度稍过节俭。',xx:['飞鸟以凶，不可如何也。','不及其君，臣不可过也。','从或戕之，凶如何也。','弗过遇之，位不当也。','密云不雨，已上也。','弗遇过之，已亢也。'],xxt:['无可奈何。','臣子不可越过。','怎样的凶险。','位置不当。','已经在上位了。','已经太过了。']},
+'6-3':{dx:'水在火上，既济。君子以思患而豫防之。',dxt:'水在火的上面、万事既成，君子思考可能发生的祸患而预先防备。',xx:['曳其轮，义无咎也。','七日得，以中道也。','三年克之，惫也。','终日戒，有所疑也。','实受其福，吉大来也。','濡其首厉，何可久也。'],xxt:['道理上无咎。','行中道。','太疲惫了。','心中有疑虑。','吉祥大举而来。','怎能长久。']},
+'3-6':{dx:'火在水上，未济。君子以慎辨物居方。',dxt:'火在水面上、万事未成，君子谨慎辨别事物找到合适位置。',xx:['濡其尾，亦不知极也。','九二贞吉，中以行正也。','未济征凶，位不当也。','贞吉悔亡，志行也。','君子之光，其晖吉也。','饮酒濡首，亦不知节也。'],xxt:['不知道适可而止。','居中行正道。','位置不当。','志向得以实行。','光芒是吉利的。','不知道节制。']}
+};
+
 const TUANZHUAN_DATA = {
   // 1. 乾为天
   '1-1': {
@@ -1473,34 +1329,22 @@ function doDivination() {
   `;
 
   // Step 3: Render hexagram display
-  const lineDisplays = [];
-  for (let i = 5; i >= 0; i--) {
-    const isMoving = (i === moveLine - 1);
-    const lineName = LINE_NAMES[i];
-    const isYang = YANG_TRIGRAMS.has(i >= 3 ? upperNum : lowerNum);
-    // Actually we should use the bitmap approach
-    const upperBits = TRIGRAM_BITS[upperNum];
-    const lowerBits = TRIGRAM_BITS[lowerNum];
-    const bits = [upperBits[0], upperBits[1], upperBits[2], lowerBits[0], lowerBits[1], lowerBits[2]];
-    const yang = bits[5 - i] === 1;
-    const lineSymbol = yang ? '━━━━━' : '━   ━';
-    lineDisplays.push({ name: lineName, symbol: lineSymbol, isMoving, yang });
+  // SVG hexagram rendering: 6 yao stacked vertically, top=上爻, bottom=初爻
+  var upperBits2 = TRIGRAM_BITS[upperNum], lowerBits2 = TRIGRAM_BITS[lowerNum];
+  var bits2 = [lowerBits2[0], lowerBits2[1], lowerBits2[2], upperBits2[0], upperBits2[1], upperBits2[2]];
+  var allBits = [lowerBits2[0], lowerBits2[1], lowerBits2[2], upperBits2[0], upperBits2[1], upperBits2[2]];
+  var w2 = 120, h2 = 8, gap = 16, pad = 8, svgW2 = w2 + pad*2 + 90, svgH2 = pad*2 + gap*5 + h2*6;
+  var hexSVG = '<svg width="' + svgW2 + '" height="' + svgH2 + '" style="display:block;margin:0 auto;">';
+  for (var i3 = 5; i3 >= 0; i3--) {
+    var y2 = pad + (5 - i3) * (h2 + gap), yang2 = bits2[i3] === 1, isMov = (i3 === moveLine - 1);
+    var c2 = isMov ? '#e53e3e' : '#1d1d1f';
+    if (yang2) { hexSVG += '<rect x="' + pad + '" y="' + y2 + '" width="' + w2 + '" height="' + h2 + '" rx="' + (h2/2) + '" fill="' + c2 + '"/>'; }
+    else { hexSVG += '<rect x="' + pad + '" y="' + y2 + '" width="' + (w2/2-10) + '" height="' + h2 + '" rx="' + (h2/2) + '" fill="' + c2 + '"/>'; hexSVG += '<rect x="' + (pad+w2/2+10) + '" y="' + y2 + '" width="' + (w2/2-10) + '" height="' + h2 + '" rx="' + (h2/2) + '" fill="' + c2 + '"/>'; }
+    hexSVG += '<text x="' + (pad+w2+10) + '" y="' + (y2+h2/2) + '" dominant-baseline="central" font-size="11" fill="' + (isMov ? '#e53e3e' : '#86868b') + '" font-family="-apple-system,PingFang SC,sans-serif" font-weight="' + (isMov ? '700' : '500') + '">' + LINE_NAMES[i3] + (isMov ? ' 动爻' : '') + '</text>';
   }
-
-  let lineDisplayHTML = lineDisplays.map((l, idx) => {
-    const movingClass = l.isMoving ? ' style="color:#c0392b;font-weight:700;"' : '';
-    const movingDot = l.isMoving ? ' <span style="color:#c0392b;font-size:0.75rem;">◀ 动爻</span>' : '';
-    return `<div${movingClass} style="font-family:monospace;font-size:1.3rem;line-height:1.6;">${l.symbol}  <span style="font-size:0.8rem;">${l.name}${movingDot}</span></div>`;
-  }).join('');
-
-  document.getElementById('hexaDisplay').innerHTML = `
-    <div style="margin-bottom:8px;">${lineDisplayHTML}</div>
-    <div class="hexa-symbol">${hexagram.symbol}</div>
-    <div class="hexa-name">${hexagram.fullName}</div>
-    <div class="hexa-detail">${upperTri.element}上${lowerTri.element}下 · ${upperTri.nature}而${lowerTri.nature}</div>
-    <div class="hexa-moving">⚡ ${LINE_NAMES[moveLine - 1]}动（${movingLineData.original.substring(0, 8)}…）</div>
-  `;
-
+  hexSVG += '</svg>';
+  var stdNames = ["","乾","坤","屯","蒙","需","讼","师","比","小畜","履","泰","否","同人","大有","谦","豫","随","蛊","临","观","噬嗑","贲","剥","复","无妄","大畜","颐","大过","坎","离","咸","恒","遁","大壮","晋","明夷","家人","睽","蹇","解","损","益","夬","姤","萃","升","困","井","革","鼎","震","艮","渐","归妹","丰","旅","巽","兑","涣","节","中孚","小过","既济","未济"];
+  document.getElementById('hexaDisplay').innerHTML = hexSVG + '<div class="hexa-symbol">' + hexagram.symbol + '</div><div class="hexa-name">第' + hexagram.id + '卦 ' + stdNames[hexagram.id] + '卦</div><div class="hexa-detail">' + upperTri.element + '上' + lowerTri.element + '下 · ' + upperTri.nature + '而' + lowerTri.nature + '</div><div class="hexa-moving">⚡ ' + LINE_NAMES[moveLine - 1] + '动</div>';
   // Step 4: Render changed hexagram row
   if (changedHexagram && changedHexagram.id !== hexagram.id) {
     document.getElementById('changedRow').innerHTML = `
@@ -1531,96 +1375,70 @@ function doDivination() {
   const commentary = tuanData ? tuanData.commentary : '';
   const sourceNote = `<p style="font-size:0.72rem;color:#b0a590;margin-top:8px;">译文来源：中华书局《周易》（杨天才、张善文译注），参考傅佩荣《易经入门》、倪海厦《天纪》、曾仕强《易经的智慧》</p>`;
 
-  // Tab 1: 卦辞 · 彖传
-  document.getElementById('tab-judgment').innerHTML = `
-    <div class="quote-block">
-      <div class="quote-original">【卦辞原文】${hexagram.judgment}</div>
-      <div class="quote-translation">【白话】${hexagram.judgmentTranslation}</div>
-    </div>
-    <div class="quote-block">
-      <div class="quote-original">【彖传原文】${tuanO || '（数据收集中）'}</div>
-      <div class="quote-translation">【彖传白话】${tuanT || '（数据收集中）'}</div>
-    </div>
-    <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.8;">
-      本卦为<strong>${hexagram.fullName}</strong>，上${upperTri.symbol}${upperTri.name}（${upperTri.element}，性${upperTri.nature}）下${lowerTri.symbol}${lowerTri.name}（${lowerTri.element}，性${lowerTri.nature}）。
-      彖传是孔子对卦辞的系统阐述，从卦体、卦德、卦象三个层面解释整个卦的核心义理。
-    </p>
-    ${sourceNote}
-  `;
+  // === Tab 1: 卦辞详解（卦辞+彖传+六爻全览）===
+  var stdNames = ["","乾","坤","屯","蒙","需","讼","师","比","小畜","履","泰","否","同人","大有","谦","豫","随","蛊","临","观","噬嗑","贲","剥","复","无妄","大畜","颐","大过","坎","离","咸","恒","遁","大壮","晋","明夷","家人","睽","蹇","解","损","益","夬","姤","萃","升","困","井","革","鼎","震","艮","渐","归妹","丰","旅","巽","兑","涣","节","中孚","小过","既济","未济"];
+  var judgmentHTML = '';
+  judgmentHTML += '<div class="quote-block"><div class="quote-original">【卦辞原文】' + hexagram.judgment + '</div><div class="quote-translation">【白话】' + hexagram.judgmentTranslation + '</div></div>';
+  judgmentHTML += '<div class="quote-block"><div class="quote-original">【彖传原文】' + (tuanO || '(数据收集中)') + '</div><div class="quote-translation">【彖传白话】' + (tuanT || '(数据收集中)') + '</div></div>';
+  var xiangData = XIANGZHUAN_DATA[hexaKey];
+  if (xiangData) {
+    judgmentHTML += '<div class="quote-block"><div class="quote-original">【大象传】' + xiangData.dx + '</div><div class="quote-translation">【白话】' + xiangData.dxt + '</div></div>';
+    judgmentHTML += '<div class="commentary-section"><h4>小象传（六爻象辞）</h4><ul class="xiaoxiang-list">';
+    for (var xj = 0; xj < 6; xj++) {
+      var isMv = (xj === moveLine - 1);
+      judgmentHTML += '<li' + (isMv ? ' style="background:var(--accent-light);border-radius:8px;padding-left:24px;"' : '') + '><strong>' + LINE_NAMES[xj] + '</strong>' + (isMv ? ' ⚡' : '') + ' 「' + xiangData.xx[xj] + '」<br><span style="font-size:0.82rem;">' + xiangData.xxt[xj] + '</span></li>';
+    }
+    judgmentHTML += '</ul></div>';
+  }
+  judgmentHTML += '<div class="commentary-section"><h4>六爻爻辞全览</h4><table class="lines-table">';
+  for (var j = 0; j < 6; j++) {
+    var ld = hexagram.lines[j];
+    var isMov = (j === moveLine - 1);
+    judgmentHTML += '<tr' + (isMov ? ' class="moving-line"' : '') + '><td class="line-name">' + LINE_NAMES[j] + (isMov ? ' ⚡' : '') + '</td><td class="line-original">' + ld.original + '</td><td class="line-translation">' + ld.translation + '</td></tr>';
+  }
+  judgmentHTML += '</table></div>';
+  judgmentHTML += '<p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.8;margin-top:12px;">本卦为<strong>第' + hexagram.id + '卦 ' + stdNames[hexagram.id] + '卦</strong>，上' + upperTri.symbol + upperTri.name + '（' + upperTri.element + '，性' + upperTri.nature + '）下' + lowerTri.symbol + lowerTri.name + '（' + lowerTri.element + '，性' + lowerTri.nature + '）。</p>';
+  document.getElementById('tab-judgment').innerHTML = judgmentHTML + sourceNote;
 
-  // Tab 2: 专家详解
+  // === Tab 2: 专家详解 ===
   document.getElementById('tab-expert').innerHTML = commentary
     ? commentary + sourceNote
-    : `<div class="quote-block"><div class="quote-translation">该卦的专家详解正在整理中，请参考卦辞原文和彖传理解卦义。</div></div>`;
+    : '<div class="quote-block"><div class="quote-translation">该卦的专家详解正在整理中，请参考卦辞原文和彖传理解卦义。</div></div>';
 
-  // Tab 3: 动爻爻辞
-  document.getElementById('tab-line').innerHTML = `
-    <div class="quote-block">
-      <div class="quote-original">【爻辞原文 · ${LINE_NAMES[moveLine - 1]}】${movingLineData.original}</div>
-      <div class="quote-translation">【白话】${movingLineData.translation}</div>
-    </div>
-    <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.8;">
-      动爻是整卦的机要所在。${LINE_NAMES[moveLine - 1]}爻动，意味着当前事情的变化关键点集中在<strong>${['初始阶段','内部积蓄期','初步行动期','中间过渡期','高位成熟期','最终末尾阶段'][moveLine - 1]}</strong>。
-      请重点关注动爻爻辞并结合本卦卦辞综合解读。
-    </p>
-    ${sourceNote}
-  `;
-
-  // Dimension readings
-  const dim = DIMENSION_READINGS[hexaKey];
+  // === Tab 3: 四项断语 ===
+  var dim = DIMENSION_READINGS[hexaKey];
   if (dim) {
-    document.getElementById('tab-dimensions').innerHTML = `
-      <div class="dimension-grid">
-        <div class="dimension-card">
-          <div class="dim-icon">💼</div>
-          <div class="dim-title">事业 / 工作发展</div>
-          <div class="dim-text">${dim.career}</div>
-        </div>
-        <div class="dimension-card">
-          <div class="dim-icon">❤️</div>
-          <div class="dim-title">身体健康状况</div>
-          <div class="dim-text">${dim.health}</div>
-        </div>
-        <div class="dimension-card">
-          <div class="dim-icon">💰</div>
-          <div class="dim-title">财运起伏</div>
-          <div class="dim-text">${dim.wealth}</div>
-        </div>
-        <div class="dimension-card">
-          <div class="dim-icon">💕</div>
-          <div class="dim-title">姻缘感情走势</div>
-          <div class="dim-text">${dim.romance}</div>
-        </div>
-      </div>
-      <p style="font-size:0.78rem;color:#b0a590;margin-top:16px;text-align:center;">以上断语结合本卦卦德与爻位时势综合推演，仅供思悟参考。</p>
-    `;
+    document.getElementById('tab-dimensions').innerHTML =
+      '<div class="dimension-grid">' +
+      '<div class="dimension-card"><div class="dim-icon">💼</div><div class="dim-title">事业 / 工作发展</div><div class="dim-text">' + dim.career + '</div></div>' +
+      '<div class="dimension-card"><div class="dim-icon">❤️</div><div class="dim-title">身体健康状况</div><div class="dim-text">' + dim.health + '</div></div>' +
+      '<div class="dimension-card"><div class="dim-icon">💰</div><div class="dim-title">财运起伏</div><div class="dim-text">' + dim.wealth + '</div></div>' +
+      '<div class="dimension-card"><div class="dim-icon">💕</div><div class="dim-title">姻缘感情走势</div><div class="dim-text">' + dim.romance + '</div></div>' +
+      '</div>';
   } else {
     document.getElementById('tab-dimensions').innerHTML = '<p style="color:var(--text-secondary);">该卦的断语数据正在完善中，请以卦辞和爻辞为主要参考。</p>';
   }
 
-  // Changed hexagram reference
-  document.getElementById('tab-changed').innerHTML = `
-    <div class="quote-block">
-      <div class="quote-original">📌 变卦：${changedHexagram ? changedHexagram.fullName : '（不变）'}</div>
-      <div class="quote-translation">
-        ${changedHexagram && changedHexagram.id !== hexagram.id
-          ? `动爻变动后，<strong>${hexagram.fullName}</strong> 的 ${LINE_NAMES[moveLine - 1]} 由${YANG_TRIGRAMS.has(moveLine <= 3 ? lowerNum : upperNum) ? (moveLine <= 3 ? (TRIGRAM_BITS[lowerNum][2 - (moveLine - 1)] === 1 ? '阳' : '阴') : (TRIGRAM_BITS[upperNum][2 - (moveLine - 4)] === 1 ? '阳' : '阴')) : (moveLine <= 3 ? (TRIGRAM_BITS[lowerNum][2 - (moveLine - 1)] === 1 ? '阳' : '阴') : (TRIGRAM_BITS[upperNum][2 - (moveLine - 4)] === 1 ? '阳' : '阴'))}变${(() => { const bits = [...TRIGRAM_BITS[upperNum], ...TRIGRAM_BITS[lowerNum]]; const idx = 5 - (moveLine - 1); bits[idx] = bits[idx] === 1 ? 0 : 1; return bits[idx] === 1 ? '阳' : '阴'; })()}，从而转为 <strong>${changedHexagram.fullName}（${changedHexagram.symbol}）</strong>。`
-          : `动爻的阴阳变化未改变上下卦的卦体，故本卦不变。这意味着${LINE_NAMES[moveLine - 1]}爻的变动在当前格局中属于内部调整，不影响整体卦象定位。`
-        }
-      </div>
-    </div>
-    ${changedHexagram && changedHexagram.id !== hexagram.id ? `
-    <div class="quote-block">
-      <div class="quote-original">【变卦卦辞】${changedHexagram.judgment}</div>
-      <div class="quote-translation">【白话】${changedHexagram.judgmentTranslation}</div>
-    </div>
-    <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.8;">
-      <strong>变卦反映的是事物发展的趋势与走向。</strong>从 ${hexagram.fullName} 变为 ${changedHexagram.fullName}，
-      提示你所问之事在经历 ${LINE_NAMES[moveLine - 1]} 所示的关键变动之后，整体格局将向 ${changedHexagram.fullName} 的方向演进。
-      请将本卦（当下之象）与变卦（未来之势）结合起来理解。
-    </p>
-    ` : ''}
-  `;
+  // === Tab 4: 之卦（变卦）===
+  var zhiguaHTML = '';
+  if (changedHexagram && changedHexagram.id !== hexagram.id) {
+    zhiguaHTML += '<div class="quote-block"><div class="quote-original">📌 之卦由来</div><div class="quote-translation">本卦 <strong>' + hexagram.fullName + '</strong> 的 ' + LINE_NAMES[moveLine - 1] + ' 由' + (allBits[moveLine-1]===1?'阳变阴':'阴变阳') + '，从而转为 <strong>' + changedHexagram.fullName + '（' + changedHexagram.symbol + '）</strong>。之卦仅动本卦一根爻，其余五爻不变。</div></div>';
+    zhiguaHTML += '<div class="quote-block"><div class="quote-original">【之卦卦辞】' + changedHexagram.judgment + '</div><div class="quote-translation">【白话】' + changedHexagram.judgmentTranslation + '</div></div>';
+    var zhiTuan = TUANZHUAN_DATA[changedHexagram.upper + '-' + changedHexagram.lower];
+    if (zhiTuan) {
+      zhiguaHTML += '<div class="quote-block"><div class="quote-original">【之卦彖传】' + zhiTuan.tuanOriginal + '</div><div class="quote-translation">【白话】' + zhiTuan.tuanTranslation + '</div></div>';
+    }
+    zhiguaHTML += '<div class="commentary-section"><h4>之卦六爻爻辞</h4><table class="lines-table">';
+    for (var k = 0; k < 6; k++) {
+      var zld = changedHexagram.lines[k];
+      zhiguaHTML += '<tr><td class="line-name">' + LINE_NAMES[k] + '</td><td class="line-original">' + zld.original + '</td><td class="line-translation">' + zld.translation + '</td></tr>';
+    }
+    zhiguaHTML += '</table></div>';
+    zhiguaHTML += '<div class="commentary-section"><h4>趋势走向分析</h4><p class="text-block">从 <strong>' + hexagram.fullName + '</strong> 变为 <strong>' + changedHexagram.fullName + '</strong>，仅通过 ' + LINE_NAMES[moveLine - 1] + ' 一爻阴阳反转即完成卦变。之卦揭示了所问之事在经历 ' + LINE_NAMES[moveLine - 1] + ' 所示的变动之后，整体格局将向的方向演进。请将本卦（当下之象）与之卦（未来之势）结合判断。</p></div>';
+  } else {
+    zhiguaHTML = '<div class="quote-block"><div class="quote-translation">动爻的阴阳变化未改变上下卦的卦体，故本卦不变。变动属于内部调整，不影响整体格局。</div></div>';
+  }
+  document.getElementById('tab-changed').innerHTML = zhiguaHTML + sourceNote;
 
   // Step 6: Disclaimer
   document.getElementById('disclaimerArea').innerHTML = `
