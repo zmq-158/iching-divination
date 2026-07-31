@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>易经数字占卜 — 傅佩荣三位数起卦法</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --card-bg: #ffffff;
+    --text: #2c2416;
+    --text-secondary: #5c5347;
+    --accent: #8b4513;
+    --accent-light: #d4a574;
+    --border: #e8e0d5;
+    --tag-bg: #f5ede0;
+    --shadow: 0 2px 16px rgba(44,36,22,0.06);
+    --radius: 12px;
+    --result-bg: #fdfaf5;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(139,69,19,0.03) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(212,165,116,0.04) 0%, transparent 60%);
+  }
+  .container { max-width: 820px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  .header { text-align: center; padding: 44px 0 32px; }
+  .header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 8px; }
+  .header .subtitle { font-size: 0.95rem; color: var(--text-secondary); }
+  .header .divider { width: 60px; height: 2px; background: var(--accent-light); margin: 16px auto 0; border-radius: 1px; }
+
+  .card {
+    background: var(--card-bg); border-radius: var(--radius); padding: 28px 32px;
+    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .card-title {
+    font-size: 1.05rem; font-weight: 700; color: var(--accent);
+    margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .icon { font-size: 1.3rem; }
+
+  .input-row { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
+  .input-group { display: flex; flex-direction: column; gap: 6px; }
+  .input-group label { font-size: 0.88rem; font-weight: 600; color: var(--text-secondary); text-align: center; }
+  .input-group label .symbol { font-size: 1.1rem; }
+  .input-group input {
+    width: 130px; padding: 14px 16px; font-size: 1.15rem; font-family: inherit;
+    text-align: center; border: 1.5px solid var(--border); border-radius: 10px;
+    background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s;
+  }
+  .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,69,19,0.08); }
+  .input-group input::placeholder { color: #c4b8a8; font-size: 0.85rem; }
+  .input-group .range-hint { font-size: 0.72rem; color: #b0a590; text-align: center; }
+
+  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 22px; }
+  .btn {
+    padding: 12px 36px; font-size: 1rem; font-family: inherit; font-weight: 600;
+    border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.03em;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #6b3410; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(139,69,19,0.25); }
+  .btn-reset { background: var(--card-bg); color: var(--text-secondary); border: 1.5px solid var(--border); }
+  .btn-reset:hover { background: var(--tag-bg); }
+
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: #c0392b; color: #fff; padding: 12px 28px; border-radius: 8px;
+    font-size: 0.92rem; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; box-shadow: 0 4px 20px rgba(192,57,43,0.3);
+  }
+  .toast.show { opacity: 1; }
+
+  .calc-steps { counter-reset: step; }
+  .step {
+    display: flex; align-items: flex-start; gap: 14px; padding: 14px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    counter-increment: step; width: 32px; height: 32px; min-width: 32px;
+    background: var(--accent); color: #fff; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700;
+  }
+  .step-content { font-size: 0.93rem; }
+  .step-content .formula { font-family: "SF Mono", "Menlo", monospace; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; font-size: 0.88rem; }
+  .step-content .highlight { color: var(--accent); font-weight: 700; }
+
+  .hexa-display { text-align: center; padding: 20px 0; }
+  .hexa-symbol { font-size: 6rem; line-height: 1.2; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .hexa-name { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+  .hexa-detail { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
+  .hexa-moving { display: inline-block; background: #c0392b; color: #fff; padding: 3px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; margin-top: 8px; }
+
+  .changed-row { display: flex; align-items: center; justify-content: center; gap: 32px; margin: 20px 0; flex-wrap: wrap; }
+  .changed-arrow { font-size: 2rem; color: var(--accent-light); }
+  .changed-mini { text-align: center; }
+  .changed-mini .symbol { font-size: 3rem; }
+  .changed-mini .name { font-size: 0.95rem; color: var(--text-secondary); margin-top: 4px; }
+
+  .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    padding: 10px 18px; font-size: 0.9rem; font-family: inherit; cursor: pointer;
+    border: none; background: none; color: var(--text-secondary); font-weight: 500;
+    border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s;
+  }
+  .tab:hover { color: var(--accent); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .quote-block { background: var(--result-bg); border-left: 4px solid var(--accent-light); padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 16px; }
+  .quote-original { font-size: 1rem; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
+  .quote-translation { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; }
+
+  .dimension-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .dimension-grid { grid-template-columns: 1fr; } }
+  .dimension-card {
+    background: var(--result-bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px; transition: box-shadow 0.2s;
+  }
+  .dimension-card:hover { box-shadow: 0 2px 12px rgba(44,36,22,0.06); }
+  .dimension-card .dim-icon { font-size: 1.5rem; margin-bottom: 6px; }
+  .dimension-card .dim-title { font-weight: 700; color: var(--accent); margin-bottom: 8px; font-size: 0.95rem; }
+  .dimension-card .dim-text { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.8; }
+
+  .disclaimer { text-align: center; font-size: 0.82rem; color: #b0a590; line-height: 1.8; padding: 20px 0; }
+  .disclaimer strong { color: var(--text-secondary); }
+
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .shake { animation: shake 0.3s ease; }
+
+  @media (max-width: 500px) {
+    .container { padding: 20px 14px 40px; }
+    .card { padding: 20px 16px; }
+    .header h1 { font-size: 1.6rem; }
+    .hexa-symbol { font-size: 4rem; }
+    .hexa-name { font-size: 1.3rem; }
+    .input-group input { width: 100px; padding: 12px; font-size: 1rem; }
+    .tabs { gap: 2px; }
+    .tab { padding: 8px 12px; font-size: 0.82rem; }
+    .changed-row { gap: 16px; }
+    .changed-arrow { font-size: 1.4rem; }
+  }
+
+  /* Bagua Diagram */
+  .bagua-container {
+    display: flex; justify-content: center; padding: 10px 0 20px;
+  }
+  .bagua-wrapper {
+    position: relative; width: 260px; height: 260px;
+  }
+  .bagua-wrapper svg { width: 100%; height: 100%; }
+  .bagua-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 80px; height: 80px; border-radius: 50%; font-size: 2rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  @media (max-width: 500px) {
+    .bagua-wrapper { width: 210px; height: 210px; }
+    .bagua-center { width: 60px; height: 60px; font-size: 1.5rem; }
+  }
+
+  /* Taboos */
+  .taboos-list { list-style: none; padding: 0; }
+  .taboos-list li {
+    padding: 8px 0 8px 28px; font-size: 0.88rem; color: var(--text-secondary);
+    border-bottom: 1px dotted var(--border); position: relative;
+  }
+  .taboos-list li::before {
+    content: '⚡'; position: absolute; left: 0; top: 8px; font-size: 0.85rem;
+  }
+  .taboos-list li strong { color: var(--accent); }
+  .taboos-list li:last-child { border-bottom: none; }
+
+  /* Commentary */
+  .commentary-section { margin-bottom: 20px; }
+  .commentary-section h4 {
+    font-size: 0.95rem; color: var(--accent); margin-bottom: 8px;
+    padding-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
+  .commentary-section p, .commentary-section .text-block {
+    font-size: 0.88rem; color: var(--text-secondary); line-height: 1.85; margin-bottom: 12px;
+  }
+  .source-tag {
+    display: inline-block; font-size: 0.72rem; color: #b0a590;
+    background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; margin-left: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="container">
+  <div class="header">
+    <h1>☯ 易经数字占卜</h1>
+    <p class="subtitle">傅佩荣三位数起卦法 · 先天八卦取余定卦</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="card" style="text-align:center;">
+    <div class="card-title"><span class="icon">☯</span> 先天八卦方位图</div>
+    <div class="bagua-container">
+      <div class="bagua-wrapper" id="baguaSvg"></div>
+    </div>
+    <p style="font-size:0.78rem;color:#b0a590;margin-top:4px;">上乾下坤 · 左离右坎 · 兑巽震艮居四隅</p>
+  </div>
+
+  <div class="card" id="inputCard">
+    <div class="card-title"><span class="icon">🎲</span> 起卦做法：心里默想希望知道未来哪些走势、问题，之后请输入三个任意三位数（100–999）。</div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>数一 <span class="symbol">①</span></label>
+        <input type="text" id="num1" placeholder="如 431" maxlength="3" inputmode="numeric">
+        <span class="range-hint">定下卦</span>
+      </div>
+      <div class="input-group">
+        <label>数二 <span class="symbol">②</span></label>
+        <input type="text" id="num2" placeholder="如 379" maxlength="3" inputmode="numeric">
+        <span class="range-hint">定上卦</span>
+      </div>
+      <div class="input-group">
+        <label>数三 <span class="symbol">③</span></label>
+        <input type="text" id="num3" placeholder="如 847" maxlength="3" inputmode="numeric">
+        <span class="range-hint">定动爻</span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="doDivination()">✦ 起 卦</button>
+      <button class="btn btn-reset" onclick="doReset()">↺ 重 置</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚠️</span> 数字起卦禁忌须知</div>
+    <ul class="taboos-list">
+      <li><strong>心神不定不占：</strong>情绪波动剧烈、心绪烦乱时不宜起卦，卦象容易失真。</li>
+      <li><strong>同一问题不反复占：</strong>既已得卦，不宜反复追问同一事。《蒙卦》云"初筮告，再三渎，渎则不告"。</li>
+      <li><strong>不诚不占：</strong>抱着怀疑或戏谑心态起卦，结果无参考价值。起卦前应静心专注。</li>
+      <li><strong>涉及违法悖德之事不占：</strong>占卜应为正道提供指引，不可用于谋算不正当之事。</li>
+      <li><strong>酒后不占：</strong>心神不清明时起卦不准，酒精会影响判断力和专注度。</li>
+      <li><strong>子时不占（23:00 – 1:00）：</strong>传统认为子时阴阳交替、天地之气未定，卦象易有偏差。</li>
+      <li><strong>极端天气不占：</strong>雷雨大风等天地气机紊乱之时，起卦易受干扰。</li>
+    </ul>
+  </div>
+
+  <div id="results" style="display:none;">
+
+    <div class="card" id="stepsCard">
+      <div class="card-title"><span class="icon">📐</span> 运算拆解</div>
+      <div class="calc-steps" id="calcSteps"></div>
+    </div>
+
+    <div class="card" id="hexaCard">
+      <div class="card-title"><span class="icon">☯</span> 卦象</div>
+      <div class="hexa-display" id="hexaDisplay"></div>
+      <div class="changed-row" id="changedRow"></div>
+    </div>
+
+    <div class="card" id="interpretCard">
+      <div class="tabs">
+        <button class="tab active" data-tab="judgment">📖 卦辞·彖传</button>
+        <button class="tab" data-tab="expert">🔍 专家详解</button>
+        <button class="tab" data-tab="line">✏️ 动爻爻辞</button>
+        <button class="tab" data-tab="dimensions">🎯 四项断语</button>
+        <button class="tab" data-tab="changed">🔄 变卦参考</button>
+      </div>
+      <div class="tab-content active" id="tab-judgment"></div>
+      <div class="tab-content" id="tab-expert"></div>
+      <div class="tab-content" id="tab-line"></div>
+      <div class="tab-content" id="tab-dimensions"></div>
+      <div class="tab-content" id="tab-changed"></div>
+    </div>
+
+    <div class="disclaimer" style="margin-top: 8px;" id="disclaimerArea"></div>
+  </div>
+
+  <div class="card" style="margin-top: 8px;">
+    <div class="card-title"><span class="icon">📚</span> 关于傅佩荣三位数数字占卜法</div>
+    <div class="disclaimer" style="text-align: left; font-size: 0.85rem;">
+      <p style="margin-bottom: 8px;"><strong>起卦原理：</strong>随意报出三个三位数，第一个数定下卦、第二个数定上卦、第三个数定动爻。分别除以 8（或 6）取余数，按先天八卦数对应卦象。此法源自傅佩荣教授对易经占筮的简化，保留了传统大衍之数法的核心逻辑。</p>
+      <p style="margin-bottom: 8px;"><strong>先天八卦数：</strong>乾一 ☰、兑二 ☱、离三 ☲、震四 ☳、巽五 ☴、坎六 ☵、艮七 ☶、坤八 ☷（除 8 余 0 取坤卦）。</p>
+      <p style="margin-bottom: 8px;"><strong>动爻规则：</strong>数三除以 6 取余数，余 1-5 分别对应初爻至五爻，余 0 对应第六爻（上爻）动。</p>
+      <p><strong>⚖️ 理性提示：</strong>易经占卜为中华传统文化遗产，本工具所展示卦辞、爻辞及断语仅供文化参考与心理指引，不构成任何形式的绝对宿命判定。生活中的重大决策，请结合理性思考与现实情况综合判断，不可盲信占卜结果。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// 先天八卦图 SVG 渲染
+// ═══════════════════════════════════════
+(function drawBagua() {
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const container = document.getElementById('baguaSvg');
+  const size = 260;
+  const cx = size / 2, cy = size / 2, R = 115;
+
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+  svg.setAttribute('width', size);
+  svg.setAttribute('height', size);
+
+  // Outer circle
+  const outer = document.createElementNS(svgNS, 'circle');
+  outer.setAttribute('cx', cx); outer.setAttribute('cy', cy); outer.setAttribute('r', R);
+  outer.setAttribute('fill', 'none'); outer.setAttribute('stroke', '#8b4513');
+  outer.setAttribute('stroke-width', '2');
+  svg.appendChild(outer);
+
+  // Bagua positions (先天八卦方位): 乾上 坤下 离左 坎右 兑左上 巽右上 震左下 艮右下
+  const positions = [
+    { name:'乾', sym:'☰', angle:-90, num:1, elem:'金' },
+    { name:'兑', sym:'☱', angle:-45, num:2, elem:'金' },
+    { name:'离', sym:'☲', angle:0, num:3, elem:'火' },
+    { name:'震', sym:'☳', angle:45, num:4, elem:'木' },
+    { name:'坤', sym:'☷', angle:90, num:8, elem:'土' },
+    { name:'艮', sym:'☶', angle:135, num:7, elem:'土' },
+    { name:'坎', sym:'☵', angle:180, num:6, elem:'水' },
+    { name:'巽', sym:'☴', angle:-135, num:5, elem:'木' },
+  ];
+
+  // Eight radiating lines
+  positions.forEach(p => {
+    const rad = p.angle * Math.PI / 180;
+    const x2 = cx + (R - 18) * Math.cos(rad);
+    const y2 = cy - (R - 18) * Math.sin(rad);
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', cx); line.setAttribute('y1', cy);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke', '#e8e0d5'); line.setAttribute('stroke-width', '1');
+    svg.appendChild(line);
+  });
+
+  // Trigram labels
+  positions.forEach(p => {
+    const rad = p.angle * Math.PI / 180;
+    const lx = cx + (R - 30) * Math.cos(rad);
+    const ly = cy - (R - 30) * Math.sin(rad);
+    const g = document.createElementNS(svgNS, 'g');
+
+    // Symbol
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', lx); text.setAttribute('y', ly);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'central');
+    text.setAttribute('font-size', '22');
+    text.setAttribute('fill', '#2c2416');
+    text.textContent = p.sym;
+    g.appendChild(text);
+
+    // Name below
+    const nameText = document.createElementNS(svgNS, 'text');
+    nameText.setAttribute('x', lx); nameText.setAttribute('y', ly + 18);
+    nameText.setAttribute('text-anchor', 'middle');
+    nameText.setAttribute('font-size', '10');
+    nameText.setAttribute('fill', '#8b4513');
+    nameText.setAttribute('font-weight', '600');
+    nameText.textContent = p.name + '(' + p.num + ')';
+    g.appendChild(nameText);
+
+    svg.appendChild(g);
+  });
+
+  // Center Taiji symbol
+  const taijiR = 30;
+  const tG = document.createElementNS(svgNS, 'g');
+
+  // White half circle (left)
+  const wh = document.createElementNS(svgNS, 'path');
+  const d = `M ${cx} ${cy - taijiR} A ${taijiR} ${taijiR} 0 0 0 ${cx} ${cy + taijiR} A ${taijiR/2} ${taijiR/2} 0 0 1 ${cx} ${cy} A ${taijiR/2} ${taijiR/2} 0 0 0 ${cx} ${cy - taijiR}`;
+  wh.setAttribute('d', d);
+  wh.setAttribute('fill', '#2c2416');
+  tG.appendChild(wh);
+
+  // Black half circle (right) with white filling
+  const bl = document.createElementNS(svgNS, 'circle');
+  bl.setAttribute('cx', cx); bl.setAttribute('cy', cy); bl.setAttribute('r', taijiR);
+  bl.setAttribute('fill', '#faf7f2');
+  bl.setAttribute('stroke', '#2c2416'); bl.setAttribute('stroke-width', '1.5');
+  tG.appendChild(bl);
+
+  // Black dot (upper)
+  const dot1 = document.createElementNS(svgNS, 'circle');
+  dot1.setAttribute('cx', cx); dot1.setAttribute('cy', cy - taijiR/2);
+  dot1.setAttribute('r', 3.5); dot1.setAttribute('fill', '#2c2416');
+  tG.appendChild(dot1);
+
+  // White dot (lower)
+  const dot2 = document.createElementNS(svgNS, 'circle');
+  dot2.setAttribute('cx', cx); dot2.setAttribute('cy', cy + taijiR/2);
+  dot2.setAttribute('r', 3.5); dot2.setAttribute('fill', '#faf7f2');
+  tG.appendChild(dot2);
+
+  // Rebuild yin-yang properly: use simple approach with two halves
+  // Clear previous inner
+  while (tG.firstChild) tG.removeChild(tG.firstChild);
+
+  const c2 = document.createElementNS(svgNS, 'circle');
+  c2.setAttribute('cx', cx); c2.setAttribute('cy', cy); c2.setAttribute('r', taijiR);
+  c2.setAttribute('fill', '#faf7f2'); c2.setAttribute('stroke', '#8b4513'); c2.setAttribute('stroke-width', '1');
+  tG.appendChild(c2);
+
+  // Yin-yang: use two interlocking teardrops via path
+  const yinPath = document.createElementNS(svgNS, 'path');
+  yinPath.setAttribute('d', `M ${cx} ${cy - taijiR} A ${taijiR} ${taijiR} 0 0 1 ${cx} ${cy + taijiR} A ${taijiR/2} ${taijiR/2} 0 0 1 ${cx} ${cy} A ${taijiR/2} ${taijiR/2} 0 0 0 ${cx} ${cy - taijiR}`);
+  yinPath.setAttribute('fill', '#2c2416');
+  tG.appendChild(yinPath);
+
+  // Center dots
+  const d1 = document.createElementNS(svgNS, 'circle');
+  d1.setAttribute('cx', cx); d1.setAttribute('cy', cy - taijiR/2); d1.setAttribute('r', 4);
+  d1.setAttribute('fill', '#faf7f2');
+  tG.appendChild(d1);
+
+  const d2 = document.createElementNS(svgNS, 'circle');
+  d2.setAttribute('cx', cx); d2.setAttribute('cy', cy + taijiR/2); d2.setAttribute('r', 4);
+  d2.setAttribute('fill', '#2c2416');
+  tG.appendChild(d2);
+
+  svg.appendChild(tG);
+  container.appendChild(svg);
+})();
+
+// ═══════════════════════════════════════
+// 先天八卦映射表
+// ═══════════════════════════════════════
+const TRIGRAMS = {
+  1: { name: '乾', symbol: '☰', element: '天', nature: '健' },
+  2: { name: '兑', symbol: '☱', element: '泽', nature: '悦' },
+  3: { name: '离', symbol: '☲', element: '火', nature: '丽' },
+  4: { name: '震', symbol: '☳', element: '雷', nature: '动' },
+  5: { name: '巽', symbol: '☴', element: '风', nature: '入' },
+  6: { name: '坎', symbol: '☵', element: '水', nature: '陷' },
+  7: { name: '艮', symbol: '☶', element: '山', nature: '止' },
+  8: { name: '坤', symbol: '☷', element: '地', nature: '顺' }
+};
+
+// 阳卦：1乾,4震,6坎,7艮（三爻卦初爻为阳）; 阴卦：2兑,3离,5巽,8坤
+const YANG_TRIGRAMS = new Set([1,4,6,7]);
+const YIN_TRIGRAMS = new Set([2,3,5,8]);
+
+// 三爻二进制位元 [上,中,下]
+const TRIGRAM_BITS = { 1:[1,1,1], 2:[1,1,0], 3:[1,0,1], 4:[1,0,0], 5:[0,1,1], 6:[0,1,0], 7:[0,0,1], 8:[0,0,0] };
+
+const LINE_NAMES = ['初爻','二爻','三爻','四爻','五爻','上爻'];
+// ═══════════════════════════════════════
+// 64卦数据库 (通行本周易序)
+// id, 上卦数, 下卦数, 卦名, 卦辞原文, 卦辞白话, 六爻爻辞
+// ═══════════════════════════════════════
+const HEXAGRAM_DATA = [
+  // 1. 乾为天
+  [1,1,1,'乾为天','元亨，利贞。','创始通达，适宜正固。乾卦象征天道刚健、自强不息，是六十四卦之首，代表纯粹的阳刚之力与创造力。',
+    [{o:'初九：潜龙勿用。',t:'龙潜伏在深渊之中，不宜有所作为。时机未到，应韬光养晦、积蓄力量。'},
+     {o:'九二：见龙在田，利见大人。',t:'龙出现在田野上，适宜拜见德高望重的大人。才能初显，可寻贵人提携。'},
+     {o:'九三：君子终日乾乾，夕惕若厉，无咎。',t:'君子整日勤勉不息，夜晚也保持警惕，虽有危险但无灾祸。'},
+     {o:'九四：或跃在渊，无咎。',t:'龙或在深渊中跃动，没有灾祸。处于进退之间，审时度势即可平安。'},
+     {o:'九五：飞龙在天，利见大人。',t:'龙飞腾于天空，适宜拜见大人。处于最有利的位置，大展宏图之时。'},
+     {o:'上九：亢龙有悔。',t:'龙飞得太高，必将有悔恨。盛极必衰，物极必反，不可骄傲自满。'}]],
+  // 2. 坤为地
+  [2,8,8,'坤为地','元亨，利牝马之贞。君子有攸往，先迷后得主，利。西南得朋，东北丧朋。安贞吉。','大为亨通，适宜像母马那样柔顺守正。君子有所前往，起初迷失方向，后来找到主人，吉利。往西南可得朋友，往东北会失去朋友。安守正固则吉。',
+    [{o:'初六：履霜，坚冰至。',t:'脚下踩到霜，便知坚冰将至。见微知著，凡事须有预见性，防微杜渐。'},
+     {o:'六二：直方大，不习无不利。',t:'正直、端方、广大，不刻意修习也不会不利。保持本真即是最大的美德。'},
+     {o:'六三：含章可贞，或从王事，无成有终。',t:'胸怀才学可以守正，若辅佐君王，虽无大成但会有好结果。收敛光芒，谦虚行事。'},
+     {o:'六四：括囊，无咎无誉。',t:'扎紧口袋，既无灾祸也无赞誉。谨慎缄默，在敏感时期不轻易表态。'},
+     {o:'六五：黄裳，元吉。',t:'穿着黄色衣裳，最为吉祥。位高而谦卑，德行温润，自然大吉。'},
+     {o:'上六：龙战于野，其血玄黄。',t:'龙在野外争斗，流出玄黄色的血。阴盛至极与阳相争，两败俱伤，过犹不及。'}]],
+  // 3. 水雷屯
+  [3,6,4,'水雷屯','元亨，利贞。勿用有攸往，利建侯。','大为亨通，适宜正固。不宜有所前往，适宜建立诸侯基业。屯卦象征万事开头难，初生事物充满艰难。',
+    [{o:'初九：磐桓，利居贞，利建侯。',t:'徘徊难进，适宜安守正固，适宜建立基业。创始阶段不可冒进，稳固根基为上。'},
+     {o:'六二：屯如邅如，乘马班如。匪寇婚媾，女子贞不字，十年乃字。',t:'艰难困顿、徘徊不前，骑马也盘桓难进。不是盗寇来犯而是来求婚，女子守贞不嫁，十年后才出嫁。保持耐心。'},
+     {o:'六三：即鹿无虞，惟入于林中，君子几不如舍，往吝。',t:'追逐山鹿却没有虞人引导，只会深入森林。君子见机不如放弃，贸然前往会有忧吝。'},
+     {o:'六四：乘马班如，求婚媾，往吉，无不利。',t:'乘马徘徊，前往求婚则吉利，没有不适宜之处。时机渐熟，可主动出击。'},
+     {o:'九五：屯其膏，小贞吉，大贞凶。',t:'囤积膏泽恩惠，小事守正可吉，大事则凶。施恩要恰到好处。'},
+     {o:'上六：乘马班如，泣血涟如。',t:'乘马徘徊难进，哭得血泪涟涟。穷途末路之际，需及时调整方向。'}]],
+  // 4. 山水蒙
+  [4,7,6,'山水蒙','亨。匪我求童蒙，童蒙求我。初筮告，再三渎，渎则不告。利贞。','亨通。不是我去求孩童启蒙，而是孩童来求我。初次占问就告知，再三占问便是亵渎，亵渎就不再告知。适宜守正。',
+    [{o:'初六：发蒙，利用刑人，用说桎梏，以往吝。',t:'启发蒙昧，适宜用典型范例来教化人，使其摆脱桎梏，贸然远行则有忧吝。'},
+     {o:'九二：包蒙吉，纳妇吉，子克家。',t:'包容蒙昧者吉利，娶妻吉利，儿子能够持家。以宽容之心教化他人。'},
+     {o:'六三：勿用取女，见金夫，不有躬，无攸利。',t:'不宜娶这样的女子，见到有钱男人就失身自贱，这样做没有任何好处。心志不坚不可靠。'},
+     {o:'六四：困蒙，吝。',t:'被困在蒙昧之中，有忧吝。不主动学习、困而不学者无出路。'},
+     {o:'六五：童蒙，吉。',t:'孩童般蒙昧纯真，吉利。保持谦逊好学的态度虚心求教。'},
+     {o:'上九：击蒙，不利为寇，利御寇。',t:'击打蒙昧者，不宜做盗寇之事，适宜抵御盗寇。严厉管教要有分寸。'}]],
+  // 5. 水天需
+  [5,6,1,'水天需','有孚，光亨，贞吉。利涉大川。','心怀诚信，光明亨通，守正得吉。适宜渡过大河。需卦象征等待，时机尚未成熟时需耐心等待。',
+    [{o:'初九：需于郊，利用恒，无咎。',t:'在郊野等待，用恒久之心，没有灾祸。保持平常心耐心等候。'},
+     {o:'九二：需于沙，小有言，终吉。',t:'在沙地等待，虽有些闲言碎语，最终吉利。身处中间地带，不受干扰可获吉。'},
+     {o:'九三：需于泥，致寇至。',t:'在泥泞中等待，招致盗寇到来。身处险境应保持谨慎。'},
+     {o:'六四：需于血，出自穴。',t:'在血泊中等待，从洞穴中出来。化解危机的最好办法是主动离开险境。'},
+     {o:'九五：需于酒食，贞吉。',t:'在酒食宴饮中等待，守正则吉。安享当下，以平和心态等待时机。'},
+     {o:'上六：入于穴，有不速之客三人来，敬之终吉。',t:'进入洞穴，有三名不请自来的客人到来，恭敬对待最终吉利。意外之事当以礼待之。'}]],
+  // 6. 天水讼
+  [6,1,6,'天水讼','有孚，窒惕，中吉，终凶。利见大人，不利涉大川。','心有诚信但受到窒塞，须警惕，中途可吉，最终凶险。适宜拜见大人，不宜渡大河。讼卦象征争讼，宜适可而止。',
+    [{o:'初六：不永所事，小有言，终吉。',t:'不要长久纠缠于事，虽有小摩擦，最终吉利。小纠纷不宜无限放大。'},
+     {o:'九二：不克讼，归而逋，其邑人三百户，无眚。',t:'打不赢官司，回去躲避，他三百户的邑人不受牵连。知难而退可保平安。'},
+     {o:'六三：食旧德，贞厉，终吉。或从王事，无成。',t:'依靠祖上旧德过日子，守正虽危终吉。若辅佐君王则难有成就。安于本分可得平安。'},
+     {o:'九四：不克讼，复即命，渝安贞，吉。',t:'打不赢官司，回头顺应天命，改变态度安于正固，吉利。知错即改可得善果。'},
+     {o:'九五：讼，元吉。',t:'秉公断案，最为吉利。公正裁决是解决争端的根本之道。'},
+     {o:'上九：或锡之鞶带，终朝三褫之。',t:'或许被赐予大带（官服），但一日之内三次被剥夺。靠争讼获得的地位终究不稳。'}]],
+  // 7. 地水师
+  [7,8,6,'地水师','贞，丈人吉，无咎。','守正。年长有德之人率领军队则吉，没有灾祸。师卦象征军队、征战，用兵须有名正言顺之由。',
+    [{o:'初六：师出以律，否臧凶。',t:'军队出征须以纪律约束，不守纪律必有凶险。纪律是一切行动的基础。'},
+     {o:'九二：在师中，吉无咎，王三锡命。',t:'身在军中指挥得当，吉无灾祸，君王多次褒奖。居中统御是为将之道。'},
+     {o:'六三：师或舆尸，凶。',t:'军队或许车载尸体而归，凶险。决策失误会造成惨重损失。'},
+     {o:'六四：师左次，无咎。',t:'军队后退驻扎，没有灾祸。知难而退、以退为进是明智之举。'},
+     {o:'六五：田有禽，利执言，无咎。长子帅师，弟子舆尸，贞凶。',t:'田中有禽兽，适宜仗义执言，没有灾祸。长子统军出征，次子却车载尸体归来，守正也有凶险。用将须选贤任能。'},
+     {o:'上六：大君有命，开国承家，小人勿用。',t:'天子颁布命令，封邦建国，不可任用小人。功成之后须防小人当道。'}]],
+  // 8. 水地比
+  [8,6,8,'水地比','吉。原筮，元永贞，无咎。不宁方来，后夫凶。','吉利。再次占筮，开始永久守正，没有灾祸。不安宁的方国前来归附，迟疑不决者凶险。比卦象征亲附和合。',
+    [{o:'初六：有孚比之，无咎。有孚盈缶，终来有它吉。',t:'以诚信待人来亲附，没有灾祸。诚信充盈如瓦罐中的酒，会有意外之喜。'},
+     {o:'六二：比之自内，贞吉。',t:'发自内心真诚亲附，守正吉利。真诚是最强大的亲和力。'},
+     {o:'六三：比之匪人。',t:'亲附了不该亲近的人。交友需谨慎，不可阿附不正之人。'},
+     {o:'六四：外比之，贞吉。',t:'向外亲附贤德之人，守正吉。走出小圈子去寻找良师益友。'},
+     {o:'九五：显比，王用三驱，失前禽。邑人不诫，吉。',t:'光明正大地亲附，君王田猎三面包围网开一面，前面禽兽会逃掉。邑人不互相戒备，吉利。宽厚待人。'},
+     {o:'上六：比之无首，凶。',t:'亲附却没有首领，凶险。群龙无首的组织关系终究会溃散。'}]],
+  // 9. 风天小畜
+  [9,5,1,'风天小畜','亨。密云不雨，自我西郊。','亨通。乌云密布但不下雨，来自西郊。小畜卦象征小有积蓄，力量尚不足。',
+    [{o:'初九：复自道，何其咎，吉。',t:'回到自己的道路上来，有什么灾祸呢？吉利。不忘初心，回归本分。'},
+     {o:'九二：牵复，吉。',t:'被牵引着回到正轨，吉利。借助外力纠偏也是好的。'},
+     {o:'九三：舆说辐，夫妻反目。',t:'车轮脱掉辐条，夫妻反目。内部合作关系出现裂痕。'},
+     {o:'六四：有孚，血去惕出，无咎。',t:'心怀诚信，远离血光之灾和恐惧，没有灾祸。以诚意化解危机。'},
+     {o:'九五：有孚挛如，富以其邻。',t:'诚信紧密相连，与邻人共享财富。以信任团结周围力量。'},
+     {o:'上九：既雨既处，尚德载。妇贞厉，月几望，君子征凶。',t:'雨已落下也已停止，崇尚德行承载。妇人守正亦有危，月将圆时，君子出征凶。'}]],
+  // 10. 天泽履
+  [10,1,2,'天泽履','履虎尾，不咥人，亨。','踩在老虎尾巴上，老虎却不咬人，亨通。履卦象征践行、履行，谨慎行事能化险为夷。',
+    [{o:'初九：素履，往无咎。',t:'以朴素本色行事，前往没有灾祸。保持本真，勿浮华造作。'},
+     {o:'九二：履道坦坦，幽人贞吉。',t:'行走的道路平坦宽广，幽居之人守正则吉。心静则道宽。'},
+     {o:'六三：眇能视，跛能履，履虎尾，咥人，凶。武人为于大君。',t:'瞎了一只眼勉强看，跛了一只脚勉强走，踩到虎尾被咬，凶险。武将为天子效命，勉强而行必有凶险。'},
+     {o:'九四：履虎尾，愬愬终吉。',t:'踩在老虎尾巴上，战战兢兢，最终吉利。敬畏之心可保平安。'},
+     {o:'九五：夬履，贞厉。',t:'决绝前行，守正仍有危险。刚愎自用、独断专行难免危厉。'},
+     {o:'上九：视履考祥，其旋元吉。',t:'回头审视走过的路，考察吉凶征兆，回归正道最为吉祥。反思总结可获大吉。'}]],
+  // 11. 地天泰
+  [11,8,1,'地天泰','小往大来，吉亨。','小的离去、大的到来，吉利亨通。泰卦象征通达安泰，天地交合、万物亨通。',
+    [{o:'初九：拔茅茹，以其汇，征吉。',t:'拔茅草时连根牵出一片，因为根相连，出征吉利。一人得道，同类相随。'},
+     {o:'九二：包荒，用冯河，不遐遗，朋亡，得尚于中行。',t:'包容广大，用以渡河，不遗弃远方之人，不结党营私，崇尚中道而行。'},
+     {o:'九三：无平不陂，无往不复，艰贞无咎。勿恤其孚，于食有福。',t:'没有永远平坦而不倾斜的道路，没有只去不回的事情。艰难守正无灾祸。不必担忧诚信不被理解，饮食自有福报。'},
+     {o:'六四：翩翩不富，以其邻，不戒以孚。',t:'翩翩往来而不自夸富足，与邻居和睦相处，不需警戒彼此诚信。'},
+     {o:'六五：帝乙归妹，以祉元吉。',t:'帝乙嫁出妹妹，因福祉而获得大吉。以柔居尊位，谦下而得福。'},
+     {o:'上六：城复于隍，勿用师，自邑告命，贞吝。',t:'城墙倒塌在护城河里，不可出兵，从邑中发布命令。守正也有忧吝。盛极必衰，转为否境。'}]],
+  // 12. 天地否
+  [12,1,8,'天地否','否之匪人，不利君子贞，大往小来。','否闭不通，非人道之常，对君子守正不利。大的离去、小的到来。否卦象征闭塞不通。',
+    [{o:'初六：拔茅茹，以其汇，贞吉亨。',t:'拔茅草连根牵出一片，因为根相连，守正则吉利亨通。同道相守以待时机。'},
+     {o:'六二：包承，小人吉，大人否亨。',t:'包容承受，小人吉利，大人则闭塞但终将亨通。君子在逆境中坚守待时。'},
+     {o:'六三：包羞。',t:'包羞忍辱。身处逆境时学会隐忍包容羞辱。'},
+     {o:'九四：有命无咎，畴离祉。',t:'顺应天意则无灾祸，同类依附可得福祉。天命渐转，否极泰来。'},
+     {o:'九五：休否，大人吉。其亡其亡，系于苞桑。',t:'闭塞状态休止了，大人吉利。将亡了将亡了，却维系在桑树的根上——时刻忧患方能转危为安。'},
+     {o:'上九：倾否，先否后喜。',t:'倾覆闭塞，先困苦而后欢喜。否极泰来，黑暗的尽头是光明。'}]],
+  // 13. 天火同人
+  [13,1,3,'天火同人','同人于野，亨。利涉大川，利君子贞。','在郊野聚合众人，亨通。适宜渡过大河，适宜君子守正。同人卦象征团结与人和同。',
+    [{o:'初九：同人于门，无咎。',t:'在门口聚合同道之人，没有灾祸。从身边做起团结志同道合者。'},
+     {o:'六二：同人于宗，吝。',t:'只在宗族内部团结人，有忧吝。狭隘的门户之见限制了事业格局。'},
+     {o:'九三：伏戎于莽，升其高陵，三岁不兴。',t:'在草丛中埋伏兵甲，登上高地观察，三年不能出兵。疑心猜忌会阻碍行动。'},
+     {o:'九四：乘其墉，弗克攻，吉。',t:'攀登到对手的城墙上，但没有攻进去，吉利。能进能退、知难而止。'},
+     {o:'九五：同人先号咷而后笑，大师克相遇。',t:'志同道合者先号啕大哭而后开怀大笑，大军战胜后会师。历经磨难终得相见之喜。'},
+     {o:'上九：同人于郊，无悔。',t:'在郊外聚合众人，没有悔恨。心胸宽广，志向高远。'}]],
+  // 14. 火天大有
+  [14,3,1,'火天大有','元亨。','大为亨通。大有卦象征丰收、富足，光明在上普照万物。',
+    [{o:'初九：无交害，匪咎，艰则无咎。',t:'没有互相交害，不是灾祸，在艰难中守正即可无咎。'},
+     {o:'九二：大车以载，有攸往，无咎。',t:'大车满载货物，有所前往，没有灾祸。有实力积蓄则可放心前行。'},
+     {o:'九三：公用亨于天子，小人弗克。',t:'公侯享用天子的礼遇，小人担当不起。德行与位置要匹配。'},
+     {o:'九四：匪其彭，无咎。',t:'不要盛气凌人，没有灾祸。富而不骄是长久之道。'},
+     {o:'六五：厥孚交如，威如，吉。',t:'诚信相交，又自然展现威严，吉利。恩威并施是领导者应有的气度。'},
+     {o:'上九：自天祐之，吉无不利。',t:'来自上天的护佑，吉利无有不利。顺应天道自然得佑。'}]],
+  // 15. 地山谦
+  [15,8,7,'地山谦','亨，君子有终。','亨通，君子会有好结果。谦卦象征谦逊，山在地下——高山自愿居于大地之下。',
+    [{o:'初六：谦谦君子，用涉大川，吉。',t:'极其谦逊的君子，用以渡大河，吉利。以谦卑之心涉险亦能成功。'},
+     {o:'六二：鸣谦，贞吉。',t:'以谦逊闻名，守正则吉。发自内心的谦逊能感染他人。'},
+     {o:'九三：劳谦君子，有终吉。',t:'有功劳仍保持谦逊的君子，会有好结果。功成弗居是最高级的谦。'},
+     {o:'六四：无不利，撝谦。',t:'没有不吉利的，发挥谦逊的品德。谦德通达无碍。'},
+     {o:'六五：不富以其邻，利用侵伐，无不利。',t:'不靠邻人助长己富，即使用兵征讨也没有不利。谦逊不等于懦弱。'},
+     {o:'上六：鸣谦，利用行师，征邑国。',t:'以谦逊闻名，适宜出兵征讨不服的邑国。高位者的谦逊反而有威服之力。'}]],
+  // 16. 雷地豫
+  [16,4,8,'雷地豫','利建侯行师。','适宜建立诸侯基业和行军出征。豫卦象征愉悦安乐，雷震于大地之上振奋人心。',
+    [{o:'初六：鸣豫，凶。',t:'自鸣得意、炫耀享乐，凶险。得意忘形是大忌。'},
+     {o:'六二：介于石，不终日，贞吉。',t:'坚如磐石，不需整日，守正则吉。有原则不为欲望所动。'},
+     {o:'六三：盱豫，悔。迟有悔。',t:'仰头谄媚享乐，有悔恨。迟疑不决也会悔恨。趋炎附势终将后悔。'},
+     {o:'九四：由豫，大有得。勿疑，朋盍簪。',t:'因愉悦而有大收获。不必怀疑，朋友们会聚在一起。快乐是最强大的凝聚力。'},
+     {o:'六五：贞疾，恒不死。',t:'守正有疾，长久不死。虽处困境但根基还在，坚持即能存活。'},
+     {o:'上六：冥豫，成有渝，无咎。',t:'沉醉于昏暗的享乐，若能改变则可无咎。及时醒悟回头是岸。'}]],
+  // 17. 泽雷随
+  [17,2,4,'泽雷随','元亨利贞，无咎。','大为亨通，适宜正固。没有灾祸。随卦象征随从、顺应，因势利导。',
+    [{o:'初九：官有渝，贞吉。出门交有功。',t:'官职有变动，守正则吉。出门与人交往会有成效。顺势而为。'},
+     {o:'六二：系小子，失丈夫。',t:'牵系小人物，失去大丈夫。因小失大，得不偿失。'},
+     {o:'六三：系丈夫，失小子。随有求得，利居贞。',t:'牵系大丈夫，失去小人物。跟随追求必有收获，适宜安守正固。'},
+     {o:'九四：随有获，贞凶。有孚在道，以明，何咎。',t:'追随有收获，守正亦有凶险。心中有诚信在道上，光明磊落，哪会有灾祸？'},
+     {o:'九五：孚于嘉，吉。',t:'以诚信对待美好的事物，吉利。择优而从则吉。'},
+     {o:'上六：拘系之，乃从维之。王用亨于西山。',t:'拘捆绑缚他，然后随从维系他。君王在西山祭祀。坚持正道不松懈。'}]],
+  // 18. 山风蛊
+  [18,7,5,'山风蛊','元亨，利涉大川。先甲三日，后甲三日。','大为亨通，适宜渡过大河。在甲日前三日后三日都要谨慎从事。蛊卦象征整治弊病、拨乱反正。',
+    [{o:'初六：干父之蛊，有子，考无咎，厉终吉。',t:'纠正父辈留下的弊端，有这样的儿子就好，虽然危险但最终吉利。'},
+     {o:'九二：干母之蛊，不可贞。',t:'纠正母亲的弊病，不可操之过急。整治家务需要柔性手段。'},
+     {o:'九三：干父之蛊，小有悔，无大咎。',t:'纠正父辈之弊，稍有些懊悔，但没有大灾祸。改革中难免有微辞。'},
+     {o:'六四：裕父之蛊，往见吝。',t:'宽纵父辈留下的弊病，往前走会遇到忧吝。姑息纵容恶习必将自食其果。'},
+     {o:'六五：干父之蛊，用誉。',t:'纠正父辈之弊，因而获得赞誉。以美德和智慧处理旧弊。'},
+     {o:'上九：不事王侯，高尚其事。',t:'不为王侯效命，把自己的人生经营得高尚。功成身退，超然物外。'}]],
+  // 19. 地泽临
+  [19,8,2,'地泽临','元亨利贞。至于八月有凶。','大为亨通，适宜正固。但到了八月会有凶险。临卦象征亲临、居上治下。',
+    [{o:'初九：咸临，贞吉。',t:'以感召的方式亲临治理，守正则吉。用真心感化而非强制。'},
+     {o:'九二：咸临，吉无不利。',t:'以感召的方式亲临治理，吉利无不顺利。德政感化最为通达。'},
+     {o:'六三：甘临，无攸利。既忧之，无咎。',t:'以甜言蜜语的方式居高临下，没有好处。既然已为此忧虑，就没有灾祸。'},
+     {o:'六四：至临，无咎。',t:'亲自到达现场处理，没有灾祸。深入一线是有效的管理方式。'},
+     {o:'六五：知临，大君之宜，吉。',t:'以智慧来治理，这是天子应有的方式，吉利。知人善任、择贤而用。'},
+     {o:'上六：敦临，吉无咎。',t:'以敦厚之道治理，吉利无灾祸。以仁厚之心待人终得善报。'}]],
+  // 20. 风地观
+  [20,5,8,'风地观','盥而不荐，有孚颙若。','洗手而不进献祭品，心怀诚信仰望。观卦象征观察、观摩，风行大地遍览万象。',
+    [{o:'初六：童观，小人无咎，君子吝。',t:'孩童般浅显地观察事物，小人物无灾祸，君子则有忧吝。'},
+     {o:'六二：窥观，利女贞。',t:'从门缝里窥探式地观察，适宜女子守正。狭隘的视角看不到全貌。'},
+     {o:'六三：观我生，进退。',t:'审视自己的生活方式，知进知退。反观自身以定进退。'},
+     {o:'六四：观国之光，利用宾于王。',t:'观察国家的光华，适宜做王的宾客。宏观视野带来大局观。'},
+     {o:'九五：观我生，君子无咎。',t:'审视自己的生活，君子没有灾祸。以开阔视野反观己身。'},
+     {o:'上九：观其生，君子无咎。',t:'观察他人的生活状态，君子没有灾祸。观察万民以为借鉴。'}]],
+  // 21. 火雷噬嗑
+  [21,3,4,'火雷噬嗑','亨，利用狱。','亨通，适宜用刑狱之道。噬嗑卦象征咬合、口中有物，需要决断清除障碍。',
+    [{o:'初九：屦校灭趾，无咎。',t:'脚上戴着刑具遮住了脚趾，没有灾祸。小惩大诫可以避免更大的灾祸。'},
+     {o:'六二：噬肤灭鼻，无咎。',t:'咬皮肤却遮住了鼻子，没有灾祸。处理问题被表面现象迷惑。'},
+     {o:'六三：噬腊肉，遇毒。小吝，无咎。',t:'咬腊肉遇到了毒，小有吝惜但没有大灾祸。处理棘手问题时可能遇到意外。'},
+     {o:'九四：噬干胏，得金矢，利艰贞，吉。',t:'咬带骨的干肉，发现了铜箭头，适宜在艰难中守正，吉利。啃硬骨头也会有意外收获。'},
+     {o:'六五：噬干肉，得黄金，贞厉，无咎。',t:'咬干肉而得黄金，守正有危厉但无灾祸。公正处理反而获得贵重回报。'},
+     {o:'上九：何校灭耳，凶。',t:'扛着刑具遮住了耳朵，凶险。罪大恶极不可挽回。'}]],
+  // 22. 山火贲
+  [22,7,3,'山火贲','亨。小利有攸往。','亨通。前往有小利。贲卦象征文饰、装饰，山下有火映照万物之美。',
+    [{o:'初九：贲其趾，舍车而徒。',t:'装饰自己的脚趾，舍弃车辆而步行。修饰只为内在满足不求炫耀于人前。'},
+     {o:'六二：贲其须。',t:'装饰胡须。文饰要追随相配之人不可喧宾夺主。'},
+     {o:'九三：贲如濡如，永贞吉。',t:'文饰温润光泽，永远守正则吉。适度的文饰带来持久美好。'},
+     {o:'六四：贲如皤如，白马翰如，匪寇婚媾。',t:'装饰得素白洁净，白马飞驰，不是盗寇而是来求婚的。简约之美最为高贵。'},
+     {o:'六五：贲于丘园，束帛戋戋，吝，终吉。',t:'在山丘园圃做简朴的装饰，礼帛虽薄，虽有吝惜但最终吉利。质朴胜过华丽。'},
+     {o:'上九：白贲，无咎。',t:'素白的装饰，没有灾祸。回归质朴是文饰的最高境界。'}]],
+  // 23. 山地剥
+  [23,7,8,'山地剥','不利有攸往。','不宜有所前往。剥卦象征剥落、衰败，山在地上——山石剥落顺地势而下。',
+    [{o:'初六：剥床以足，蔑贞凶。',t:'从床脚开始剥塌，无视正道而行凶险。根基先被侵蚀。'},
+     {o:'六二：剥床以辨，蔑贞凶。',t:'床已剥塌到鉴别之处，无视正道凶险。破坏持续深入。'},
+     {o:'六三：剥之，无咎。',t:'与上层剥落划清界限，没有灾祸。在衰败环境中保持清醒独立。'},
+     {o:'六四：剥床以肤，凶。',t:'床已剥塌到贴近肌肤了，凶险。危险已经非常迫近。'},
+     {o:'六五：贯鱼，以宫人宠，无不利。',t:'像鱼贯而行一样有序，以宫人得到宠幸的方式领导，没有不利。'},
+     {o:'上九：硕果不食，君子得舆，小人剥庐。',t:'丰硕的果实在不吃——君子得到车辆，小人则连房屋都被剥去。硕果仅存要懂得珍惜。'}]],
+  // 24. 地雷复
+  [24,8,4,'地雷复','亨。出入无疾，朋来无咎。反复其道，七日来复，利有攸往。','亨通。出入没有疾病，朋友来也没有灾祸。回复到自己的道路，七天一个周期循环，适宜有所前往。复卦象征回复、重生，一阳复始。',
+    [{o:'初九：不远复，无祗悔，元吉。',t:'走得不远就回头，不至于后悔，最为吉祥。知过能改，善莫大焉。'},
+     {o:'六二：休复，吉。',t:'以美好的姿态回归，吉利。愉快地回归正道。'},
+     {o:'六三：频复，厉无咎。',t:'频繁地回归，有危险但没有灾祸。反复尝试回归终究无咎。'},
+     {o:'六四：中行独复。',t:'与众人同行，唯独自己回归正道。在群体中保持独立判断力。'},
+     {o:'六五：敦复，无悔。',t:'以敦厚的性格回归，没有悔恨。踏踏实实回到正途。'},
+     {o:'上六：迷复，凶，有灾眚。用行师，终有大败，以其国君，凶。至于十年，不克征。',t:'迷失了回归之途，凶险，有天灾人祸。出兵征战最终大败，危及国君，凶。十年都不能恢复出征能力。'}]],
+  // 25. 天雷无妄
+  [25,1,4,'天雷无妄','元亨利贞。其匪正有眚，不利有攸往。','大为亨通，适宜正固。不守正则会有灾祸，不宜有所前往。无妄卦象征不妄为、顺其自然。',
+    [{o:'初九：无妄，往吉。',t:'不妄为，前往吉利。顺其自然、不做非分之想即是吉。'},
+     {o:'六二：不耕获，不菑畲，则利有攸往。',t:'不期望耕种就有收获、不渴望新田就有熟田，这样适宜前往。'},
+     {o:'六三：无妄之灾，或系之牛，行人之得，邑人之灾。',t:'不妄为却遭遇了灾难——有人把牛拴在那里，路人牵走了，邑人却遭了殃。意外之灾。'},
+     {o:'九四：可贞，无咎。',t:'可以守正，没有灾祸。坚守正道就是最好的护身符。'},
+     {o:'九五：无妄之疾，勿药有喜。',t:'不妄为而得的小病，不需用药自然痊愈有喜。顺其自然反而能痊愈。'},
+     {o:'上九：无妄，行有眚，无攸利。',t:'不妄为但出行会有灾祸，没有利处。时候不对，以静制动方为上策。'}]],
+  // 26. 山天大畜
+  [26,7,1,'山天大畜','利贞，不家食吉，利涉大川。','适宜正固。不吃家里的存粮吉，适宜渡过大河。大畜卦象征大积蓄，山包容天——君子以多识前言往行。',
+    [{o:'初九：有厉利已。',t:'有危险时适宜停下来。及时刹车是一种智慧。'},
+     {o:'九二：舆说輹。',t:'车的轮轴脱落了。积蓄的载体出问题要及早修补。'},
+     {o:'九三：良马逐，利艰贞。曰闲舆卫，利有攸往。',t:'良马追逐，适宜在艰难中守正。说每天练习驾车护卫，适宜前往。'},
+     {o:'六四：童牛之牿，元吉。',t:'给小牛犊戴上木角套，最为吉祥。把隐患扼杀在萌芽之中。'},
+     {o:'六五：豮豕之牙，吉。',t:'给公猪阉割以防獠牙伤人，吉利。软性预防比对硬碰硬更有效。'},
+     {o:'上九：何天之衢，亨。',t:'承载天之大路，亨通。积蓄充足则可自由驰骋通达无阻。'}]],
+  // 27. 山雷颐
+  [27,7,4,'山雷颐','贞吉。观颐，自求口实。','守正则吉。观察养生养德之道，自己谋求食物。颐卦象征颐养、滋养。',
+    [{o:'初九：舍尔灵龟，观我朵颐，凶。',t:'舍弃你的灵龟，看我大快朵颐，凶险。放弃自身的优势去艳羡他人。'},
+     {o:'六二：颠颐，拂经于丘颐，征凶。',t:'颠倒了养颐之道，违背常理去高处觅食，出征凶险。'},
+     {o:'六三：拂颐，贞凶。十年勿用，无攸利。',t:'违背养生之道，守正也有凶险。十年内不能用此法，没有任何好处。'},
+     {o:'六四：颠颐吉，虎视眈眈，其欲逐逐，无咎。',t:'颠倒养颐之道却吉利？虎视眈眈地盯着看，欲望追着跑——但无灾祸。特殊情况下反常规可取。'},
+     {o:'六五：拂经，居贞吉，不可涉大川。',t:'违背常规，安居守正则吉，不可渡大河。保守静养为上。'},
+     {o:'上九：由颐，厉吉，利涉大川。',t:'从养颐之道而来，虽有危险但吉祥，适宜渡大河。颐养得道万事可成。'}]],
+  // 28. 泽风大过
+  [28,2,5,'泽风大过','栋桡，利有攸往，亨。','栋梁弯曲，适宜有所前往，亨通。大过卦象征大为过越、阳刚过盛，非常之时需要非常之举。',
+    [{o:'初六：藉用白茅，无咎。',t:'用白色茅草做铺垫，没有灾祸。谨慎周密以柔克刚。'},
+     {o:'九二：枯杨生稊，老夫得其女妻，无不利。',t:'枯杨树发出新芽，老夫娶得年轻妻子，没有不利。非常时期非常之举。'},
+     {o:'九三：栋桡，凶。',t:'栋梁弯曲，凶险。刚愎自用承担不起重任。'},
+     {o:'九四：栋隆，吉。有它吝。',t:'栋梁隆起，吉利。但有其他方面的吝惜。'},
+     {o:'九五：枯杨生华，老妇得其士夫，无咎无誉。',t:'枯杨树开花，老妇得年轻丈夫，无灾祸也无可称誉。表面光鲜不可持久。'},
+     {o:'上六：过涉灭顶，凶，无咎。',t:'渡水过深淹没了头顶，凶险。但归根到底不是自己的过错。'}]],
+  // 29. 坎为水
+  [29,6,6,'坎为水','习坎，有孚，维心亨，行有尚。','重重险难，心怀诚信，内心亨通，行为可嘉。坎卦象征重重险阻但内心光明。',
+    [{o:'初六：习坎，入于坎窞，凶。',t:'陷入重重险阻之中，又掉进深深的陷阱，凶险。一错再错会深陷泥潭。'},
+     {o:'九二：坎有险，求小得。',t:'坎陷中有危险，只求小有所得。不在险境中贪大求全。'},
+     {o:'六三：来之坎坎，险且枕，入于坎窞，勿用。',t:'前后来去都是坎险，危险而又枕着危险，掉进了陷阱深处，不可轻举妄动。'},
+     {o:'六四：樽酒簋贰，用缶，纳约自牖，终无咎。',t:'一樽薄酒两碗简单饭菜，用瓦缶盛着，从窗户中送进简陋的契约，最终无咎。简朴真诚可渡险。'},
+     {o:'九五：坎不盈，祗既平，无咎。',t:'险坑没有满溢，只要持平就没有灾祸。危险未至极点尚可挽回。'},
+     {o:'上六：系用徽纆，寘于丛棘，三岁不得，凶。',t:'用绳索绑缚了，囚禁在荆棘丛中，三年不得脱身，凶险。'}]],
+  // 30. 离为火
+  [30,3,3,'离为火','利贞，亨。畜牝牛，吉。','适宜正固，亨通。畜养母牛，吉利。离卦象征光明与依附，需柔顺而坚守正道。',
+    [{o:'初九：履错然，敬之无咎。',t:'脚步错杂纷乱，恭敬谨慎地处理就没有灾祸。混乱中更要保持敬意。'},
+     {o:'六二：黄离，元吉。',t:'黄色的光明，最为吉祥。中正柔和的光明境界。'},
+     {o:'九三：日昃之离，不鼓缶而歌，则大耋之嗟，凶。',t:'太阳偏西时的光明——不敲瓦缶放声歌唱，就会有老人的悲叹，凶。乐天知命。'},
+     {o:'九四：突如其来如，焚如，死如，弃如。',t:'突然到来，燃烧了，死去了，被遗弃了。突如其来的变故令人措手不及。'},
+     {o:'六五：出涕沱若，戚嗟若，吉。',t:'泪如雨下，悲戚长叹——吉利。忧患意识反而能保全自身。'},
+     {o:'上九：王用出征，有嘉折首，获匪其丑，无咎。',t:'君王出兵征讨，嘉奖立功斩首之人，捕捉参与的异类，没有灾祸。'}]],
+  // 31. 泽山咸
+  [31,2,7,'泽山咸','亨，利贞，取女吉。','亨通，适宜正固。娶妻吉利。咸卦象征感应、感情——少男少女相感相应。',
+    [{o:'初六：咸其拇。',t:'感应到大脚趾。爱情的萌芽刚刚开始触动。'},
+     {o:'六二：咸其腓，凶，居吉。',t:'感应到小腿肚，凶险，安静不动则吉。感情刚开始就急于行动是危险的。'},
+     {o:'九三：咸其股，执其随，往吝。',t:'感应到大腿，执意追随，前往会有忧吝。盲目跟随他人是不好的。'},
+     {o:'九四：贞吉悔亡，憧憧往来，朋从尔思。',t:'守正则吉、悔恨消失。来来往往心神不宁，朋友终究会跟随你的心思。'},
+     {o:'九五：咸其脢，无悔。',t:'感应到背部的肌肉，没有悔恨。深沉内敛的感情虽不张扬但无怨无悔。'},
+     {o:'上六：咸其辅颊舌。',t:'感应到口舌面颊。感情停留在言语表面显得言过其实。'}]],
+  // 32. 雷风恒
+  [32,4,5,'雷风恒','亨，无咎，利贞，利有攸往。','亨通，没有灾祸，适宜正固，适宜有所前往。恒卦象征恒久不变，雷与风相辅相成。',
+    [{o:'初六：浚恒，贞凶，无攸利。',t:'过度深挖求恒久，守正也有凶险，无好处。一开始就要求过深过严是不现实的。'},
+     {o:'九二：悔亡。',t:'悔恨消失。保持中道自然无悔。'},
+     {o:'九三：不恒其德，或承之羞，贞吝。',t:'不能恒久保持德行，或许会承受羞耻，守正也有吝。'},
+     {o:'九四：田无禽。',t:'田猎没有获得禽兽。守株待兔将一无所获。'},
+     {o:'六五：恒其德，贞。妇人吉，夫子凶。',t:'恒久保持德行而守正。对于妇人吉利，对于男子则有凶险。恒也要因时制宜。'},
+     {o:'上六：振恒，凶。',t:'以动荡不安来追求恒久，凶险。反复无常是恒久的天敌。'}]],
+  // 33. 天山遁
+  [33,1,7,'天山遁','亨，小利贞。','亨通，小有利守正。遁卦象征退避、隐退——其时不利则退避以待时机。',
+    [{o:'初六：遁尾，厉，勿用有攸往。',t:'退避时落在尾巴，危险。不宜有所前往。退避也要及时。'},
+     {o:'六二：执之用黄牛之革，莫之胜说。',t:'用黄牛皮革紧紧绑住，无人能够解脱。心志坚定不为外物所动。'},
+     {o:'九三：系遁，有疾厉，畜臣妾吉。',t:'被牵系住了退避不得，有疾病危险。安于管理臣妾这样的小事可吉。'},
+     {o:'九四：好遁，君子吉，小人否。',t:'喜欢退隐，君子吉利，小人不利。高风亮节的人懂得适时离开。'},
+     {o:'九五：嘉遁，贞吉。',t:'美好的退避，守正则吉。在最恰当的时机优雅退出，是极高的智慧。'},
+     {o:'上九：肥遁，无不利。',t:'肥美的退避，没有任何不利。彻底超然物外，自由自在。'}]],
+  // 34. 雷天大壮
+  [34,4,1,'雷天大壮','利贞。','适宜正固。大壮卦象征阳刚壮大——四阳在下二阴在上，阳刚之力强盛。',
+    [{o:'初九：壮于趾，征凶，有孚。',t:'力量从脚趾开始强壮，出征凶险，但仍有诚信。力量初成不可贸然行动。'},
+     {o:'九二：贞吉。',t:'守正则吉。保持中道的刚健。'},
+     {o:'九三：小人用壮，君子用罔，贞厉。羝羊触藩，羸其角。',t:'小人用蛮力，君子不用蛮力，守正有危。公羊顶撞篱笆，反而伤了角。'},
+     {o:'九四：贞吉悔亡，藩决不羸，壮于大舆之輹。',t:'守正吉悔恨消失，篱笆破了之后角不再被卡住，力量壮大如大车轮辐。'},
+     {o:'六五：丧羊于易，无悔。',t:'在边界附近丢失了羊，但不必悔恨。软性实力胜过硬碰硬。'},
+     {o:'上六：羝羊触藩，不能退，不能遂，无攸利，艰则吉。',t:'公羊顶撞篱笆，不能退也不能进，无所利，坚守到底可得吉。'}]],
+  // 35. 火地晋
+  [35,3,8,'火地晋','康侯用锡马蕃庶，昼日三接。','康侯被赏赐众多良马，一天之内被接见了三次。晋卦象征前进、上升——光明出现在大地的上方。',
+    [{o:'初六：晋如摧如，贞吉。罔孚，裕无咎。',t:'前进中受到挫折，守正则吉。诚信尚未被认可，宽裕待之即可无咎。'},
+     {o:'六二：晋如愁如，贞吉。受兹介福，于其王母。',t:'前进时忧愁不安，守正则吉。承受这份大福，来自王母的恩泽。'},
+     {o:'六三：众允，悔亡。',t:'众人一致认可你，悔恨消除。得到大家信任的是前进的基础。'},
+     {o:'九四：晋如鼫鼠，贞厉。',t:'像大鼯鼠那样投机钻营前进，守正也有危险。不走正道往上爬是很危险的。'},
+     {o:'六五：悔亡，失得勿恤，往吉无不利。',t:'悔恨消除，不要计较得失，前进吉利、无所不利。放下得失心反而通达。'},
+     {o:'上九：晋其角，维用伐邑，厉吉无咎，贞吝。',t:'前进到了最上面如同动物的角，用来征伐邑国有危险但终吉无咎，守正亦有吝。'}]],
+  // 36. 地火明夷
+  [36,8,3,'地火明夷','利艰贞。','适宜在艰难中守正。明夷卦象征光明受伤——太阳落入地中，黑暗笼罩。',
+    [{o:'初九：明夷于飞，垂其翼。君子于行，三日不食，有攸往，主人有言。',t:'光明受伤时侯鸟要飞离垂下翅膀。君子出行三天没有饭吃，有所前往但主人有怨言。在黑暗中低调行事。'},
+     {o:'六二：明夷，夷于左股，用拯马壮，吉。',t:'光明受伤，伤在左大腿，用健壮的马来救——吉利。受损不大及时救援可脱险。'},
+     {o:'九三：明夷于南狩，得其大首，不可疾贞。',t:'在南方狩猎时光明受伤；俘获了大首领，但不可过于急躁。'},
+     {o:'六四：入于左腹，获明夷之心，于出门庭。',t:'深入其内部，获取了受伤害光明的核心，然后走出门庭。'},
+     {o:'六五：箕子之明夷，利贞。',t:'像箕子被纣王囚禁那样的明夷情境，适宜守正。大智若愚以保护自己。'},
+     {o:'上六：不明晦，初登于天，后入于地。',t:'不光明反而黑暗了——起初登上了天空，最后掉进了大地深处。黑暗到了极点。'}]],
+  // 37. 风火家人
+  [37,5,3,'风火家人','利女贞。','适宜女子守正。家人卦象征家庭伦理——风火相生，家庭兴旺之道。',
+    [{o:'初九：闲有家，悔亡。',t:'门户防闲、端正家风，悔恨消除。建立家庭规则是第一要务。'},
+     {o:'六二：无攸遂，在中馈，贞吉。',t:'没有什么特别成就，只在家中主持饮食之事，守正则吉。家庭中平凡的奉献也是伟大的。'},
+     {o:'九三：家人嗃嗃，悔厉吉。妇子嘻嘻，终吝。',t:'家中严厉管教的声音，虽有悔恨和危险，但最终吉祥。妇人孩子嘻嘻哈哈，终究有吝。'},
+     {o:'六四：富家，大吉。',t:'能使家庭富裕起来，大吉。为家庭创造财富是非常好的。'},
+     {o:'九五：王假有家，勿恤吉。',t:'君王来到家中，不必忧愁，吉利。家中有德，贵人自来。'},
+     {o:'上九：有孚威如，终吉。',t:'有诚信而又威严，最终吉利。家庭的领导者需要恩威并施。'}]],
+  // 38. 火泽睽
+  [38,3,2,'火泽睽','小事吉。','小事吉利。睽卦象征乖离、背离——火向上而泽向下，两者背道而驰。',
+    [{o:'初九：悔亡，丧马勿逐，自复。见恶人无咎。',t:'悔恨消除，丢失了马不必去追，它自己会回来。见到恶人也无咎害。求同存异。'},
+     {o:'九二：遇主于巷，无咎。',t:'在小巷中偶遇主人，没有灾祸。不期而遇也能找到相通之路。'},
+     {o:'六三：见舆曳，其牛掣，其人天且劓，无初有终。',t:'看见车被拖住，牛被牵制，那个人受过额刑和劓刑——起初艰难但终有好结果。'},
+     {o:'九四：睽孤，遇元夫，交孚，厉无咎。',t:'乖离而孤独的时候，遇到了有德之人，以诚信交往，虽有危险但无咎。'},
+     {o:'六五：悔亡，厥宗噬肤，往何咎。',t:'悔恨消除，宗族中可以咬开肌肤般亲密——前往有什么灾祸呢？'},
+     {o:'上九：睽孤，见豕负涂，载鬼一车，先张之弧，后说之弧，匪寇婚媾，往遇雨则吉。',t:'背离孤独，看见猪满身污泥，又看见一辆车载满鬼怪——先是拉弓要射，后来放下了弓。原来不是盗寇而是来求婚的，前往遇到下雨则吉。'}]],
+  // 39. 水山蹇
+  [39,6,7,'水山蹇','利西南，不利东北。利见大人，贞吉。','宜向西南去，不宜向东北去。适宜拜见大人，守正吉利。蹇卦象征艰难险阻——水在山上，前行艰难。',
+    [{o:'初六：往蹇，来誉。',t:'前往有艰难，回来则获得赞誉。知难而退也是一种智慧。'},
+     {o:'六二：王臣蹇蹇，匪躬之故。',t:'王臣陷入重重艰难之中，但不是因为他们自身的问题。'},
+     {o:'九三：往蹇来反。',t:'前往遇到困难就返回来。灵活转身是最好的策略。'},
+     {o:'六四：往蹇来连。',t:'前往遇难就联合众人一起返回。困难时寻求同盟很重要。'},
+     {o:'九五：大蹇朋来。',t:'大难临头时朋友们会纷纷赶来相助。真正的困难激发真正的友情。'},
+     {o:'上六：往蹇来硕，吉。利见大人。',t:'前往有艰难但回来收获丰硕，吉利。适宜拜见大人。经历了风雨方能见彩虹。'}]],
+  // 40. 雷水解
+  [40,4,6,'雷水解','利西南，无所往，其来复吉。有攸往，夙吉。','宜向西南去。不必执着于前往，回来重新来过就吉。有所前往的话，及早行动吉。解卦象征解除困难——雷雨倾盆冲刷一切障碍。',
+    [{o:'初六：无咎。',t:'没有灾祸。困难解除的开始阶段尚可平稳。'},
+     {o:'九二：田获三狐，得黄矢，贞吉。',t:'田猎捕获三只狐狸，得到黄铜箭头，守正吉。解除困难就会有实在的收获。'},
+     {o:'六三：负且乘，致寇至，贞吝。',t:'背着东西又坐着马车，会招致盗寇来抢，守正也会有吝。炫耀财富会引来麻烦。'},
+     {o:'九四：解而拇，朋至斯孚。',t:'解开你大拇指上的绑缚，朋友们来了就会产生诚信。放下戒备才能建立信任。'},
+     {o:'六五：君子维有解，吉。有孚于小人。',t:'君子被解开束缚，吉祥。以诚信感化了小人也。'},
+     {o:'上六：公用射隼，于高墉之上，获之，无不利。',t:'王公射杀高墙上的猛禽，捕获了它，没有任何不利。果断清除最顽固的障碍。'}]],
+  // 41. 山泽损
+  [41,7,2,'山泽损','有孚，元吉，无咎，可贞，利有攸往。曷之用，二簋可用享。','心怀诚信，最为吉祥，没有灾祸，可以守正，适宜有所前往。用什么来表达呢？两碗简单的供品就可以祭祀。损卦象征减损——损下益上、损有余补不足。',
+    [{o:'初九：已事遄往，无咎，酌损之。',t:'事情做完了就赶快前往，没有灾祸。适当地减损一些即可。'},
+     {o:'九二：利贞，征凶，弗损益之。',t:'适宜守正，出征有凶。不应减损而要增益——有时该加码不是减法。'},
+     {o:'六三：三人行，则损一人。一人行，则得其友。',t:'三人同行就会减少一人；一人独行反而会得到朋友。'},
+     {o:'六四：损其疾，使遄有喜，无咎。',t:'减损自身的毛病，使之迅速得到好转有喜事，没有灾祸。'},
+     {o:'六五：或益之十朋之龟，弗克违，元吉。',t:'或许有人赠送价值十朋的大宝龟，无法拒绝，最为吉祥。'},
+     {o:'上九：弗损益之，无咎，贞吉，利有攸往，得臣无家。',t:'不需减损而要增益，没有灾祸，守正则吉，适宜前往，得到臣仆而不限于一家一户。'}]],
+  // 42. 风雷益
+  [42,5,4,'风雷益','利有攸往，利涉大川。','适宜有所前往，适宜渡过大河。益卦象征增益——损上益下、君王施惠于民。',
+    [{o:'初九：利用为大作，元吉，无咎。',t:'适宜做一番大事业，最为吉祥，没有灾祸。有了增益就要用在正途上。'},
+     {o:'六二：或益之十朋之龟，弗克违，永贞吉。王用享于帝，吉。',t:'有人赠送十朋大宝龟，无法拒绝，永远守正则吉。君王用它祭祀天帝，吉利。'},
+     {o:'六三：益之用凶事，无咎。有孚中行，告公用圭。',t:'把增益用在凶险之事上，没有灾祸。心怀诚信行中道，手持玉圭告禀王公。'},
+     {o:'六四：中行，告公从。利用为依迁国。',t:'行中道禀告王公被采纳。适宜用来依托迁移国都。'},
+     {o:'九五：有孚惠心，勿问元吉。有孚惠我德。',t:'以诚信施惠于民心，不必问也知是大吉。诚信会反过来惠泽我的德行。'},
+     {o:'上九：莫益之，或击之，立心勿恒，凶。',t:'没有人增益他，反而有人攻击他，因他的心志不恒久，凶险。'}]],
+  // 43. 泽天夬
+  [43,2,1,'泽天夬','扬于王庭，孚号有厉。告自邑，不利即戎，利有攸往。','在王庭上公开宣告，诚信而呼号危险。从自己的城邑发号施令，不适宜立即动武，适宜有所前往。夬卦象征决断——五阳在上决去一阴。',
+    [{o:'初九：壮于前趾，往不胜为咎。',t:'力量集中在前脚趾上，贸然前往不能取胜就会有灾祸。决断需要实力而非冲动。'},
+     {o:'九二：惕号，莫夜有戎，勿恤。',t:'警惕地呼号，即使夜晚有兵戎之事也不用担忧。'},
+     {o:'九三：壮于頄，有凶。君子夬夬，独行遇雨，若濡有愠，无咎。',t:'力量在颧骨上表现出来，有凶险。君子态度坚决却独行遇雨被淋湿了，引起不快，但没有灾祸。'},
+     {o:'九四：臀无肤，其行次且。牵羊悔亡，闻言不信。',t:'臀部没了皮肤，行走艰难。牵着羊前去悔恨就消失，听到话却不相信。'},
+     {o:'九五：苋陆夬夬，中行无咎。',t:'像马齿苋那样干脆地决断，行中道就没有灾祸。温和而坚定是最好的决断方式。'},
+     {o:'上六：无号，终有凶。',t:'没有发出呼号警告，最终会有凶险。到了最后依然不醒悟就只有凶险了。'}]],
+  // 44. 天风姤
+  [44,1,5,'天风姤','女壮，勿用取女。','女子过于强壮，不可娶进家门。姤卦象征不期而遇——天在上风在下，风行天下万物相遇。',
+    [{o:'初六：系于金柅，贞吉。有攸往，见凶。羸豕孚蹢躅。',t:'用金属的制动器拴牢，守正则吉。如果贸然前往会有凶险。瘦猪虽受牵制却还在不停地挣扎。'},
+     {o:'九二：包有鱼，无咎，不利宾。',t:'包裹里有鱼，没有灾祸，但不适宜招待宾客——要守住自己遇到的东西。'},
+     {o:'九三：臀无肤，其行次且，厉，无大咎。',t:'臀部没有皮肤，行走困难，有危险但没有大灾祸。'},
+     {o:'九四：包无鱼，起凶。',t:'包裹里没有鱼了，一旦有所行动就有凶险。失去了遇到的东西就会陷入困境。'},
+     {o:'九五：以杞包瓜，含章，有陨自天。',t:'用杞柳编的筐包裹着瓜，内含美好，有东西从天而降。顺应天意自然天成。'},
+     {o:'上九：姤其角，吝，无咎。',t:'遇到动物的角（尖锐之物），有吝惜但无灾祸。正面遭遇矛盾但没有实质伤害。'}]],
+  // 45. 泽地萃
+  [45,2,8,'泽地萃','亨。王假有庙。利见大人，亨，利贞。用大牲吉，利有攸往。','亨通。王到宗庙祭祀。适宜拜见大人，亨通，适宜正固。用大牲畜祭祀吉祥，适宜有所前往。萃卦象征聚集——泽在地上汇合，万物相聚。',
+    [{o:'初六：有孚不终，乃乱乃萃，若号一握为笑，勿恤，往无咎。',t:'有诚信而不能持久，于是就混乱地聚集在一起，好像呼号一下又握手大笑，不必担忧，前往没有灾祸。'},
+     {o:'六二：引吉，无咎，孚乃利用禴。',t:'被引荐见面吉利没有灾祸，诚信之心可以用来进行夏日薄祭——真诚比排场重要。'},
+     {o:'六三：萃如，嗟如，无攸利，往无咎，小吝。',t:'聚集在一起却叹息不已，没有什么好处，前往没有灾祸，小有吝惜。'},
+     {o:'九四：大吉，无咎。',t:'非常吉祥，没有灾祸。众人的聚集带来了强大力量。'},
+     {o:'九五：萃有位，无咎。匪孚，元永贞，悔亡。',t:'聚集在自己职位上，没有灾祸。虽然尚未建立起充分的信誉，但如果长期坚守正道，悔恨就会消除。'},
+     {o:'上六：齎咨涕洟，无咎。',t:'悲叹哭泣，一把鼻涕一把泪——但没有灾祸。穷途末路时的发泄没有实质伤害。'}]],
+  // 46. 地风升
+  [46,8,5,'地风升','元亨，用见大人，勿恤，南征吉。','大为亨通，适宜拜见大人，不必忧虑，往南出征吉利。升卦象征上升——地中生出树木，日益向上。',
+    [{o:'初六：允升，大吉。',t:'被允许上升，非常吉利。要获得认可才能开始上升之路。'},
+     {o:'九二：孚乃利用禴，无咎。',t:'诚信之心可以用来行简薄的祭祀，没有灾祸。真诚朴素是最好的升进之道。'},
+     {o:'九三：升虚邑。',t:'上升到空虚的城邑——前方似乎一片空旷。'},
+     {o:'六四：王用亨于岐山，吉无咎。',t:'君王在岐山祭祀，吉利没有灾祸。到了适当的位置要祭祀感恩。'},
+     {o:'六五：贞吉，升阶。',t:'守正则吉，沿着台阶一级一级往上走。稳步前进是最好的上升方式。'},
+     {o:'上六：冥升，利于不息之贞。',t:'在黑暗中盲目地上升，适宜永不停息地坚守正道——即使看不清也要保持向善之心。'}]],
+  // 47. 泽水困
+  [47,2,6,'泽水困','亨，贞，大人吉，无咎，有言不信。','亨通，守正。大人吉利，没有灾祸。但说出来的话被人怀疑而不被信任。困卦象征困顿——泽中无水，干涸的困局。',
+    [{o:'初六：臀困于株木，入于幽谷，三岁不觌。',t:'臀部被困在树桩上，进入幽深的山谷，三年不见天日。最严重的困顿——身心皆被束缚。'},
+     {o:'九二：困于酒食，朱绂方来，利用亨祀，征凶，无咎。',t:'被酒食所困——官服刚送来，适宜用于祭祀，出征有凶险——但无大咎。'},
+     {o:'六三：困于石，据于蒺藜，入于其宫，不见其妻，凶。',t:'被困在乱石堆中，坐在蒺藜剌上，回到家中又见不到妻子——凶险。内外交困的局面。'},
+     {o:'九四：来徐徐，困于金车，吝，有终。',t:'慢慢前来，被困在镀金的车辆中，有吝惜，但最终会有好结果。'},
+     {o:'九五：劓刖，困于赤绂。乃徐有说，利用祭祀。',t:'被割掉鼻子的肉刑所困，被官服所困——但慢慢地可以解脱，适宜祭祀求神。'},
+     {o:'上六：困于葛藟，于臲兀，曰动悔。有悔，征吉。',t:'被藤蔓缠绕困住，身处危险震荡之中，所谓动辄生悔——但如果能幡然悔悟，前行则是吉利的。'}]],
+  // 48. 水风井
+  [48,6,5,'水风井','改邑不改井，无丧无得，往来井井。汔至，亦未繘井，羸其瓶，凶。','城邑可以改迁，井却不会改变，没有失去也没有收获，来来往往的人们在井边打水。快打到水了，还没有把井绳提出井口，却把瓶子打破了——凶险。井卦象征养而不穷的源泉。',
+    [{o:'初六：井泥不食，旧井无禽。',t:'井底全是淤泥不能饮用，连鸟兽都不来光顾这口旧井。需要疏浚清理。'},
+     {o:'九二：井谷射鲋，瓮敝漏。',t:'井底沟中射小鱼，破瓦瓮在漏水——水源被埋没了，需要修复。'},
+     {o:'九三：井渫不食，为我心恻，可用汲，王明，并受其福。',t:'井掏干净了却没人来喝，让我心中伤悲。可以来汲取了，如果君王圣明的话，大家都能享有福泽。'},
+     {o:'六四：井甃，无咎。',t:'井壁用砖石砌好了，没有灾祸。修缮好了基础设施。'},
+     {o:'九五：井洌，寒泉食。',t:'井水清洌甘甜，像寒泉般可供饮用。井水源源不断地发挥价值。'},
+     {o:'上六：井收勿幕，有孚元吉。',t:'井水汲取上来了不要盖上井盖，有诚信之心最为吉祥。敞开胸怀分享资源。'}]],
+  // 49. 泽火革
+  [49,2,3,'泽火革','己日乃孚。元亨利贞，悔亡。','在改变发生后的日子才能获得信任。大为亨通，适宜正固，悔恨消除。革卦象征变革——水火相克，非变不可。',
+    [{o:'初九：巩用黄牛之革。',t:'用黄牛皮革牢牢绑缚巩固。变革之前要先稳固自身。'},
+     {o:'六二：己日乃革之，征吉，无咎。',t:'到了该变革的日子就果断变革，出征吉利，没有灾祸。时机到了就当机立断。'},
+     {o:'九三：征凶，贞厉。革言三就，有孚。',t:'出征有凶险，守正也有危险。变革的主张得到了三次讨论认可后，才有信任。'},
+     {o:'九四：悔亡，有孚改命，吉。',t:'悔恨消除，以诚信改变命运，吉利。得民心者得变革成功。'},
+     {o:'九五：大人虎变，未占有孚。',t:'大人的变革像老虎的皮毛一样鲜明耀目，不用占问也知道会得到信任。'},
+     {o:'上六：君子豹变，小人革面。征凶，居贞吉。',t:'君子的变革像豹纹般细腻，小人则只改变表面。这时候出征凶险，安居正固得吉。'}]],
+  // 50. 火风鼎
+  [50,3,5,'火风鼎','元吉，亨。','最为吉祥，亨通。鼎卦象征鼎器——以木入火烹饪，化生为熟、除旧布新。',
+    [{o:'初六：鼎颠趾，利出否。得妾以其子，无咎。',t:'把鼎脚倒过来，有利于倒出残渣。娶妾因为她的儿子，没有灾祸。清除了旧的才能迎接新的。'},
+     {o:'九二：鼎有实，我仇有疾，不我能即，吉。',t:'鼎中有充实的内容，我的仇人却生了病，不能来接近我，吉利。有实力者不怕外部威胁。'},
+     {o:'九三：鼎耳革，其行塞，雉膏不食，方雨亏悔，终吉。',t:'鼎的耳环脱掉了，搬运困难，美味的雉鸡肉也不能吃了——不过雨下了之后缺水解除，悔恨也消除了，终吉。'},
+     {o:'九四：鼎折足，覆公餗，其形渥，凶。',t:'鼎的腿折断了，倒掉了王公的粥汤，弄得一身污秽，凶险。才不配位必有灾殃。'},
+     {o:'六五：鼎黄耳金铉，利贞。',t:'鼎有铜质的耳朵和金属的铉杠，适宜守正。德才兼备就是最好的装备。'},
+     {o:'上九：鼎玉铉，大吉，无不利。',t:'鼎配有玉制的铉杠，大吉大利，无所不利。温润如玉的品德才是最高境界。'}]],
+  // 51. 震为雷
+  [51,4,4,'震为雷','亨。震来虩虩，笑言哑哑。震惊百里，不丧匕鬯。','亨通。雷声震来令人害怕，但过后反而有说有笑。雷声震惊百里之外，但祭祀的人手中的勺子却没有掉落。震卦象征震动、震惊——君子临危不乱。',
+    [{o:'初九：震来虩虩，后笑言哑哑，吉。',t:'雷声震来让人害怕，过后却有说有笑——吉利。经历了剧烈震动反而能安定下来。'},
+     {o:'六二：震来厉，亿丧贝，跻于九陵，勿逐，七日得。',t:'雷震到来时非常猛烈，估计会丢失钱财，登上高高的山陵不要追逐这些损失，七天后就会失而复得。'},
+     {o:'六三：震苏苏，震行无眚。',t:'雷震使人有些迟钝也有些清醒，如果按照雷所提示的去行动就不会有灾害。'},
+     {o:'九四：震遂泥。',t:'雷震下来却掉进了泥里——气势被消解了。'},
+     {o:'六五：震往来厉，亿无丧，有事。',t:'雷震往来十分猛烈——估计不会有太大损失，还会有事可做。'},
+     {o:'上六：震索索，视矍矍，征凶。震不于其躬，于其邻，无咎。婚媾有言。',t:'雷震使人索索发抖，眼含惊恐——此时出征有凶险。雷没有震到自身而震到了邻居，所以没有灾祸。但婚姻之事会有口舌。'}]],
+  // 52. 艮为山
+  [52,7,7,'艮为山','艮其背，不获其身，行其庭，不见其人，无咎。','停在自己的背后，不觉有自身的存在。行走在他的庭院中，却不见他这个人——没有灾祸。艮卦象征停止——当止则止。',
+    [{o:'初六：艮其趾，无咎，利永贞。',t:'停止在脚趾上——刚迈出一步就停下。没有灾祸，适宜长期坚守。'},
+     {o:'六二：艮其腓，不拯其随，其心不快。',t:'停止在小腿肚上——跟着别人停下来的，不能去拯救跟随的人，他的心中感到不愉快。'},
+     {o:'九三：艮其限，列其夤，厉薰心。',t:'停在腰部界限上，腰脊两边的肉像是被撕裂般地疼痛，危险的烟雾熏烤着内心。'},
+     {o:'六四：艮其身，无咎。',t:'停止在身体上——管好自己的言行。没有灾祸。自我克制是正确的做法。'},
+     {o:'六五：艮其辅，言有序，悔亡。',t:'停止在口舌上——说话有条有理，悔恨就消失了。言语谨慎是最实际的修身之道。'},
+     {o:'上九：敦艮，吉。',t:'以敦厚的品格安止于所当止之处，非常吉利。敦厚克制能修得最高的善。'}]],
+  // 53. 风山渐
+  [53,5,7,'风山渐','女归吉，利贞。','女子出嫁吉利，适宜正固。渐卦象征循序渐进——风行山上，柔顺地缓缓推进。',
+    [{o:'初六：鸿渐于干，小子厉，有言，无咎。',t:'鸿雁逐渐飞到了水边——年轻人在岸边上体会到的风险，有一些闲言碎语，但没有实质性的灾祸。'},
+     {o:'六二：鸿渐于磐，饮食衎衎，吉。',t:'鸿雁逐渐飞到了大石头上，悠然自得地饮水进食——吉利。进展到更为安稳的阶段。'},
+     {o:'九三：鸿渐于陆，夫征不复，妇孕不育，凶。利御寇。',t:'鸿雁逐渐飞到了高地上——丈夫出征一去不回，妻子怀了孕却不能生育，凶险之事。适宜抵御盗寇。'},
+     {o:'六四：鸿渐于木，或得其桷，无咎。',t:'鸿雁逐渐飞到了树上，或许找到了橡木的木方——没有灾祸。'},
+     {o:'九五：鸿渐于陵，妇三岁不孕，终莫之胜，吉。',t:'鸿雁逐渐飞到了高岭上——妇人三年都没有怀孕，但终究没有谁能压倒她，吉利。'},
+     {o:'上九：鸿渐于逵，其羽可用为仪，吉。',t:'鸿雁逐渐飞到了云中大道上，它的羽毛可以用来做成仪仗装饰——大吉。循序渐进的终点是光彩夺目的。'}]],
+  // 54. 雷泽归妹
+  [54,4,2,'雷泽归妹','征凶，无攸利。','出征有凶险，没有好处。归妹卦象征少女出嫁——非正配而结合需格外谨慎。',
+    [{o:'初九：归妹以娣，跛能履，征吉。',t:'妹妹陪姐姐一起出嫁成为偏室——就像跛脚的人勉强能走路一样，出征吉利。'},
+     {o:'九二：眇能视，利幽人之贞。',t:'独眼的人勉强能看见，适宜隐居者坚守贞正——看不清楚全局的人应该安静守正。'},
+     {o:'六三：归妹以须，反归以娣。',t:'出嫁的妹妹被当作姐姐的替代品，结果又返回来以偏房的身份嫁出。缘份不可勉强。'},
+     {o:'九四：归妹愆期，迟归有时。',t:'妹妹出嫁错过了预定日期，推迟了出嫁但终究会有那一天。耐心等待缘分。'},
+     {o:'六五：帝乙归妹，其君之袂，不如其娣之袂良，月几望，吉。',t:'帝乙嫁出妹妹——作为正夫人的衣袖反而不如陪嫁妹妹的衣袖好。月将圆的时候，吉利。质朴胜过浮华。'},
+     {o:'上六：女承筐无实，士刲羊无血，无攸利。',t:'女子捧着筐但没有东西在里面，男子杀羊却流不出血来——形同虚设，没有任何好处。'}]],
+  // 55. 雷火丰
+  [55,4,3,'雷火丰','亨，王假之，勿忧，宜日中。','亨通。君王亲临治理，不用忧愁，适宜如日中天之时来照耀万物。丰卦象征丰盛盛大——光明与震动相配合。',
+    [{o:'初九：遇其配主，虽旬无咎，往有尚。',t:'遇到了相配的主人——即使过了十天也没有灾祸，前往会得到推崇。'},
+     {o:'六二：丰其蔀，日中见斗，往得疑疾，有孚发若，吉。',t:'丰盛中被黑暗蒙蔽了——日正当午却见到了北斗星。前往会引来疑心之疾，但怀着诚信之心去开导就好了，吉利。'},
+     {o:'九三：丰其沛，日中见沫，折其右肱，无咎。',t:'丰盛中被黑暗笼罩得更多——日正午时见到了小星星，折断了右臂。没有灾祸——在最黑的夜也要挺住。'},
+     {o:'九四：丰其蔀，日中见斗，遇其夷主，吉。',t:'丰盛中有黑暗障蔽——正午见到了北斗星。遇到了平易近人的好主人，吉利。'},
+     {o:'六五：来章，有庆誉，吉。',t:'光明灿烂的文采到来了——有喜庆和赞誉，吉利。'},{o:'上六：丰其屋，蔀其家，窥其户，阒其无人，三岁不觌，凶。',t:'丰盛地装饰房屋，却把自己的家遮蔽得严严实实，从门缝往里窥视，寂寂无声不见人——三年见不到人，凶险。自我封闭是最大的凶。'}]],
+  // 56. 火山旅
+  [56,3,7,'火山旅','小亨，旅贞吉。','小有亨通。旅居在外守正则吉。旅卦象征旅行、客居——山上有火，旅人举火赶路。',
+    [{o:'初六：旅琐琐，斯其所取灾。',t:'旅途中斤斤计较、琐碎小气——这正是招致灾难的原因。出门在外小气会惹来麻烦。'},
+     {o:'六二：旅即次，怀其资，得童仆贞。',t:'旅途中找到了住所，怀里揣着路费，又得到了忠诚的童仆——一切安顿妥当。'},
+     {o:'九三：旅焚其次，丧其童仆，贞厉。',t:'旅途中住处被烧了，丢失了童仆，即使守正也有危险。旅途中的意外无常令人措手不及。'},
+     {o:'九四：旅于处，得其资斧，我心不快。',t:'旅途中找到了一个地方住下来，又得到了钱财和斧头等必备工具，但我的内心还是不快乐——物质的安稳并不等于精神的安宁。'},
+     {o:'六五：射雉一矢亡，终以誉命。',t:'射野鸡时丢失了一支箭——看上去有所损失，但最终因此而获得了美好的声誉和任命。'},
+     {o:'上九：鸟焚其巢，旅人先笑后号咷。丧牛于易，凶。',t:'鸟窝被火烧了——旅行的客人先是大笑，后来却号啕大哭。牛在边界地带丢失了。极端凶险——乐极生悲的典型写照。'}]],
+  // 57. 巽为风
+  [57,5,5,'巽为风','小亨，利有攸往，利见大人。','小有亨通。适宜有所前往，适宜拜见大人。巽卦象征巽顺、谦逊——风随风而行，无孔不入。',
+    [{o:'初六：进退，利武人之贞。',t:'犹犹豫豫、进进退退——这时候适宜像军人那样以坚决果断的态度来守正。'},
+     {o:'九二：巽在床下，用史巫纷若，吉无咎。',t:'谦逊到了跪在床下的地步——请来史官和巫觋们纷纷出来说话。如此夸张的谦恭反倒吉利无咎。'},
+     {o:'九三：频巽，吝。',t:'频繁地表达谦逊却变成了愁眉苦脸——这种反复无常的谦顺其实是有吝的。'},
+     {o:'六四：悔亡，田获三品。',t:'悔恨消除了——打猎获得了三种不同级别的猎物。谦逊带来了实实在在的收获。'},
+     {o:'九五：贞吉悔亡，无不利。无初有终，先庚三日，后庚三日，吉。',t:'守正则吉，悔恨消除；没有不吉利之事——开始时虽然不顺，但最终会有好结果。庚日前三天到后三天这个期间都吉利。'},
+     {o:'上九：巽在床下，丧其资斧，贞凶。',t:'谦逊到了跪在床下，却丢失了自己的钱财和赖以生存的斧头——守正也有凶险。过度的谦卑已经不像谦逊了，而是没有原则。'}]],
+  // 58. 兑为泽
+  [58,2,2,'兑为泽','亨，利贞。','亨通，适宜正固。兑卦象征喜悦、言说——泽泽相连交流融通。',
+    [{o:'初九：和兑，吉。',t:'以和善融洽的方式给人带来喜悦，吉利。柔和而温暖的喜悦才是真正的悦。'},
+     {o:'九二：孚兑，吉，悔亡。',t:'以发自内心的诚信给人带来喜悦，吉利，悔恨消除了。真诚的愉悦胜过万金。'},
+     {o:'六三：来兑，凶。',t:'故意前来取悦逢迎——凶险。谄媚讨好是喜悦的反面。'},
+     {o:'九四：商兑，未宁，介疾有喜。',t:'与他人商量寻求愉悦，心中尚不宁静——但大的毛病却有可能好转而带来欢喜。'},
+     {o:'九五：孚于剥，有厉。',t:'把诚信放在已经腐坏剥落的人身上——这是有危险的。'},
+     {o:'上六：引兑。',t:'被人引导着去寻找喜悦——非发自内心的愉悦，终究是漂浮无根的。'}]],
+  // 59. 风水涣
+  [59,5,6,'风水涣','亨。王假有庙，利涉大川，利贞。','亨通。君王亲自来到宗庙。适宜渡过大河，适宜正固。涣卦象征涣散——风行水上，涣散当前的困境重新凝聚。',
+    [{o:'初六：用拯马壮，吉。',t:'用强壮的马来拯救危局，吉利。涣散之初要用强大力量来力挽狂澜。'},
+     {o:'九二：涣奔其机，悔亡。',t:'涣散的时候奔向了合适的时机和平台，悔恨消除了。在涣散中找到自己的位置。'},
+     {o:'六三：涣其躬，无悔。',t:'涣散自己的私心私利——把自我的执念都涣散掉就没有悔恨了。无私的人不会被涣散所伤。'},
+     {o:'六四：涣其群，元吉。涣有丘，匪夷所思。',t:'涣散那些拉帮结派的小团体，最为吉祥。解散之后形成了像山丘一样庞大的聚合体，这不是一般人所能理解的。'},
+     {o:'九五：涣汗其大号，涣王居，无咎。',t:'像发汗一样把号令散布出去——把君王仓库中的积蓄也涣散给四方。没有灾祸。'},
+     {o:'上九：涣其血，去逖出，无咎。',t:'涣散那一身的血光之气，远远地离开危险之地走出去——没有灾祸了。彻底的涣散之后才是真正的安宁。'}]],
+  // 60. 水泽节
+  [60,6,2,'水泽节','亨。苦节不可贞。','亨通。用过分严苛的方式节制是不可以长期固守的。节卦象征节制、节度。',
+    [{o:'初九：不出户庭，无咎。',t:'不出门、不出庭院，没有灾祸。在开始阶段适度的节制显得很谨慎。'},
+     {o:'九二：不出门庭，凶。',t:'连家门前的门庭都不走出去，凶险。节制过头了变成自我封闭就会丧失时机。'},
+     {o:'六三：不节若，则嗟若，无咎。',t:'不能加以适当节制的样子，就会变成嗟叹不已的样子——虽然没有大的过错，但这是咎由自取。'},
+     {o:'六四：安节，亨。',t:'以安乐平和的方式来节制，亨通。温和的节制最符合人情。'},
+     {o:'九五：甘节，吉。往有尚。',t:'以甘美愉悦的方式来节制，吉利。这样发展下去会受到推崇。与人分享的节制最为高明。'},
+     {o:'上六：苦节，贞凶，悔亡。',t:'用苦涩严苛的方式去节制，守正也有凶险——但如果知道悔改，悔恨还是可以消除的。'}]],
+  // 61. 风泽中孚
+  [61,5,2,'风泽中孚','豚鱼吉，利涉大川，利贞。','用小猪和鱼来祭祀——吉利。适宜渡过大河，适宜正固。中孚卦象征内心的诚信——风行泽上，以诚待物。',
+    [{o:'初九：虞吉，有它不燕。',t:'心中有戒备是吉利的；但如果有其他的心思杂念，那就连燕子那般安闲的心态都保持不了。'},
+     {o:'九二：鸣鹤在阴，其子和之。我有好爵，吾与尔靡之。',t:'白鹤在阴凉的地方鸣叫，小鹤就会应答它——我有美好的酒器，我愿意和你一起分享使用。最有名的诚信之歌。'},
+     {o:'六三：得敌，或鼓或罢，或泣或歌。',t:'遇到了对手敌人——一会儿擂鼓前进，一会儿停止休战；一会儿哭，一会儿又唱。起伏不定的心最难诚信。'},
+     {o:'六四：月几望，马匹亡，无咎。',t:'月亮快圆了——在这圆满的前夕却丢失了马匹。虽然失去了伴侣，但没有过错。'},
+     {o:'九五：有孚挛如，无咎。',t:'诚信之心紧紧相连、牢不可破的样子，没有灾祸。诚信的最高境界。'},
+     {o:'上九：翰音登于天，贞凶。',t:'鸟儿的鸣叫声高飞登上了天空——把诚信唱得太高反而显得虚假。守正也有凶险。名不副实的诚信是危险的。'}]],
+  // 62. 雷山小过
+  [62,4,7,'雷山小过','亨，利贞。可小事，不可大事。飞鸟遗之音，不宜上宜下，大吉。','亨通，适宜正固。可以做小事，不宜做大事。飞鸟飞过留下的声音提示我们——此时不宜向上，应该向下，大吉。小过卦象征小有过越——以小为贵之道。',
+    [{o:'初六：飞鸟以凶。',t:'像飞鸟那样着急飞得太快太高——凶险。一开始就越过了界限是不吉的。'},
+     {o:'六二：过其祖，遇其妣。不及其君，遇其臣。无咎。',t:'越过了祖父，遇到了祖母；没有到达君王的面前，却遇到了臣下——没有灾祸。稍微越过一点界限但不是出于野心就没问题。'},
+     {o:'九三：弗过防之，从或戕之，凶。',t:'不要越过界限但要防备着——如果跟从而不加防备，可能招来杀身之祸，凶险。防越比越更危险。'},
+     {o:'九四：无咎。弗过遇之。往厉必戒，勿用永贞。',t:'没有灾祸——没有越界却遇到了事情。前往有危险一定要警戒，不能固执地永远守着同一种方式。'},
+     {o:'六五：密云不雨，自我西郊。公弋取彼在穴。',t:'密云从西郊那边涌来却没有下雨。公侯射取躲在洞穴中的猎物——这是在安静处低调抓机会的时候。'},
+     {o:'上六：弗遇过之，飞鸟离之，凶，是谓灾眚。',t:'没有遇到却远远地越过了——就像飞鸟误入了罗网之中。凶险，这就是所谓的灾与祸——越界到极端就会自取灭亡。'}]],
+  // 63. 水火既济
+  [63,6,3,'水火既济','亨小，利贞。初吉终乱。','小有亨通。适宜守正。开始吉利末尾会转为混乱。既济卦象征事情已经完成——水在火上，万事都归于既定的样子。',
+    [{o:'初九：曳其轮，濡其尾，无咎。',t:'拖住车轮不让它快跑，稍微沾湿了尾巴——没有灾祸。事情刚成的时候要懂得拉住自己不要跑过头。'},
+     {o:'六二：妇丧其茀，勿逐，七日得。',t:'妇人丢了遮挡马车的帷幕，不要去追寻，七天之内会失而复得。小事上的损失不必惊慌。'},
+     {o:'九三：高宗伐鬼方，三年克之。小人勿用。',t:'殷高宗出兵征伐鬼方，整整三年才取得胜利——小人不可被重用。成功要付出漫长艰苦的忍耐。'},
+     {o:'六四：繻有衣袽，终日戒。',t:'准备了华丽鲜艳的新衣服，同时还要天天保持戒备。成功之后不忘防患于未然。'},
+     {o:'九五：东邻杀牛，不如西邻之禴祭，实受其福。',t:'东边邻居用杀牛的大礼来祭祀，反而不如西边邻居用简单的夏祭那样真正蒙受福泽。成功之后真诚比排场更重要。'},
+     {o:'上六：濡其首，厉。',t:'把头都沾湿了，有危险。成功了还往前硬闯就会陷入新的泥沼。'}]],
+  // 64. 火水未济
+  [64,3,6,'火水未济','亨。小狐汔济，濡其尾，无攸利。','亨通。小狐狸快要渡河了还没渡完，尾巴被沾湿了——没有优势可言。未济卦象征事物尚未完成——火在水上，火向上而水向下，两者各走各的互不相济。',
+    [{o:'初六：濡其尾，吝。',t:'尾巴被沾湿了，有点吝惜。事情刚开始就遇到了小的挫折。'},
+     {o:'九二：曳其轮，贞吉。',t:'往后拉车轮不让它前进，守正则吉。未完成的时候特别需要沉得住气。'},
+     {o:'六三：未济，征凶，利涉大川。',t:'事情尚未完成——此时出征有凶险，但有利的是可以渡过大河。看似矛盾实则警示：不要争战但要敢于闯荡。'},
+     {o:'九四：贞吉，悔亡。震用伐鬼方，三年有赏于大国。',t:'守正则吉悔恨消除。雷震一般攻打鬼方，三年后有大国的赏赐。长期坚持必有厚报。'},
+     {o:'六五：贞吉，无悔。君子之光，有孚，吉。',t:'守正则吉没有悔恨。君子的光辉来自诚信，吉利。未完成之时保持诚信就能赢得最终的胜利。'},
+     {o:'上九：有孚于饮酒，无咎。濡其首，有孚失是。',t:'在饮酒之中保持诚信之心——没有灾祸。但是如果喝酒喝到把头都沾湿了的程度——有诚信也会丢失掉做人的底线。'}]]
+  ];
+// ═══════════════════════════════════════
+// 四大维度断语数据库
+// key: "upperTrigram-lowerTrigram"
+// ═══════════════════════════════════════
+const DIMENSION_READINGS = {
+  // === 乾 ===
+  '1-1': {career:'乾卦纯阳刚健，事业上处于强势上升期，应自强不息、勇往直前。适合创业、开拓新领域、担任领导角色。谨记"亢龙有悔"，功成名就之际不可骄傲自满，须保持谦虚进取之心。',health:'纯阳之体，气血旺盛，身体状态良好。但需注意阳气过旺可能带来的头部、心脑血管方面问题。建议劳逸结合，避免长期高强度工作。适当运动有助于平衡身心。',wealth:'财运处于上升通道，正财偏财皆有利。乾卦主"元亨利贞"，适合长期稳健投资。但需注意不可过于激进冒进，尤其在高位时应考虑分散风险。',romance:'乾卦为纯阳，在感情中表现得较为主动强势。有伴侣者可能给对方压力，需学会柔化表达。单身者气场强盛易吸引异性，但应注意双方性格互补而非一方独大。'},
+  '8-8': {career:'坤卦为至柔至顺，事业上宜采取包容、配合、辅助的策略。适合从事服务、教育、医疗、行政等需要耐心和细致的工作。不宜急于求成，"先迷后得主"，找准方向后循序渐进。',health:'坤为地属土，关联脾胃消化系统。需注意饮食规律，避免暴饮暴食。整体健康宜以"静养"为主，适当进行柔和的运动如瑜伽、太极。"履霜坚冰至"，小毛病要及时重视。',wealth:'坤卦"利牝马之贞"，财运以稳为主，适宜长线保守型理财。不宜高风险投机，应注重积累储蓄。"安贞吉"，守住本分自然财源平稳。',romance:'坤卦柔顺包容，感情中善于成全和付出。有伴侣者关系稳定和谐，但需注意不要一味迁就而失去自我。单身者与其急于寻找，不如先提升自身修养，良缘自然会来。"直方大，不习无不利"。'},
+  '6-4': {career:'屯卦象征万事开头难，事业初创期会面临诸多障碍。此时不宜冒进扩张，应扎实打好根基。适合在稳定环境中逐步积累实力，"利建侯"——建立可靠的小团队或人脉圈是明智之举。',health:'屯卦初生之气受阻不畅通，身体可能处于亚健康状态，容易疲劳乏力。需注意作息规律，不宜过度劳累。春季应特别注意身体调理，顺应万物复苏之气。适当户外活动有助恢复活力。',wealth:'财运处于起始阶段，暂时难有大收获。"屯其膏"，金钱需细水长流慢慢积累。不建议此时做大额投资，应以储蓄和节约为主。创业者需做好资金储备应对前期压力。',romance:'初生阶段感情易遇阻，相处时需要更多耐心包容。"乘马班如"——感情进展缓慢甚至有停顿感。单身者不宜急于脱单，给彼此足够空间等待好的时机。"匪寇婚媾"，缘分是自然到来的，不可强求。'},
+  '7-6': {career:'蒙卦主启蒙，事业上意味着需要学习成长、接受指导。适合初入职场或正在转型的时期。应虚心请教长辈或有经验之人，"匪我求童蒙，童蒙求我"——主动学习的态度比被动等待更有益处。',health:'蒙昧之卦暗示身体可能存在未被发现的隐患，建议体检排查。精神层面可能有些混沌迷茫，可借助阅读或正念冥想来提升觉知。注意肾脏和泌尿系统（坎水为下卦）保养。',wealth:'财运稚嫩，投资理财经验尚浅，不宜贸然进入不熟悉的领域。"再三渎，渎则不告"——理财咨询应虚心听取专业意见，不可反复折腾频繁操作。',romance:'感情尚处于懵懂阶段，或在选择上犹豫不决。"童蒙吉"——保持纯真坦诚的态度最适合。已婚者需加强沟通理解；单身者不要给对方过度期待，让感情自然发展最好。'},
+  '6-1': {career:'需卦为等待之意，事业上当前宜静不宜动，时机尚未成熟。可利用等待期充电学习、完善规划。保持诚信与耐心，"有孚，光亨"——心怀希望耐心等待，光明终将到来。',health:'需卦关联饮食营养的吸收，身体可能对某些营养有所渴求。注意饮食均衡，不要偏食。"需于酒食"——适当的饮食调理有益健康，但切勿过量。泌尿系统需要特别关注。',wealth:'财运暂时不宜大动，"需于郊"——在边缘观望等待时机是最佳策略。正财稳定但增长缓慢，宜按兵不动储蓄为主。投资市场还在酝酿期，不应急于入市。',romance:'感情发展进入等待期，推进不宜操之过急。"需于沙，小有言"——可能有些小摩擦、小口舌，属于正常磨合。单身者等待合适的缘分到来，不需焦虑。有伴侣者给彼此空间从容相处。'},
+  '1-6': {career:'讼卦主争讼纠纷，事业上要注意合同文书，防范与人发生摩擦与纠纷。大项目要慎重签协议，必要时应寻求法律支持。"利见大人"——遇到争议时应当寻求有权威的人调解仲裁。',health:'讼卦主肝胆容易上火，注意情绪管理，避免动怒动气。身心处于比较紧绷的状态，"窒惕"——胸闷气滞的感觉会比较明显。建议通过运动或艺术来疏导情绪，适当放松。',wealth:'财运易有纠纷风险，涉及借贷、合伙等金钱往来务必明确协议。投资需谨慎，"不利涉大川"——此时冒大风险会有麻烦。守正安分、不贪不占则可在纠纷中自保。',romance:'感情容易因小事争执或翻旧账。"中吉、终凶"——吵到一定程度应立即停止，否则越吵越伤感情。即使争赢了道理也输了感情。建议两人安静下来后真诚交流内心的感受。'},
+  '8-6': {career:'师卦主领导与统率，事业上可能需要带领团队或担任指挥角色。选人用人要谨慎，"丈人吉"——任用德高望重、稳重可靠的人才能顺利。遵守规则和纪律是胜利的基础。',health:'师卦暗示身体处于需要整顿调理的状态，"师出以律"——需要有严格的作息纪律。可能容易发炎发热，应注意劳逸结合。坚持规律的运动锻炼有助于提升免疫力。',wealth:'财运与纪律和制度紧密相关。不宜投机取巧，应严格遵守投资纪律。"否臧凶"——不守规矩的投资行为会招致风险。团队协作的项目财运较佳，单打独斗不太有利。',romance:'感情关系中存在主导与服从的权力结构问题。"师或舆尸"——一方强势主导容易伤感情。相处时应注意平等互敬，不可一方当将军另一方当士兵。单身者在选择伴侣时也要考虑对方是否德才兼备（丈人吉）。'},
+  '6-8': {career:'比卦主亲附和合，事业上适合扩大人脉、建立合作关系。人际关系和谐对事业发展至关重要。"不宁方来"——主动靠近重要人物是好的策略。但注意"后夫凶"，在关键机会面前犹豫不决最为不利。',health:'比卦主和睦之气，身心健康总体良好。但应注意与他人的交叉感染风险，尤其是季节性的感冒流感。"有孚盈缶"——心态积极乐观就是最好的免疫力。',wealth:'财运与人和高度相关，通过合作、联盟可以获得较好的收益。适合结合他人资源共同投资。"显比"——光明正大的合作方式最为有利，隐藏私心会适得其反。',romance:'感情运势以亲和为主，是建立和加深关系的好时机。单身者通过社交聚会容易遇到心仪对象，"比之自内"——真诚走心比表面搭讪更能打动对方。有伴侣者关系愈加深厚。'},
+  '5-1': {career:'小畜卦象征积蓄与准备，事业上正处于默默耕耘、积蓄力量的阶段。虽尚未爆发但前景可期。"密云不雨"——看起来像要下雨但还没到下雨的时候。保持耐心、继续积累。',health:'小畜属于积蓄之气，身体储备状态尚可但不够充裕。容易出现轻微的不适，如亚健康状态。"舆说辐"——注意不要因小毛病耽误大的健康计划。坚持定期体检和锻炼。',wealth:'财运小有积蓄但不够丰沛，属于"存得住但发不了"的状态。适合小额稳定投资，不宜做大额投入。"有孚挛如，富以其邻"——诚信合作共享资源可以逐渐做大财富。',romance:'感情处于缓慢升温积蓄的阶段。"夫妻反目"提示小矛盾和摩擦的风险，注意日常沟通维护。"有孚"——真心实意对待对方是最重要的基石。单身者感情正处在暗流涌动的积蓄期。'},
+  '1-2': {career:'履卦象征谨慎行事，事业上如火中取栗——需谨慎小心才可成事。"履虎尾，不咥人"——身处险境但只要足够小心就不会被伤害。适合处在高压竞争环境中的职场人士。',health:'履卦暗示身体需要小心呵护，"眇能视，跛能履"——在亚健康状态下去做超出身体负荷的事是不明智的。听从身体发出的警告信号，不要带病坚持。',wealth:'财运如履薄冰，投资需极为谨慎。"视履考祥"——回看自己走过的理财之路，总结经验教训才能安全前行。稳健保守是目前最好的策略。',romance:'感情中需谨慎用语，不可言语伤人。"愬愬终吉"——相处中保持敬畏和珍视之心，最终结果不会差。单身者应谨慎选择对象，不可为脱单而随便将就。'},
+  '8-1': {career:'泰卦是六十四卦中最吉利的卦之一，事业处于万事亨通的阶段。天地交融、上下沟通顺畅，是推进大项目、拓展新业务的好时机。"小往大来"——小投入能带来大回报。适合积极进取。',health:'泰卦通泰畅达，身体健康状况良好。阴阳调和、气血通畅。可趁此时机建立良好的锻炼和作息习惯。"拔茅茹，以其汇"——健康的生活习惯会带动周边的人也关注健康，形成良性循环。',wealth:'财运亨通，是投资回报较好的时期。"无平不陂，无往不复"——运势好时也不要忘记风险就在转角处。做好资产配置，不要把鸡蛋全放在一个篮子里。',romance:'感情运势极佳，是感情发展开花结果的好时节。"帝乙归妹，以祉元吉"——天地交融之气也意味着男女感情最为和谐。单身者有很大机会找到心仪之人，已婚者感情更加甜蜜稳固。'},
+  '1-8': {career:'否卦闭塞不通，事业上处境艰难，天地不交、上下阻隔。此时不宜扩张，"不利君子贞"。应"俭德辟难"（修身立德、避开灾难），韬光养晦等待转机。"倾否"——黑暗终将过去。',health:'否卦闭塞之气，身体容易出现不通则痛的症状。消化系统、关节僵硬等问题较为明显。"其亡其亡，系于苞桑"——不能掉以轻心，要时刻关注身体信号，定期体检预防严重疾病。',wealth:'财运闭塞不利，正财收入可能减少或遇到阻碍。"大往小来"——大的投入容易打水漂。投资宜保守、暂时收缩开支，等待"否极泰来"的拐点再做新的财务规划。',romance:'感情运势闭塞，也较容易出现误会、冷战、疏远。"休否"——双方都需要停下脚步，各自冷静反思，然后真诚对话破解僵局。单身者此时不太适合展开新恋情，管好自己比急于寻找更有意义。'},
+  '1-3': {career:'同人卦象征团结协作，事业上适合团队作战而非单打独斗。"同人于野，亨"——把胸怀打开到在野外都能找到同伴的地步就亨通了。选择志同道合的伙伴，发挥团队力量可以事半功倍。利于跨部门协作。',health:'同人卦主和合之气，身心健康，人际关系带来的心理支持较强。"同人先号咷而后笑"——即便一开始有些情绪上的波动，最终也能在朋友家人的陪伴下化解压力和烦恼。',wealth:'财运与人际合作相关，适合合股、合伙经营。"大师克相遇"——遇到关键的合作者或大客户可以改变财务格局。注意选择靠谱的合作伙伴，签订明确的合作协议以避免日后纠纷。',romance:'感情极佳，如果是单身则易通过朋友介绍或在社团活动中遇到理想类型。如果已有伴侣则这段时间相处和谐、价值观趋同。核心提示是找到"志同道合"的感觉，而非仅仅外表或条件的匹配。'},
+  '3-1': {career:'大有卦主丰收富足，事业处于鼎盛期，收获丰厚。光明在上普照四方，是展现实力和成果的好时机。"自天祐之，吉无不利"——顺天应人者自然有好的成果。适合在此时确立行业地位。',health:'大有卦阳气充沛，身体状态一般较佳。但"匪其彭"——不要暴饮暴食或过度放纵，过犹不及。享受当下的健康同时也应持续投资于良好生活习惯。',wealth:'财运丰收，是投资获得回报、项目收获成果的阶段。"大车以载"——财源滚滚值得欣喜。但"匪咎，艰则无咎"——依然要保持审慎的理财态度，不断积累和优化才有更持久的回报。',romance:'感情方面也将迎来丰盈的收获期。"厥孚交如，威如"——既有真诚信赖又有适当独立空间的相处模式最为健康长久。单身者魅力四射容易引起注意，但注意不要因优越感而错失真心。'},
+  '8-7': {career:'谦卦以谦逊为核心美德，事业上应低调务实、不张扬。高山隐藏在大地之下——越是厉害的人越谦逊。"谦谦君子，用涉大川"——谦虚的态度反而可以支撑你去完成更大的事业。团队中保持低姿态反而得到拥戴。',health:'谦卦气息内敛柔和，身体适合做一些内养型的锻炼如太极、气功等。"劳谦君子，有终吉"——劳逸结合、不逞强不熬夜是保持健康的关键。适当减缓节奏对身心都有益。',wealth:'财运以谦逊和保守为主，"不富以其邻"——不炫富、抱朴守拙是更好的理财之道。有赚钱机会时也不要做太过张扬的投资，时间长了反而能听到好口碑带来新的财路。',romance:'感情方面需要谦逊克己，不宜强势。"鸣谦"——在感情里谦虚温柔的一方会得到对方的认可和回应。单身者不宜太挑剔条件，低调随和的氛围更适合发展缘分。'},
+  '4-8': {career:'豫卦象征喜庆和愉悦——事业上既有机遇又有风险。人在顺境中容易懈怠，"鸣豫，凶"——享受成绩的时候如果过分自满炫耀就会有危机。顺境中的审慎和远见是制胜法宝。',health:'豫卦主喜悦之气，适度的娱乐放松对健康有益。但"冥豫"——沉迷于酒色逸乐则会损害健康。谨记劳逸结合，尤其注意肝脏保养和避免熬夜。',wealth:'财运虽有好转迹象，"由豫，大有得"——适合在愉快的合作氛围中抓住机遇。但"盱豫，悔"——过于乐观冒进、趋炎附势可能会引来损失。量力而投、乐在其中为上策。',romance:'感情运势轻松愉悦，是发展感情的好时候。两人共同享受生活的美好时光能增进感情。"勿疑，朋盍簪"——相信对方、给予空间，朋友般的自然相处最为舒适。单身者应在轻松自然的场合认识新朋友。'},
+  '2-4': {career:'随卦象征跟随和顺应，事业上以顺应形势、追随正确方向为佳。"官有渝"——职位或角色可能面临变动，随机应变即可。选择跟随有能力的领导或合作伙伴是不错的选择。"出门交有功"——多外出社交会有意外收获。',health:'随卦主畅通之气，身体没有什么大碍。"系小子，失丈夫"——但不要因小失大，为一点小毛病而过分焦虑。注意季节变换时的适应和调理，随天气变化增减衣物。',wealth:'财运需要顺其自然，顺势而为。"随有求得"——在顺势中自然而然会有所收获。不宜强行逆势操作；跟对趋势、选对赛道比勤奋更重要。',romance:'感情缘分随缘而来，"随有获"——自然遇到、水到渠成的缘分最值得珍惜。不要刻意强求。"系丈夫，失小子"——选择对的伴侣比选择一个条件光鲜的人更重要。'},
+  '7-5': {career:'蛊卦主整治弊病、拨乱反正，事业上可能需要你站出来重整秩序。"干父之蛊"——勇于纠正前人遗留下来的问题。这是一个需要勇气和担当的位置，但做得好的话能获得众人赞誉（"用誉"）。',health:'蛊卦暗示身体可能积累了某些陈年问题需要调理整治，"干母之蛊，不可贞"——慢性病的调理不宜操之过急，需要足够的耐心和恒心。可以趁势去做一次全面体检，排查隐患。',wealth:'财运上需清算旧账、整理财务状况。之前隐蔽的财务问题可能暴露，及时"干蛊"（整治）可以止损。"裕父之蛊，往见吝"——如果纵容放任坏账或不良消费习惯，后果将不堪。',romance:'感情中可能需要去正视和解决长期存在的隐患。"不事王侯，高尚其事"——有些家庭纠纷不宜去求外人仲裁，自尊自爱保持适当的隔离才能保护感情不出乱子。'},
+  '8-2': {career:'临卦主居高临下、亲临治理，事业上适合采取主动、走动式管理。"咸临"——用感召力而非强硬手段去领导是更为有效的方式。这是开拓进取的好时机，但也需留意"至于八月有凶"——顺境时要未雨绸缪。',health:'临卦为主宰自身之气，健康管理上要亲力亲为、主动调理。"知临"——了解自己的身体，学习健康知识，做出明智选择。注意保持精神上的松弛和灵活，避免长期高压。',wealth:'财运处于高涨期，主动出击往往有所收获。"至临"——亲自把控关键财务决策会比较稳妥。在八月之前适合积极投资布局，但别忘了预留后路以应对可能的反转。',romance:'感情中适度主动能带来好结果。有伴侣者可主动制造浪漫增进感情；"敦临"——以敦厚诚恳的心去经营和维系关系。单身者则需要主动认识新朋友而非在角落里等待被注意。'},
+  '5-8': {career:'观卦象征观察与省思，事业上宜多看、多分析、多学习，不急于行动。"观我生，进退"——审视自身在组织中的定位，再决定进退。适合参加展览、考察市场、研究竞品。"观国之光"——提升视野和格局很重要。',health:'观卦为观察反思之气，适合审视自己的生活习惯和健康状况。"童观"——不要像小孩一样片面地看问题，要全面细致地了解自己的身体需求。多看一些养生健康书籍有助于正确的自我管理。',wealth:'财运上要多观察市场动向，不可轻易下判断。"窥观，利女贞"——不宜偷窥小道消息做投资决策，要保持宽视角和长远眼光。等待时机明确后再出手，成功率远高于猜大小。',romance:'感情上以观察了解为主，不宜过早表白或仓促做决定。"观其生"——观察对方的生活方式和人品比一时冲动重要得多。已经有伴侣的人不要患得患失，把眼光放长远来思考这段关系的价值。'},
+  '3-4': {career:'噬嗑卦象征咬合障碍，事业上遇到了「啃硬骨头」的阶段——需要果断决策清除障碍。"利用狱"——可能需要做艰难的决定，如调整团队、终止项目等。果断决断总好过拖而不决。',health:'噬嗑是咬合之意，可能暗示牙科问题或是关节咬合问题。"噬腊肉，遇毒"——注意避免食物中毒或消化问题。身体某处可能有一个比较顽固的障碍需要你去攻克（例如戒掉坏习惯）。',wealth:'财运上有阻碍需要强力突破。"噬干胏，得金矢"——在艰难之处往往埋着惊喜，仔细梳理财务问题反而能发现新的增长点。清理不良资产或整顿债务是非常有必要的。',romance:'感情中可能存在需要克服的障碍或分歧。"何校灭耳，凶"——如果问题严重到听不进对方的话，则前景堪忧。勇敢面对和讨论问题所在的根源，而非选择逃避。'},
+  '7-3': {career:'贲卦主文饰与装饰，事业上讲究包装、品牌和形象管理。"贲其趾"——从细节做起，提升专业形象。但"白贲，无咎"——最终达到返璞归真的境界才是最高明的。适合从事品牌、设计、公关、创意相关工作。',health:'贲卦为表象修饰之气，健康方面不要过度依赖保健品和补品。"贲如濡如"——适度保养就好，切忌过度。身体本身的质朴健康比华丽的养生方案更长久可靠。',wealth:'财运上宜适度包装自己或产品以提升价值。"束帛戋戋"——简朴但有质感的投入会带来回报。不要过度消费在炫耀性物品上，返璞归真才是最划算的理财之道。',romance:'感情中外在的浪漫和仪式感很重要——适度"装饰"感情。但"白马翰如，匪寇婚媾"——真正纯洁的感情不需要过度修饰。过于在意外表或条件的恋爱往往基础不稳。真诚朴素的情感最打动人。'},
+  '7-8': {career:'剥卦象征剥落与衰退，事业上正经历下行周期或不顺。"不利有攸往"——此时不宜主动出击或扩张。保存实力、稳固现有阵地是更明智的选择。坚持过去，衰败会走向新生。',health:'剥卦是消耗剥落之气，身体活力降低，容易感到疲惫。"剥床以肤"——疾病可能已经比较迫近，须及早干预。需要特别注意皮肤和身体完整性的保养，加强营养和休息。',wealth:'财运处于下行，务必保守理财。"硕果不食"——留下一颗硕果不要吃光它（指保留最后的资源）。避免新的投资和借贷行为，先整理盈亏、尽量保住本金。',romance:'感情方面可能处于比较疏离和衰退的状态，如果不加维护会愈加疏远。"贯鱼，以宫人宠"——理清关系中的秩序和尊重可能是修复关系的第一步。单身者其时不宜寄望遇见新缘分，先整理好自己的生活和心态。'},
+  '8-4': {career:'复卦主回归与重生，事业上在经历低谷后将迎来转机。"七日来复"——七天一个小周期，恢复需要时间和耐心。"不远复"——走错了路就及时回头，不要一条道走到黑。回调、调整、重新出发是正确的节奏。',health:'复卦是回复生气之象，身体处于恢复期。"出入无疾"——如果不胡乱折腾，身体可以慢慢自愈恢复。保持规律的休息和适量的运动是恢复的关键。"不远复"——小毛病及时调整，不要让它发展成大病。',wealth:'财运虽然前期可能不太理想，但触底反弹的趋势正在形成。"休复，吉"——在安静恢复中培养新机会。不建议立即重新大规模投入，先做一些小的试探性投资。',romance:'感情方面旧情复燃或关系回温的机会较大。"频复"——虽然修好过程中会有反复的磨合，但只要坚持真诚和反省，关系有望回到正轨。单身者有可能与旧识重逢擦出火花。'},
+  '1-4': {career:'无妄卦主不妄作为、顺其自然。事业上应保持真诚务实、不投机取巧。"无妄，往吉"——脚踏实地地做事反而有出人意料的回报。切忌耍小聪明或投机取巧。妄念一起、祸事便至（"其匪正有眚"）。',health:'无妄卦劝人不要妄动，在健康上也同理。"无妄之疾，勿药有喜"——有些小病无需过度医疗，顺其自然会自行恢复。注意不要轻信奇奇怪怪的养生偏方，保持比较自然的生活节奏。',wealth:'财运禀持"不妄为"的准则。"不耕获，不菑畲"——不要期待不劳而获。投机取巧的短线操作容易失算（"无妄之灾"）。诚实劳动所得比投机所得稳妥得多。',romance:'感情中最忌妄念和猜疑。"无妄之疾"——莫须有的怀疑会破坏感情。相信对方、顺其自然地相处，不过度解读对方的信息。单身者无需刻意寻找，缘分在日复一日的自然生活中。'},
+  '7-1': {career:'大畜卦主积蓄和蓄养，事业上适合储能待发——为未来做充分的准备。"利涉大川"——充分积蓄之后能干成大事。"何天之衢，亨"——储备够强的时候就四通八达了。适合学习充电和资本储备。',health:'大畜为积蓄之气，身体有较好的储备，但也有过量的风险。"童牛之牿"——从小处防范大问题。要关注体重和"四高"（血压血脂血糖及尿酸）的提早预防。适当"消耗"也是重要的，不可只蓄不化。',wealth:'财运因积蓄而有底气。"良马逐，利艰贞"——即便在市场艰难的时候也能守得住。着眼于长期长线的价值投资，不断积累资产。但"舆说輹"——注意不要把所有鸡蛋放一个篮子里。',romance:'感情上蓄力待发。"不家食吉"——走出去而不只是待在家里维持现状。单身者与其焦急，不如好好提升自己、做好准备。有伴侣的人宜多滋养和"投资"于这段感情——细心呵护后的感情会更牢固。'},
+  '7-4': {career:'颐卦主养育和滋养，事业上适合"养"——培养团队、维护人脉、稳固客户关系。"自求口实"——必须靠自己创造价值打拼，不能过度依赖。口实也是口碑，用实实在在的业绩说话。',health:'颐卦是"口"的事，是养生养胃之气。合理健康的饮食是颐养之道的核心。"拂颐，贞凶"——违背生物钟胡乱饮食是有害的。坚持均衡健康的饮食习惯且配合适度运动是颐养的关键。',wealth:'财运需要自己一点一滴踏实积累。"舍尔灵龟，观我朵颐"——不要羡慕他人的暴富故事而放弃自己原本稳妥的理财方法。稳定的现金流比单次大额横财更重要。',romance:'感情重在彼此滋润而非彼此消耗。"颠颐"——过度依赖对方反而会让感情变质。各自有独立的兴趣和事业，在精神和物质上相互滋养才是更健康长久的关系。单身者先养好自己，良缘自会被你吸引。'},
+  '2-5': {career:'大过卦，阳刚过盛——事业中处于非常时期，可能需要采取非常手段。"栋桡"——主梁弯曲了，组织架构可能存在深层问题。在处理上需要从根基着手改革，而非表面的缝缝补补。适合有大魄力的人去推动彻底的变革。',health:'大过是过刚之气，身体方面要注意"过"的问题——阳气过旺、心脑血管压力、高血压等。"枯杨生稊"——有些异样的生理信号不能等闲视之，防微杜渐很重要。',wealth:'财运属于高风险高回报的非常时期，"藉用白茅"——在行动之前做好最安全的铺垫。如果选择此时进行投资，应该容许较大的波动，并准备好最坏情况的应对。不适合保守型投资者。',romance:'感情中易出现年龄或条件悬殊过大的组合。"老夫得其女妻"或"老妇得其士夫"均提示关系有反常之处。无论选择如何奇特的结合，只要真诚有爱，世人的眼光不是最重要的。'},
+  '6-6': {career:'坎为水主重重险难，事业上处于逆境和挑战之中。"习坎"——难关一个接一个。核心是保持诚信（"有孚"）和内心光明（"维心亨"）。每一步都须小心翼翼，稳扎稳打方能脱险。',health:'坎为水，对应肾脏、泌尿系统和血液。身体正经历低谷，容易感到身心疲惫、抵抗力下降。"坎不盈，祗既平"——危险还没满溢出来时尽快调理恢复到平衡状态。多喝温水、注意保暖特别重要。',wealth:'财运极其不顺，易有资金周转困难。"求小得"——大收益不要指望了，能保住现有资产已是不易。资金应优先满足基本安全需求。更要小心诈骗和投资陷阱。',romance:'感情中也可能面临考验和危机。"樽酒簋贰，用缶，纳约自牖"——在逆境中最简单的示好和发自内心的关爱最动人。真诚朴素的沟通比华丽言语更有穿透力。'},
+  '3-3': {career:'离为火主光明与依附。事业上宜主动发光显现才干，但同时需要找到可以依附的平台或领导。"畜牝牛，吉"——柔和地坚持在正确的位置上会带来收获。适合在文化、艺术、教育及服务行业发挥光和热。',health:'离为火属心，对应心血管系统和眼睛。"日昃之离"——注意不要去挑战身体极限，随着年龄增长更需呵护心脏。多看绿色植物放松眼睛，保持良好的用眼习惯非常重要。',wealth:'财运适合依附大的平台或经济趋势获利。"黄离，元吉"——在正确的道路上坚持正道即可获得预料之外的好收益。不宜投机倒把。"突如其来如"提示意外横财来去匆匆不可追逐。',romance:'离为火主热情和浪漫，但也容易热得快冷得也快。"不鼓缶而歌，则大耋之嗟"——在该尽情去爱的时候尽情去爱，否则老了只剩下遗憾。'},
+  '2-7': {career:'咸卦主感应，事业上人脉和合作伙伴的"化学反应"比合同条款更重要。"憧憧往来，朋从尔思"——那些频繁与你互动的人，最终可能会成为支持你事业方向的关键力量。适合做与人打交道的工作。',health:'咸卦感应之事，"咸其拇"——身体的初始信号不容忽视。注意肌肉筋骨（尤其下肢）的保养。"贞吉悔亡"——不要因为忙碌就敷衍了身体的酸痛或不适。',wealth:'财运和感应人脉关系紧密相连。"朋从尔思"——你信任的朋友可能带来最好的投资建议。但"咸其辅颊舌"——不要完全依赖别人的口舌之言，保持自己独立的判断。',romance:'咸卦是周易中与恋爱感情最紧密相关的卦。"取女吉"——感情生活中吉祥顺遂。两人之间的默契和感应是经营的重点，无需太多言语，真诚的感应胜过千言万语。'},
+  '4-5': {career:'恒卦主恒久与坚持。事业上要目光长远、持之以恒，不要朝秦暮楚或频繁跳槽。"不恒其德，或承之羞"——职业上如果没有坚持和信誉的积累，很可能会自取其辱。在行业中深耕、沉淀，坚持正确的方法就会看到收获。',health:'恒卦讲究长期的养生之道。"浚恒，贞凶"——像挖井一样过度消耗自己是不可取的（锻炼过度、节食过度都属于此类）。温和、持续、适度的养生方式是最理想的。',wealth:'财运不属于暴富型，而属于细水长流型。"恒其德，贞"——坚持正确的财务纪律和投资理念，长期回报可观。不要和其他暴富的故事比较而打乱自己的节奏。',romance:'感情中"恒"字当道——能走到最后的往往是坚持和包容。"妇人吉，夫子凶"——双方不能以同一套标准处理感情问题。充分了解对方的需求、不断磨合与适应是恒卦给出的良方。'},
+  '1-7': {career:'遁卦主退避、退隐。事业上如果发现当前形势不利，及时的退让和回避是智慧之举。"好遁，君子吉"——真正厉害的人懂得何时退出。可能是换岗、休假或暂时远离权力中心，保存自身以等待更好的时机卷土重来。',health:'遁卦暗示要适当远离压力源。"肥遁，无不利"——一个彻底的休假或放松有益身心。尤其注意"遁尾"——不要再硬撑到最后才休息，及时放松是关键。',wealth:'财运当前不适合激进扩张。"嘉遁，贞吉"——体面地退场、退出高风险投资是明智的。可以把资产转至更稳健的领域和渠道。等待下一个周期再重新入市。',romance:'感情中可能需要适度拉开距离。"系遁，有疾厉"——纠缠不清的旧感情可能会消耗极大的心神。如果已经走到尽头，体面地告别是保护自己的方式。给彼此一定的空间，反而可能让感情有呼吸的余地。'},
+  '4-1': {career:'大壮卦，四阳在下，极其强健。事业处于强势阶段，行动力非常旺盛。"羝羊触藩"——但是力量虽强如果不加控制，可能会像公羊顶撞篱笆一样反伤自己。强而不骄、以柔和来驾驭强势是对的。',health:'大壮是纯阳刚之气，"小人用壮"——勉强去做超出自身负荷的运动会伤害身体。遵循适度原则来施展能量，避免中暑、心血管超荷和运动意外伤害。',wealth:'财运状态很"壮"，有较可观的经济实力或盈利。"藩决不赢"——如果打破某些限制会带来跃升。但风险在于过于自信和盲目。刚柔相济的投资策略更稳定长久。',romance:'感情中注意"壮"过了头——占有欲和控制欲可能会成为矛盾之源。单身的你可能阳光健康吸引人，但也容易因为过于阳刚而让对方感到压力。试着在感情中增加一些柔和、体贴和陪伴。'},
+  '3-8': {career:'晋卦主前进和晋升，事业运势节节上升。"康侯用锡马蕃庶"——像康侯受到众多赏赐一样获得嘉奖或升迁。在前进中保持"罔孚，裕无咎"的心态——即使暂时得不到信任也从容不迫。',health:'晋卦阳气上升，"晋如摧如"——前进速度太快也会给心脏和血压带来压力。适当放慢脚步，让身体适应上升的工作节奏才是长久健康之道。',wealth:'财运随事业的进步而上升，收入和资产价值走高。"晋其角"——但到了顶点就要小心，因为顶点就是拐点的前兆。守住上升带来的收益，落袋为安。',romance:'感情随生活质量的上升有所改善，但也可能出现"选花了眼"的情况。"众允，悔亡"——身边人的认可和祝福对这段关系很重要，不要一意孤行做大家都不看好的事。'},
+  '8-3': {career:'明夷卦，光明受伤，暗夜降临。事业中可能遇到阻力、不公或极其不利的外部环境。"利艰贞"——此时最需要坚强地守住正道。收敛锋芒、隐藏实力，"箕子之明夷"——大智若愚是最佳的自保策略。',health:'明夷卦精神层面容易受伤，心情低落是比较自然的状态。"夷于左股"——身体有受伤的可能（尤其注意左侧和下肢）。在黑暗中要注意安全，避免低潮期做剧烈运动或冒险。',wealth:'财运"不明晦"，此时不是赚钱的时机，而是避损的时候。"初登于天，后入于地"——曾经辉煌的账面收益可能回归原始。不要在这种情况下加杠杆或追加投资。先以现金为王。',romance:'感情上也可能遭遇比较黯淡的时期——彼此之间像是隔了一层屏障。此时急于解决问题反而容易激化矛盾。默默坚守、耐心等候黑暗时期过去，比激烈争吵或冲动分手更为明智。'},
+  '5-3': {career:'家人卦顾名思义，事业上适合家族企业或以家庭为单位的合作。核心内涵在于"各正其位"——每个人找准自己在组织中的职责和分工。"闲有家"——在确定规则和制度之后才能正常运作。',health:'家人卦提示多关注家人和自己的起居健康。"无攸遂，在中馈"——最简单的往往最有效：好好吃饭、规律作息比任何高级保健品都管用。关心家人的饮食营养是家人的福气。',wealth:'财运以家庭整体利益为核心，收支适合一家人共同商量规划。"富家，大吉"——开源截流都需要一家子的努力。不宜独自做重大投资决策；家庭和谐是财富的基础。',romance:'家人卦是六十四卦中最直接关联婚姻家庭的卦之一。感情生活以家庭为单位，"有孚威如"——既有爱又有威信和责任地维持家庭秩序。单身者若在寻找结婚对象，这是一段不错的时期去寻找能共建家庭的人。'},
+  '3-2': {career:'睽卦主乖离与不合——事业上人际关系存在不和谐因素。"小事吉"——在大方向上可能有矛盾分歧，但在具体的小事上合作还是可以的。"遇主于巷"——在非正式的场合反而有机会化解隔阂。',health:'睽卦涉及"乖离"——心、肝之间可能不那么协调和谐，注意情绪引起的健康问题。"丧马勿逐，自复"——轻微的身体问题不用过度紧张，有时冷静对待便能自愈。',wealth:'财运存在分化趋势，不宜全力押注单一项目。大钱难赚，但小钱可以有所回报（"小事吉"）。"见恶人无咎"——即使对生意伙伴印象不好也不适宜公开撕破脸，保持表面的和气很重要。',romance:'感情出现裂隙的趋势——此时不宜逼着对方表态（小事吉，大事睽）——从小处修补关系、偶尔制造惊喜来拉近彼此的内心距离。单身者在"见舆曳，其牛掣"——找对象这事阻力较大，暂停一下放松对自己压力更小。'},
+  '6-7': {career:'蹇卦象征艰难险阻，事业路上面临诸多障碍。"利西南，不利东北"——选择方向很重要。往柔和的西南方向（指处理问题的方式）会好走一些。"大蹇朋来"——在最困苦的时候朋友们会出手相助，不要独自逞强。',health:'蹇卦寒气逼人（水在山上），注意保暖驱寒、防范关节疼痛。"往蹇，来誉"——不要硬撑着出门承受风寒，在家好好休息反而得到恢复。整体行动需缓慢稳重。',wealth:'财运前行困难，"往蹇来反"——在财务上如果走不通就回头调整。暂时不宜扩大经营或加杠杆。与可以信赖的朋友或机构合作比独自应对更有利（大蹇朋来）。',romance:'感情之路上有些坎坷。就像要翻越座座高山——"往蹇"——但不要气馁，硬闯反而不美。"来誉"——如果暂时停下脚步，慢慢沟通，可能关系反而融洽恢复。'},
+  '4-6': {career:'解卦主困难解除。长时间的瓶颈将出现转机。"田获三狐"——解除困难后会有实际的好的收获。适宜着手清理之前的遗留问题；没有新的幺蛾子了，是清扫旧账、重启新航线的大好时机。',health:'解卦是放轻松和消解之气。"解而拇"——之前被绑得紧紧的身体和神经终于被解开。适合在这个时候安排放松、推拿、短途旅游。把紧绷的肌肉和紧张的情绪一起释放出去。',wealth:'财运因困难的解除而有所改观。"负且乘，致寇至"——有了财富之后不宜炫耀。低调处理收益。之前被套牢的投资或坏账有希望解套，抓紧时机。',romance:'感情中的误会将在此时解开。"朋至斯孚"——随着彼此信任的恢复，关系会自然地回温。单身的朋友可能会发现身边很早认识的一个朋友原来很适合自己。有伴侣的通过坦诚的对话解除芥蒂。'},
+  '7-2': {career:'损卦主减损——事业上可能需要做一些减法：精简团队、砍掉不必要的项目。"曷之用，二簋可用享"——用最简单朴素的方式反而能成事。"损下益上"——将基层的资源适度集中到核心项目上。有舍才有得。',health:'损卦是减去不良习惯和压力的好卦。"损其疾，使遄有喜"——果断戒除影响健康的不良嗜好（吸烟、酗酒、熬夜等）会快速改善体质和心情。"酌损之"——适当减重、减食。',wealth:'财运宜做减法——减少开支、减少非必要的贷款。"弗损益之"——有时候减损不是最好的办法，反而是去增益那些能生钱的模块。在割舍和保留之间做出聪明的判断。',romance:'在感情上有时需要减损自我中心的心态。"三人行，则损一人"——引入第三方意见可能会破坏两人间的平衡。最珍贵的关系有时只需两个人安安静静地沟通就足够。'},
+  '5-4': {career:'益卦是增益之意。事业运势快速上升，贵人运和资源支持都很到位。"利用为大作，元吉"——非常适合启动新的大型项目。这是一个"天时地利人和"汇聚的阶段，抓住机会。',health:'益卦增益之气滋养五脏六腑，身体处于上升期。可以趁此机会建立一个健身或养生目标，但不建议过度进补。"或益之十朋之龟"——有些贵重的补品礼物可能从天而降，适当享用但不要迷信。',wealth:'财运因时运和贵人的扶持而"增益"——投资收益、加薪、项目分润都可能有较可观的增加。"有孚惠心，勿问元吉"——带着感恩的心去享受，但不可贪婪。',romance:'感情运势在"益"的状态，双方都从彼此身上获得正能量。"有孚惠我德"——伴侣的正向反馈让你变得更好。单身者可能会遇到能"益"你的人——她/他能让你成为更好的自己。'},
+  '2-1': {career:'夬卦主决断，是关键时刻该做出选择。"扬于王庭"——决断要公开透明。"不利即戎"——不主张用强硬的手段解决问题。事业上要做出理智且勇敢的决断，但不宜发动办公室战争。',health:'夬为决断，健康上需要下定决心丢弃某些坏习惯。"壮于前趾，往不胜为咎"——仅凭一股冲动去开始健身或节食，往往不能坚持。需要制定系统具体可执行的方案，方可成功。',wealth:'财运面临决定性的时刻，可能需要做"割肉"或"止盈"的决断。"牵羊悔亡"——如果早一点止损或落袋为安，悔恨就会消失。拖延决断反而会让损失扩大。',romance:'感情中面临抉择。持续消耗你的旧情该断了。"君子夬夬"——当断则断才不受其乱。如果正处在一段纠缠不清的关系中，这一卦提醒你必须做出最后的决定了。'},
+  '1-5': {career:'姤卦主不期而遇，事业上可能会遇到偶然却又关键的机会或合作对象。"系于金柅"——虽然遇到了机会，但也要适当地控制节奏。"包有鱼"——先守住自己得到的资源和机会，不要急着分享和炫耀。',health:'姤为遇——外出交际需要注意饮食卫生以免"遇"到不健康的食物。"女壮，勿用取女"——异性关系影响健康（因情志波动导致的身心疾病）。保持心境平和有助于免疫。',wealth:'财运上可能会遇到某些意外的收益或支出——"有陨自天"——像天上掉下来的东西砸到你。对这个意外之财或意外之债要保持冷静的判断，不要因为它来得突然就草率行事。',romance:'姤卦是最直接关联邂逅和缘分的卦之一。单身者近期可能会在完全意外的地方遇见互相吸引的人（艳遇/邂逅）。有伴侣者要注意"女壮，勿用取女"的提醒——容易出现因异性（可能是强势异性）引起感情上的纠葛或诱惑需要保持安全距离。'},
+  '2-8': {career:'萃卦主聚集，事业上非常适合团队建设、公司活动、集体培训。"王假有庙"——高层领导到一线凝聚士气很重要。此时举办活动、结交盟友、凝聚人心都会事半功倍。"有孚不终"提示聚在一起的人心可能不齐，需要持续用真诚维系。',health:'萃卦汇聚人气也是流行病高发之际。人多的地方注意呼吸系统疾病交叉感染。"若号一握为笑"——心情好坏对萃卦时期的健康影响极大，保持愉悦胜过吃药。',wealth:'财运通过"聚"来生财——合伙、众筹、合资都很有利。"大吉，无咎"——聚集资源共同投入的项目多半有利可图。但也需小心"萃如，嗟如"——光有资源和金钱凑一起而没有好管理，到头来只剩叹息。',romance:'感情的"萃"：单身者在聚会中（联谊、社团、朋友婚礼）容易遇到缘分。"引吉，无咎"——通过朋友引荐是最靠谱的脱单方式。有伴侣者适合与对方一起多参加家人朋友聚会。'},
+  '8-5': {career:'升卦主上升与晋升，事业运势蒸蒸日上。适合寻求突破、向更高的位置发展。"南征吉"——向前（南）进发追逐目标是吉祥的。"允升，大吉"——得到了允许和认可之后上升是极其顺利的。',health:'升卦阳气上升，身体代谢功能变好，但要注意升发太过而引发的上火、易怒、血压波动。"冥升"——不要透支自己的体力去盲目追求目标。以正固之态稳步健身。',wealth:'财运处于上升通道，资产稳中有升。"升虚邑"——看似升到空空如也的位置，实际上是在为未来的价值做铺垫。保持耐心等待长时间的复利效应。',romance:'感情运势也在上升中。可能在两人关系中越过一个新台阶（承诺、同居、婚嫁等）——"升阶"——拾级而上、一步一个脚印是最佳的节奏。'},
+  '2-6': {career:'困卦主受困和瓶颈，事业中感觉前路被堵住、有力无处使。"有言不信"——此时再多解释也没用，因为别人暂时不愿或不能支持你。沉默坚守、在"困"中磨练内心才是正道。大人吉——坚持到头还是能走出来。',health:'困卦为闭塞不通之气，"困于酒食"——应酬多多、饮食不规律伤害身体。小心肠胃问题和肝胆的淤阻不通。减少不必要的应酬，保持清淡简单的饮食是最佳药方。',wealth:'财运极其困窘，不利投资扩张。"困于金车"——被债务或资产拖累。"徐有说"——保持耐心，慢慢去剥离不良资产才能脱困。切忌拆东墙补西墙。',romance:'感情困局中两人都感觉很累很委屈。"困于石，据于蒺藜"——处境艰难得像坐在乱石刺上。需要极为坦诚的深谈来找到打破僵局的那个突破口。'},
+  '6-5': {career:'井卦主不变和滋养，如同井水源源不断。事业上适合扎根于一个行业深耕不辍——"改邑不改井"——周围环境可以变、外在的东西可以变，但你的核心专业能力不能变。打好基本功，像井一样取之不尽。',health:'古井不波的养生之道——规律的饮食起居是最好的保健品。"井渫不食，为我心恻"——有价值的好习惯（早起、锻炼）不坚持实在太可惜了。注意泌尿系统（井/水）的清洁与保养。',wealth:'财运如一口老井，看上去不显山露水实际上有稳定的产出。"井收勿幕"——有收益时不要过度吝啬也不要去封死财路。敞开分享长远来看会带来更多回馈。',romance:'感情犹如古井之水，静谧、绵长、源源不绝。不需要太多的轰轰烈烈；恒常平淡的关爱往往最养人。单身者适合在稳定的社区、经常活动的圈子里寻找同样重视"细水长流"的伴侣。'},
+  '2-3': {career:'革卦主变革，事业上到了非变不可的转折点。"己日乃革之"——选择正确的时机改变是最重要的。"大人虎变"——真正的变革是脱胎换骨的，你需要展现出勇气和决断力，才能服众。',health:'新陈代谢和旧有习惯的彻底变革。适合戒烟、杜绝酗酒、或彻底调整作息。需要一些狠心和果断（"巩用黄牛之革"——像牛皮一样坚韧地坚持新习惯）。旧的去了新的才会来。',wealth:'投资格局需要一次彻底的大调整。"改命，吉"——重塑你的理财规划和资产配置可以获得新生。此时不破不立，与其死守亏损的投资，不如及时止损转向。',romance:'感情关系中有些东西需要彻底改变。不是修修补补，而是"革"——颠覆旧的相处模式。如果双方都有这个决心，这段关系可以在洗礼中获得重生。否则积弊太多就只能走向终结。'},
+  '3-5': {career:'鼎卦主鼎新，适合开创新的事业或新项目。"鼎颠趾，利出否"——先倒掉残渣（清理积弊），再装入新的食物。鼎有烹饪之意，将资源重新整合和优化能够烹出更好的事业大餐。',health:'身体需要"鼎新"排毒除旧。"鼎有实"——营养基础是好的，但需要更好地烹调（吸收方式）。注意食材的新鲜度，尽可能地减少垃圾食品的累积。',wealth:'财运迎来新格局。"鼎玉铉，大吉"——精益求精的投资组合带来极丰厚的回报。你可以像一个用玉鼎烹饪美食的高明厨师一样，把资产运营得非常出色。',romance:'需要"鼎新"彼此相处的方式。"我仇有疾，不我能即"——外界的一些干扰可能会来烦你的感情生活（例如有第三者的闯入或追求）。稳住你的鼎，不要被别人动摇了你的根基。'},
+  '4-4': {career:'震卦主震动，事业上可能面临突发性的大事（行业震荡、公司变革、人事大地震）。"震惊百里，不丧匕鬯"——在最大的震动中依然能够保持冷静和稳当的人才是真君子和大将之材。',health:'应激反应——注意突发性的健康问题，尤其是与惊吓、紧张、神经衰弱相关的症状。"震苏苏"——收到突发的健康信息后不要被吓倒，反复确认再说。',wealth:'市场震动，波动极大。"亿丧贝"——可能会错失钱财。"跻于九陵"——保全本金进入最安全的避险处（如高利率储蓄和国债）。"勿逐，七日得"——不要追着市场跑，耐心等待它自己恢复。',romance:'感情可能遇到突发震动（发现秘密、突然爆发争吵）。"震来虩虩，后笑言哑哑"——一开始的惊吓过后，双方还是能够和好说笑的。信任彼此的韧性，一起撑过这个震动期。'},
+  '7-7': {career:'艮卦主停止，事业上应该暂停冒进，停下来思考和沉淀。"艮其背，不获其身"——忽略掉外在的诱惑和杂音（背对着它们）。这段时间适合按兵不动，专注内部管理而非对外扩张。',health:'全身需要静静休养，不要再强力打熬了。"艮其腓"——如果在腿部肌肉发出酸痛信号时还继续跑步，可能会受伤。听从身体的信号适时休息比运动更重要。',wealth:'现在不是出击的好时机，保本和持有现金为上。"敦艮，吉"——像山一样稳稳地坐在你的资产上比到处折腾要吉利得多。',romance:'感情上需要"停下来"——发生冲突时追着要解释只会越闹越僵。给双方一点冷战的空间和时间，安静几天再回过头聊天反而更清楚。'},
+  '5-7': {career:'渐卦主循序渐进。事业发展宜按部就班，急不得。"女归吉"——就像古代女子出嫁要经过漫长的礼仪一样，任何大项目都急不得。每一步都走扎实了才不会有后顾之忧。"鸿渐于干"——大雁慢慢从水边草地一级一级飞向高空，你需要的就是这个节奏。',health:'身体在逐渐康复或适应新的健康程序（例如逐步增加训练强度）。"鸿渐于磐"——大雁慢慢地找到了稳固的石头休息，你的健康也在逐日巩固。保持耐心。',wealth:'钱财逐渐增长。不要预期一夜致富，设定长期储蓄和投资计划。"鸿渐于陵"——经过细水长流的积累后，将最终登上高处鸟瞰众人的景色。',romance:'感情是一段慢慢发展的过程。"夫征不复，妇孕不育"——暗示在中间阶段可能有一些意外的挫折和延迟。但这都是循序渐进中的插曲，最终抵达山顶的风景好就好了。'},
+  '4-2': {career:'归妹主非正配，事业上注意名分和责任问题的归属一定要清晰！"征凶，无攸利"——在不该你来主导或名义还没明确的时候，冲上去指挥是有风险的。适合作为辅助角色共同推进。"眇能视，利幽人之贞"——看不太清全局的时候就安静守正。',health:'归妹卦，注意女性特有的健康问题（妇科、内分泌、情绪）。"女承筐无实"——避免无实质作用的保健消费。审慎了解后再决定是否尝试新疗法或新产品。',wealth:'财运上要警惕"名实不符"的投资。"士刲羊无血"——有些投资项目看起来像回事但根本是空壳。对看不透的金融产品要多保持警惕心，静观其变。',romance:'感情中"名分问题"是主题。隐婚、玩暧昧、长期不清不楚的恋爱都是归妹卦所警惕的。"愆期，迟归有时"——结婚或确认关系的时间可能延后了。找到一个合适的时机和身份去面对这段关系很重要。'},
+  '4-3': {career:'丰卦主巨大丰盛，事业处于最巅峰鼎盛的时期。"宜日中"——像正午太阳那样光明正大。但"日中见斗"——最光明的时候心灵反而可能出现了黑暗（骄傲、目盲）。越是丰盛越要虚心冷静。',health:'身体总体强健，但"丰其蔀"——表面上光鲜亮丽但内部可能有阴暗不通透之处需要认真检查。"折其右肱"——防止在剧烈运动中意外伤害。越是感觉身体好越要注意安全。',wealth:'财运"来章，有庆誉"——大量财富涌入且获得多方赞赏和美誉。但"丰其屋，蔀其家"——财富多了反而可能筑起高墙隔绝外界。分享财富和为富行仁是让丰盛不变成凶的秘诀。',romance:'感情丰满却可能有看不见的隔阂。"窥其户，阒其无人"——外界看来光鲜亮丽，关了门里面却没有交流。丰盛的物质不能取代沟通和温情。'},
+  '3-7': {career:'旅卦主客居他乡或者流动的状态。事业上可能处于出差、外派、换工作环境或者是不稳定期。"旅贞吉"——在客居和流动中能守住正道就吉利。"旅琐琐，斯其所取灾"——在人家的地盘上小家子气会带来麻烦。大方得体和快速适应新环境非常重要。',health:'水土不服——在外出差或新环境适应期间容易有健康问题。"旅焚其次"——外部的环境可能突然生变，随身必备常用的药品可以应急。',wealth:'在变动和流动中理财。财来财去比较快，"得其资斧"——务必保证有充足的流动资金（斧头=生存工具）。不宜在公务或旅行途中做重大的投资决策。',romance:'感情可能处于聚少离多的状态。异地恋、出差、短暂分开的考验。稳定后的重逢往往能让感情升温。"旅人先笑后号咷"——不要因为暂时的分离而放纵情绪伤害对方。忍耐一下再见会更甜。'},
+  '5-5': {career:'巽卦主柔顺谦逊、顺势而为。事业上以柔克刚、不卑不亢。擅长聆听他人的意见后再拿捏决策——"进退，利武人之贞"——在进和退之间果断决定是对的。温柔但不失果断的行动力。',health:'巽为风，风邪入侵最易感冒风寒。"巽在床下"——过于卑微或劳累导致抵抗力下降就要躺在床上养病了。注意根据天气及时更衣和被褥。',wealth:'财运像风一样进出自由——"田获三品"——之前布局的多种渠道可能会同时带来收益。不是暴利，但是多种组合回报可观。',romance:'在感情中可能需要展现柔顺谦逊的一面。"频巽，吝"——然而过度地讨好和做小伏低会让人觉得虚伪。柔顺之中保有自己的原则和力量才是"巽"的精髓。'},
+  '2-2': {career:'兑卦主口舌和喜悦。事业上适合与人交谈、谈判、教学、咨询——一切和口有关的工作都特别有利。"商兑，未宁"——在商议中的喜悦或许还不确定，但积极沟通的方向是对的。',health:'兑为口，注意口腔溃疡、咽喉炎、呼吸道问题。"孚兑，吉"——带着愉悦而真诚的心态去面对生活，这是心理健康的良方。',wealth:'财运要靠"说"出来——销售口才、商业谈判对收益有非常直接的影响。开心地分享商机和资源是最好的生财之道。"来兑，凶"——但要防止谄媚讨好带来的虚假商机。',romance:'感情中口舌之悦非常重要——每天多说几句真心夸赞的话能让关系非常滋润。"孚兑"——由心而生的喜悦会传染给对方。单身者在开心交流的场合中容易擦出火花。'},
+  '5-6': {career:'涣卦主涣散和重组。事业上旧结构瓦解、新结构正在形成中。"涣其群，元吉"——解散掉那些不合适的小团体和派系是最吉祥的。"涣有丘"——解散后反而形成了一个更伟大稳固的高丘（新组织）。属于破而后立之象。',health:'发散体内的邪气和寒湿。"涣汗其大号"——发一身透汗或者排出累积的代谢废物会让身体有种焕然一新的解脱感。多喝水并适当排汗排湿。',wealth:'资产"涣"（分散）是为了更好的重组。"涣王居"——把储蓄拿出来投资到不同的篮子里。不要再专注一只股票或一类资产。分化和多样化是涣卦的最佳理财之道。',romance:'感情中彼此内心的一些心结和误会散开离开了。经历了一次彻底的谈心（涣）之后关系反而更为牢固。'},
+  '6-2': {career:'节卦主节制、节度、规矩。在工作上需要有明确的规章制度和界限。"不出户庭，无咎"——有时候不迈出办公室去外部乱跑反而是安全的。"苦节不可贞"——规则管得太死板（苦节）就走向了反面。适度即可。',health:'在吃喝上要特别有度（水泽节=管住嘴）。"不节若，则嗟若"——如果不节制饮食，之后就会叹气后悔。把管住嘴当作核心养生之道。',wealth:'严格制定预算和节约计划。"安节，亨"——心平气和地执行预算，安贫乐道会让财运亨通。"甘节，吉"——把节制当作一种甘之如饴的习惯而非刻苦的忍受。',romance:'感情中需要建立健康的界限感。给足彼此私人空间，"不出门庭，凶"——但是给空间给到完全不管对方就不对了。需要在管与不管之间取得精妙的平衡（节）。'},
+  '5-2': {career:'中孚卦主内心的诚信。事业的成功建立在可靠的信誉上。要言而有信——"我有好爵，吾与尔靡之"——有了好的资源和成果，要与团队共享，从而凝聚更多力量。',health:'"鸣鹤在阴，其子和之"——内心宁静祥和对健康及其有益。少一些忧愁，多倾听大自然的音乐和声音来调养身心。心态放平（中孚）百病难侵。',wealth:'财运建立在长期的互信基础上。与靠谱的伙伴达成长期的信任合作比什么都重要。"有孚挛如，无咎"——双方牢牢互相捆绑互信的资产组合最为安全。',romance:'感情的核心是"中孚"——内心的诚信与真诚。彼此有没有真心，往往不需要证言就可以直接感觉到。单身者应寻找一颗真心而非华丽的外在。"翰音登于天，贞凶"——不要轻易许下天大的空头诺言（登天），做不到的话反受其害。'},
+  '4-7': {career:'小过卦，小有过越。事业上适合在小事上稍微"过"一点——多努力一步、多做一点细致功夫，很容易脱颖而出。"可小事，不可大事"——但核心战略和方向性的决策上不要剑走偏锋。',health:'养生需要稍做一些超过平时量的微小运动。"不宜上宜下"——不应往上硬顶（挑战太高强度），向下来了感觉，做下沉放松的锻炼更舒服有效。',wealth:'在小的投资上可以稍微积极一点，大资金上要保守。"弗过防之"——更要防花费"过"度。小的奢侈可以怡情，大的奢侈会带来麻烦。',romance:'小有过越，在感情中偶尔来点小小的浪漫惊喜过度一些没关系。"过其祖，遇其妣"——跨过了一些形式上的障碍和代沟，可能见到的是惊喜。'},
+  '6-3': {career:'既济，万事已然完成。"初吉终乱"——成功的初期非常吉利，但接下来持盈保泰是最难的。不要因为既得的成功而松懈。将已有的成就制度化、稳固化。"曳其轮，濡其尾"——成功后要拉住车轮勿求过快。',health:'各项指标在一段时间内平衡稳定（既济）。"终日戒"——但正因为平衡，所以要保持警戒心以防微杜渐。保持现有的健康作息。',wealth:'财务上已经达成了一次性目标（例如买房/存款到七位数）。"初吉终乱"——达成目标后财务管理的松懈会导致后期有麻烦。继续保持理财好习惯。',romance:'感情已经水到渠成，处于极其稳定或新婚的阶段。"妇丧其茀，勿逐，七日得"——不要因为一些小得失大惊小怪，平静稳定互信的感情很快就能化解所有小障碍。'},
+  '3-6': {career:'未济，万事未成。"小狐汔济，濡其尾"——像小狐狸快过河了又湿了尾巴。目标近在眼前却尚未完成。事业上需要更专注和力出一孔去完成最后最重要的那一步。未济代表还有无限可能和活力。',health:'身体处于修复未完成或者疗程还没完的状态。"濡其尾，吝"——就差最后一点没坚持到底（如吃完疗程）。把这最后一段路坚持走完。',wealth:'某项财务目标（存钱目标、投资退出）尚未实现。"君子之光，有孚"——凭着诚信和声誉，你可获得需要的帮助从而抵达对岸。就差这最后一口气，一定要坚持。',romance:'感情尚未修成正果。"有孚于饮酒，无咎"——在轻松愉快的氛围里真诚对谈是增进感情的好方式。但切勿沉迷于虚幻的欢乐（饮酒至醉）。保持清醒的真心才能让未济成为既济。'},
+};
+// ═══════════════════════════════════════
+// 主应用逻辑
+// ═══════════════════════════════════════
+
+// ═══════════════════════════════════════
+// 彖传 + 专家详解数据库
+// 译文主要来源：中华书局《周易》（杨天才、张善文译注）
+// 补充参考：傅佩荣《易经入门》、倪海厦《天纪》、曾仕强《易经的智慧》
+// ═══════════════════════════════════════
+const TUANZHUAN_DATA = {
+  // 1. 乾为天
+  '1-1': {
+    tuanOriginal:'彖曰：大哉乾元，万物资始，乃统天。云行雨施，品物流形。大明终始，六位时成，时乘六龙以御天。乾道变化，各正性命，保合太和，乃利贞。首出庶物，万国咸宁。',
+    tuanTranslation:'彖传说：伟大啊，乾卦所象征的元气！万物凭借它而开始产生，它统领着天。云气流动，雨水布施，各类事物在运动中变化成形。太阳反复运转，上下四方的六个方位因此而形成，就像阳气按时乘着六条龙驾驭天道。乾道的变化使万物各自端正其本性和命运，保持和谐的状态，所以适宜正固。乾阳之气创生万物，天下万国都得到安宁。',
+    commentary:`<div class="commentary-section">
+<h4>【卦义总论】</h4>
+<p class="text-block">乾卦为《周易》六十四卦之首，六爻纯阳，象征天道刚健、自强不息的精神。乾卦的核心思想是"元亨利贞"四德——元为创始、亨为通达、利为和谐、贞为正固。这四种品德贯穿始终，是君子修身立业的根本。<span class="source-tag">中华书局《周易》</span></p>
+<p class="text-block"><strong>傅佩荣</strong>指出：乾卦六爻以龙为象，从"潜龙"到"飞龙"再到"亢龙"，完整描述了一个人从默默无闻到功成名就再到警戒自省的完整生命周期。关键在于"自强不息"——不是一时的冲动，而是终身的修行。<span class="source-tag">傅佩荣《易经入门》</span></p>
+<p class="text-block"><strong>倪海厦</strong>强调：乾卦纯阳，代表无形的力量。初九潜龙，时机未到不可妄动。九五飞龙在天，才是真正的得位。最怕上九亢龙有悔——功高震主、得意忘形必然招祸。这一卦教人"知进退存亡而不失其正"。<span class="source-tag">倪海厦《天纪》</span></p>
+<p class="text-block"><strong>曾仕强</strong>从管理角度解读：乾卦是领导的哲学。"群龙无首"不是混乱，而是最高境界——每个人都能自发地做好自己的事。真正的领导不是控制，而是创造一个让每个人都能发挥潜力的环境。<span class="source-tag">曾仕强《易经的智慧》</span></p>
+<h4>【爻位详解】</h4>
+<p class="text-block"><strong>初九·潜龙勿用</strong>——时机未到，应韬光养晦。傅佩荣认为"潜"不是消极逃避，而是积极的储备。倪海厦说此爻如胎儿在母腹，看似无用实则在积蓄全部力量。曾仕强比喻为新入职员工，多看多学少说话。</p>
+<p class="text-block"><strong>九二·见龙在田</strong>——才能初显，适逢贵人。此爻为"利见大人"之始，是君子初出茅庐的第一步。傅佩荣说九二得中，是最稳健的位置。</p>
+<p class="text-block"><strong>九三·终日乾乾</strong>——勤勉戒惧，是承上启下的关键爻。倪海厦指出此爻最凶险，因为在下卦之上、上卦之下，两头不靠，只能靠自己拼命努力。</p>
+<p class="text-block"><strong>九四·或跃在渊</strong>——进退之间，审时度势。曾仕强说这是"鲤鱼跳龙门"时刻：跳过去就是九五之尊，跳不过仍可在深渊中继续修炼。</p>
+<p class="text-block"><strong>九五·飞龙在天</strong>——最理想的爻位，中正得位。傅佩荣说这是圣人治理天下的象征。倪海厦称此爻"利见大人"是真龙见真龙——你到了这个位置，自然会吸引同等层次的人。</p>
+<p class="text-block"><strong>上九·亢龙有悔</strong>——盛极必衰的警示。三位专家一致强调：高处不胜寒，权力越大越要谦虚，否则物极必反。</p>
+<h4>【综合断卦建议】</h4>
+<p class="text-block">本卦为纯阳之体，无论动在何爻，皆提示问卦者当前处于主动进取的生命阶段。关键在于把握节奏：初九不急、九三不怠、九五不骄。将"自强不息"内化为日常修为，而非一蹴而就的冲动。</p>
+</div>`
+  },
+  // 2. 坤为地
+  '8-8': {
+    tuanOriginal:'彖曰：至哉坤元，万物资生，乃顺承天。坤厚载物，德合无疆。含弘光大，品物咸亨。牝马地类，行地无疆，柔顺利贞。君子攸行，先迷失道，后顺得常。西南得朋，乃与类行；东北丧朋，乃终有庆。安贞之吉，应地无疆。',
+    tuanTranslation:'彖传说：至极啊，坤卦所象征的元气！万物凭借它而生长，它顺从着天道。坤德深厚能承载万物，德行广大无边。它含容弘大而光明，各类事物都亨通。像母马一样柔顺、行走大地而无止境，柔和顺利而适宜正固。君子有所前往，起初迷失了道路，后来顺从天道才回到正轨。往西南方向可以得到朋友，因为与同类同行；往东北方向失去朋友，但最终会有喜庆。安守正固的吉兆，与大地的无边德行相呼应。',
+    commentary:`<div class="commentary-section">
+<h4>【卦义总论】</h4>
+<p class="text-block">坤卦为纯阴之卦，象征大地、母性、柔顺与包容。六爻皆阴，以"顺"为德。卦辞"元亨，利牝马之贞"——坤卦虽然亨通，但需要像母马那样柔顺守正才能吉利。"先迷后得主"是核心提示：刚开始可能会迷失方向，但找到正确的引导就能走上正途。<span class="source-tag">中华书局《周易》</span></p>
+<p class="text-block"><strong>傅佩荣</strong>认为：坤卦教我们"厚德载物"——不是软弱而是强大的包容力。真正的柔能胜刚，不是以柔去对抗刚，而是以柔去转化刚。坤的智慧在于懂得配合与成就他人。<span class="source-tag">傅佩荣《易经入门》</span></p>
+<p class="text-block"><strong>倪海厦</strong>从中医角度：坤为土为脾，对应人体的后天之本。"履霜坚冰至"——从踩到霜就知道坚冰要来，是见微知著的智慧。他强调坤卦的"先迷后得主"在临床上表现为患者起初病急乱投医，后来找到对的医生才痊愈。<span class="source-tag">倪海厦《天纪》</span></p>
+<p class="text-block"><strong>曾仕强</strong>说：坤卦是配合的哲学。在一个组织中，不是只有领导重要，跟随者的智慧同样可贵。坤的"直方大"——正直、端方、广大，是追随者的最高境界，不需要刻意表现就能得到认可。<span class="source-tag">曾仕强《易经的智慧》</span></p>
+<h4>【爻位详解】</h4>
+<p class="text-block"><strong>初六·履霜坚冰至</strong>——见微知著。傅佩荣说这是警觉的智慧。倪海厦认为此爻在病理上对应疾病的潜伏期——小症状出现就应及时调治。曾仕强说管理上要有预见性，问题刚萌芽就要解决。</p>
+<p class="text-block"><strong>六二·直方大</strong>——坤卦最正的一爻，居中得正。傅佩荣认为"直"是真诚，"方"是原则性，"大"是格局。三者兼具，不需要刻意表现就已十分美好。</p>
+<p class="text-block"><strong>六三·含章可贞</strong>——才华内敛。倪海厦说此爻犹如良医——本事很大但谦虚内敛，给君王（患者）办事，虽不求个人成就但终会有好结果。</p>
+<p class="text-block"><strong>六四·括囊</strong>——谨慎缄默。曾仕强特别强调这一爻：在敏感时期，管住嘴比什么都重要。不说不该说的话，既无灾祸也无赞誉，反而是最好的保全。</p>
+<p class="text-block"><strong>六五·黄裳元吉</strong>——坤卦最吉之爻。傅佩荣说"黄"是中色，"裳"是下衣——位高而谦下，最是吉祥。</p>
+<p class="text-block"><strong>上六·龙战于野</strong>——阴盛至极、以柔逼刚。三位专家一致认为这是坤卦的警示：柔顺过度变成懦弱，或者阴柔积聚到极点和阳刚对抗，两败俱伤。</p>
+<h4>【综合断卦建议】</h4>
+<p class="text-block">坤卦提示以柔顺包容的态度示人，但不是无原则的退让。在配合他人时保持自己的"直方大"，在需要沉默时"括囊"不语，在可以发光时"含章"展现。记住"先迷后得主"——迷茫的时候找到正确的指引方向即可。</p>
+</div>`
+  },
+  // 3. 水雷屯
+  '6-4': {
+    tuanOriginal:'彖曰：屯，刚柔始交而难生。动乎险中，大亨贞。雷雨之动满盈，天造草昧，宜建侯而不宁。',
+    tuanTranslation:'彖传说：屯卦，阳刚与阴柔开始交合而艰难产生。在危险中运动，大为亨通而宜守正。雷雨的发动充满天地，犹如天地初创时的草莽迷蒙状态，适宜建立诸侯而不求安宁。',
+    commentary:`<div class="commentary-section">
+<h4>【卦义总论】</h4>
+<p class="text-block">屯卦为乾坤之后的第一卦，象征万物初生的艰难。"屯"字本义为草木初生艰难破土之状。上坎为水为险，下震为雷为动——动于险中，正是创业初期的写照。"勿用有攸往，利建侯"提示此时不宜急于远行扩张，而应扎根本地建立基础。<span class="source-tag">中华书局《周易》</span></p>
+<p class="text-block"><strong>傅佩荣</strong>解读：万事开头难，屯卦教我们在困难面前不气馁。初生之物虽然脆弱但蕴藏着无限生机。"磐桓"就是徘徊难进的样子——但这不是犹豫不决，而是蓄势待发的姿态。<span class="source-tag">傅佩荣《易经入门》</span></p>
+<p class="text-block"><strong>倪海厦</strong>指出：屯卦在中医里对应婴儿出生时的艰难。"屯如邅如，乘马班如"——胎儿在产道中盘桓不进的景象。但他强调"匪寇婚媾"——看起来凶险的不是敌人而是来成全你的，就像分娩看似痛苦实则是新生命的开始。<span class="source-tag">倪海厦《天纪》</span></p>
+<p class="text-block"><strong>曾仕强</strong>从创业角度：屯卦是每一个创业者的必经之路。"即鹿无虞"提醒我们——在没有向导的情况下去追逐利益，只会迷失在丛林中。创业初期，找对人比找对事更重要。<span class="source-tag">曾仕强《易经的智慧》</span></p>
+<h4>【爻位详解】</h4>
+<p class="text-block"><strong>初九·磐桓</strong>——初创阶段徘徊不前是正常现象。傅佩荣说"利居贞，利建侯"提示先站稳脚跟、建立人脉圈。曾仕强说创业者应先建团队再谋发展。</p>
+<p class="text-block"><strong>六二·屯如邅如</strong>——困难反复出现。倪海厦认为"十年乃字"不是真的要等十年，而是提醒要有足够的耐心。傅佩荣说此爻告诉面对困境时"贞"（守正）是第一要务。</p>
+<p class="text-block"><strong>六三·即鹿无虞</strong>——追逐利益缺乏指引。曾仕强将此爻解释为创业中最容易犯的错误：看到机会就冲进去，没有经验丰富的人带路，很可能血本无归。</p>
+<p class="text-block"><strong>六四·乘马班如</strong>——时机渐熟，可以主动求婚（寻求合作）。傅佩荣说此爻从被动等待转为主动出击，"往吉，无不利"是最积极的信号。</p>
+<p class="text-block"><strong>九五·屯其膏</strong>——资源有限时不可挥霍。"小贞吉，大贞凶"——小规模的坚持是好的，大张旗鼓反而有害。倪海厦说这就像初诊医生开药，先小剂量试探，不宜一开始就用猛药。</p>
+<p class="text-block"><strong>上六·乘马班如，泣血涟如</strong>——陷入绝境。三位专家都认为这是屯卦最凶之爻：初创失败、进退无路的悲凉。但曾仕强补充：泣血说明还活着，只要活着就有翻盘的机会。</p>
+<h4>【综合断卦建议】</h4>
+<p class="text-block">问卦者正处于某事的初创或起步阶段。困难是必然的，也是正常的。核心策略：稳扎稳打（初九）、保持耐心（六二）、找对向导（六三）、适时出击（六四）、节制资源（九五）、不轻易放弃（上六）。</p>
+</div>`
+  },
+  // 4. 山水蒙
+  '7-6': {
+    tuanOriginal:'彖曰：蒙，山下有险，险而止，蒙。蒙亨，以亨行时中也。匪我求童蒙，童蒙求我，志应也。初筮告，以刚中也。再三渎，渎则不告，渎蒙也。蒙以养正，圣功也。',
+    tuanTranslation:'彖传说：蒙卦，山下面有危险，遇到危险就停止，这就是蒙昧的状态。蒙卦亨通，是因为在通达中行动能把握适中的时机。不是我去求孩童启蒙，而是孩童来求我，这是心意相通的体现。初次占问就告知结果，是因为阳刚居中。再三占问便是亵渎，亵渎就不再告知，因为这是对启蒙的亵渎。在蒙昧中培养正道，这是圣人教化的功业。',
+    commentary:`<div class="commentary-section">
+<h4>【卦义总论】</h4>
+<p class="text-block">蒙卦是教育之卦。上艮为山为止，下坎为水为险——山下有水，水遇山而止，犹如幼童面对未知世界的懵懂。"亨"字出现很有意思：蒙昧居然能亨通？因为只有在承认自己无知的前提下，才能开启真正的学习之路。<span class="source-tag">中华书局《周易》</span></p>
+<p class="text-block"><strong>傅佩荣</strong>指出蒙卦的精髓在于"匪我求童蒙，童蒙求我"——不是老师追着学生教，而是学生主动来求教。真正的学习必须是发自内心的渴望。被动灌输不是蒙卦的精神。<span class="source-tag">傅佩荣《易经入门》</span></p>
+<p class="text-block"><strong>倪海厦</strong>把蒙卦解释为医患关系：患者来找医生（童蒙求我），医生根据初次诊断开方（初筮告）。如果患者不信医嘱反复来问（再三渎），就失去了治疗的最佳时机。<span class="source-tag">倪海厦《天纪》</span></p>
+<p class="text-block"><strong>曾仕强</strong>从教育管理视角：蒙卦讲的是教育的时机和分寸。"发蒙"是启蒙的第一步——用恰当的典型范例来感化人。"包蒙"是包容蒙昧者，给他们成长的空间。"击蒙"是最后的手段——严厉管教要讲究分寸，过犹不及。<span class="source-tag">曾仕强《易经的智慧》</span></p>
+<h4>【爻位详解】</h4>
+<p class="text-block"><strong>初六·发蒙</strong>——启蒙初始阶段，树立典型范例很重要。傅佩荣说教育要从规矩开始。</p>
+<p class="text-block"><strong>九二·包蒙</strong>——包容蒙昧之人。曾仕强说这是好老师的品质——不以聪明自居去嘲笑笨学生。</p>
+<p class="text-block"><strong>六三·勿用取女</strong>——倪海厦解读为择偶/择人原则：见到有钱就失去自我的人不可取。</p>
+<p class="text-block"><strong>六四·困蒙</strong>——最被动的一爻。傅佩荣说"困而不学，民斯为下矣"——困在蒙昧中又不主动学习，是最大的问题。</p>
+<p class="text-block"><strong>六五·童蒙</strong>——最吉的一爻。保持孩童般的纯真和谦逊好学之心，反而无往不利。曾仕强说：终身学习的人永远年轻。</p>
+<p class="text-block"><strong>上九·击蒙</strong>——严厉的管教。倪海厦说药猛伤身，教严伤心，适可而止。</p>
+<h4>【综合断卦建议】</h4>
+<p class="text-block">问卦者当前处于学习成长或需要求教的阶段。请保持"童蒙"的谦逊心态，主动寻求明师指点。切忌"困蒙"——明明不懂却不去学习。如果已经掌握了关键信息，也不宜反复纠结追问。</p>
+</div>`
+  },
+  // 5. 水天需
+  '6-1': {tuanOriginal:'彖曰：需，须也，险在前也。刚健而不陷，其义不困穷矣。需有孚，光亨，贞吉。位乎天位，以正中也。利涉大川，往有功也。',tuanTranslation:'彖传说：需是等待的意思，危险就在前面。刚健而不陷入危险，其意义在于不会被困穷。需卦心怀诚信，光明亨通，守正得吉，是因为居于天位而又守中正。适宜渡过大河，前往就会有功绩。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">需卦象征等待。上坎为水为险在前，下乾为天为健——前面有危险，但自身刚健能等。《需·彖传》强调"险在前也，刚健而不陷"——正是因为在等待中保持了刚健的品质，才不会被危险所困。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>认为：等待不是消极的拖延，而是积极的准备。"需于郊"→"需于沙"→"需于泥"描述的是危险越来越近的过程，但始终保持"利用恒"和"贞吉"的态度。最关键的是"需于酒食"——在最危险的时候反而要心态放平，该吃吃该喝喝，保持平常心才能等来转机。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>倪海厦</strong>将此卦比作等车：站在郊外等（初九）、踏进沙地等（九二）、踩到泥里等（九三）——越来越危险但你必须等。如果乱跑反而会出事。他特别指出"有不速之客三人来"——最意外的事情往往在最意想不到的时候出现。<span class="source-tag">倪海厦《天纪》</span></p><p class="text-block"><strong>曾仕强</strong>从商业角度说：在谈判桌前等待对方先开口、在市场底部等待反转信号、在项目启动前等待最佳时机——都是"需"的智慧。"敬之终吉"——以恭敬之心对待意外来客，最终可得吉利。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者当前最需要的是耐心。前有险阻但自身刚健，冲动冒进会陷入险境。保持平常心等待时机成熟，光明终将到来。</p></div>`},
+  // 6. 天水讼
+  '1-6': {tuanOriginal:'彖曰：讼，上刚下险，险而健，讼。讼有孚，窒惕，中吉，刚来而得中也。终凶，讼不可成也。利见大人，尚中正也。不利涉大川，入于渊也。',tuanTranslation:'彖传说：讼卦，上面刚健下面危险，在危险中仍然刚健，所以产生争讼。争讼中虽有诚信但受到窒塞，必须警惕，中途可吉是因为阳刚来到中位。最终凶险是因为争讼不能走向极端。适宜拜见大人，是崇尚中正之道。不宜涉大河，因为会陷入深渊。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">讼卦是争讼之卦。上乾为刚健强势，下坎为危险陷阱——强势者陷入险境中，不争不甘心，争又危险。讼卦的核心智慧是"中吉，终凶"——争讼中途停下来是吉的，打到最后一刻必定两败俱伤。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>解读：讼卦不是教人不要争，而是教人适可而止。"不永所事"是说鸡毛蒜皮的小摩擦不要无限放大。"不克讼，归而逋"是说打不赢就躲回家，面子重要还是平安重要？<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>倪海厦</strong>指出：在中医里，讼卦对应的是正邪相争——正气和邪气在体内打架。治病的要诀是扶正祛邪，而不是用药把正邪都干掉。"中吉"就是适度的治疗，"终凶"就是过度治疗。<span class="source-tag">倪海厦《天纪》</span></p><p class="text-block"><strong>曾仕强</strong>说：中国人最怕打官司。"讼"字的右边是"公"，左边是"言"——把话说给公正的人听。但走到打官司这一步本身就是失败了。所以讼卦反复提醒"不克讼"——算了别争了。他总结合伙人闹翻了、夫妻离婚争财产——打到最后的没有赢家。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者可能正面临纠纷或争论。核心把握"中吉终凶"——见好就收。能和解则和解，非要争就请公正的第三方调解。不要走到最后一步。</p></div>`},
+  // 7. 地水师
+  '8-6': {tuanOriginal:'彖曰：师，众也。贞，正也。能以众正，可以王矣。刚中而应，行险而顺，以此毒天下，而民从之，吉又何咎矣。',tuanTranslation:'彖传说：师是众人的意思。贞是正道的意思。能够率领众人走正道的人，可以成为君王。阳刚居中而上下相应，在危险中行动而能顺利，以此来治理天下，人民都会跟从，吉祥又有什么灾祸呢？',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">师卦是出师作战之卦。下坎为险，上坤为顺——险中行顺，以正道统军。卦辞强调"丈人吉"——必须是年长有德之人统领军队才吉利。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说师卦的核心在选将。"丈人吉"不是谁带队都吉——必须是稳重有德的人。反面是"弟子舆尸"——让没有经验的年轻人领军，只能车载尸体归来。选人用人的眼光决定胜负。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>从团队管理角度：任何组织都像一支军队。纪律（师出以律）是基础，选对人（丈人吉）是关键。"开国承家，小人勿用"——功成之后最怕小人当道，利欲熏心的人会毁掉打下的江山。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者可能需要带领团队或面临竞争。选对人用对人、建立纪律是第一要务。功成之后更要警惕小人和骄傲情绪。</p></div>`},
+  // 8. 水地比
+  '6-8': {tuanOriginal:'彖曰：比，吉也。比，辅也，下顺从也。原筮，元永贞，无咎，以刚中也。不宁方来，上下应也。后夫凶，其道穷也。',tuanTranslation:'彖传说：比卦，吉利。比是辅助的意思，在下者顺从。再次占筮，开始永久守正没有灾祸，是因为阳刚处于中位。不安宁的方国前来归附，是上下相应。迟疑不决者凶险，因为他的道路已经走到尽头。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">比卦是亲附之卦。上坎为水，下坤为地——水在地上，亲密无间。全卦都在讲"比"（亲近、合作、团结）的智慧。"原筮"是再三确认，"元永贞"是长期持守正道。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>指出"比之匪人"是交友的大忌——亲近了不该亲近的人。比卦不是无条件地亲附，而是要有选择地亲近。内在真诚（比之自内）和外在光明（显比）同样重要。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>强调"后夫凶"三个字：在关键机会面前犹豫不决的人最为凶险。别人都已经做出了选择，你还在观望——结果就是被淘汰出局。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者适合积极拓展人脉、建立合作关系。要主动亲附正确的人，不要亲近不该亲近的人。面对机会果断决策。</p></div>`},
+  // 9. 风天小畜
+  '5-1': {tuanOriginal:'彖曰：小畜，柔得位而上下应之，曰小畜。健而巽，刚中而志行，乃亨。密云不雨，尚往也。自我西郊，施未行也。',tuanTranslation:'彖传说：小畜卦，柔顺得到位置而上下都响应它，所以叫小畜。刚健而又巽顺，阳刚居中而志向能实行，于是亨通。乌云密布不下雨，是因为还在前往的路上。来自西郊，是因为恩泽尚未施行。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">小畜卦象征小有积蓄，但力量尚不足够。下乾为天为健，上巽为风为入——刚健者被柔顺所蓄止，暂时施展不开。最经典的意象是"密云不雨"——乌云密布就是不下雨，只差最后一点点力量。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>认为小畜是在积蓄期的等待。"复自道"——回到自己的本分上做积累。"牵复"——实在不行可以借助外界力量拉自己一把。"有孚挛如"——在积蓄过程中诚信是关键，人与人之间的互信是最大的资产。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>说：小畜就是存款还不够买房的状态。你已经有了一笔钱，但还差一点。这时候最忌讳急功近利——"舆说辐"（车轮脱辐）和"夫妻反目"都是急于求成的恶果。耐心等雨落下来。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者处于积蓄力量的阶段，成果尚未完全显现。再坚持一段时间，保持耐心和诚信，乌云终将化作甘霖。</p></div>`},
+  // 10. 天泽履
+  '1-2': {tuanOriginal:'彖曰：履，柔履刚也。说而应乎乾，是以履虎尾，不咥人，亨。刚中正，履帝位而不疚，光明也。',tuanTranslation:'彖传说：履卦，柔顺踩在刚健的上面。以和悦的态度来与乾卦相应，所以踩在老虎尾巴上，老虎却不咬人，亨通。阳刚中正，履行帝位而没有愧疚，是因为光明磊落。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">履卦象征如履薄冰的践行。上乾为天为刚，下兑为泽为悦——以柔顺喜悦的态度行走在刚健之道上。"履虎尾，不咥人"是全卦的核心意象：踩在老虎尾巴上竟然没被咬，靠的是什么？是敬畏之心和谨慎的态度。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说：履卦教人如何在高危环境中行走。"素履"是保持朴素本色，"履道坦坦"是走正道自然平坦。"视履考祥"提醒经常回头审视自己的行为——反思是避免犯错的最好方式。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>将此卦解释为职场生存法则：在强势领导手下做事就像踩着老虎尾巴。"愬愬终吉"——始终保持战战兢兢的敬畏心，反而最终是安全的。最怕"夬履"（独断专行），以为自己是老虎了，结果反而被咬。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者处于需要小心谨慎的环境或关系中。保持敬畏之心、走正道、常反思，即使环境凶险也能化险为夷。</p></div>`},
+  // 11. 地天泰
+  '8-1': {tuanOriginal:'彖曰：泰，小往大来，吉亨。则是天地交而万物通也，上下交而其志同也。内阳而外阴，内健而外顺，内君子而外小人，君子道长，小人道消也。',tuanTranslation:'彖传说：泰卦，小的离去、大的到来，吉利亨通。这是因为天地交合而万物通畅，上下交流而心意相通。内阳外阴，内健外顺，内君子外小人——君子的道在增长，小人的道在消减。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">泰卦是六十四卦中最通达的卦之一。上坤下乾——天在下地在上，天地交泰，万物亨通。"小往大来"——小的付出换大的回报，是泰卦的核心精神。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>强调泰卦的"通"——上下的沟通、内外的和谐。领导人要像泰卦一样，让下情上达、上意下达，让组织中信息自由流通。一旦上下隔绝，泰就变成了否。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>说泰卦最大的警示在"城复于隍"——城墙倒塌在护城河里。最通达的时候往往是最危险的临界点。他提醒：泰极否来，在最好的时候就要为最坏的情况做准备。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者处于运势亨通的好时机，天地交泰、人事顺利。享受当下的同时，不忘居安思危、未雨绸缪。</p></div>`},
+  // 12. 天地否
+  '1-8': {tuanOriginal:'彖曰：否之匪人，不利君子贞。大往小来，则是天地不交而万物不通也，上下不交而天下无邦也。内阴而外阳，内柔而外刚，内小人而外君子，小人道长，君子道消也。',tuanTranslation:'彖传说：否卦闭塞非人道之常，不适宜君子守正。大的离去小的到来，这是因为天地不相交合而万物不通，上下不相交流而天下不成国家的样子。内阴外阳，内柔外刚，内小人外君子——小人的道在增长，君子的道在消减。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">否卦与泰卦完全相反——天地不交、万物不通。"大往小来"——大投入只换来小回报，是不利之象。但否卦的智慧恰恰在于：在黑暗的时候如何守住自己。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说否卦不是在教人放弃，而是在教人如何在逆境中保存实力。"俭德辟难"——收敛自己的美德和光芒以避开灾祸。"包羞"——忍辱负重，含羞而不发。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>说否卦最激励人的是"倾否，先否后喜"——黑暗终有尽头。否极泰来不是自我安慰，而是宇宙运行的规律。关键是在否境中"不可荣以禄"——不贪图名利，保持清正。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者可能正经历不顺。不要慌乱，收敛锋芒、保存实力、耐心等待。否极泰来，黑暗的尽头就是光明。</p></div>`},
+  // 13. 天火同人
+  '1-3': {tuanOriginal:'彖曰：同人，柔得位得中而应乎乾，曰同人。同人曰：同人于野，亨，利涉大川。乾行也。文明以健，中正而应，君子正也。唯君子为能通天下之志。',tuanTranslation:'彖传说：同人卦，柔顺得到位置和居中而与乾卦相应，所以叫同人。同人卦说：在郊野聚合众人，亨通，适宜渡大河。这是乾道运行的结果。文明而又刚健，中正而相应，这是君子所守的正道。只有君子才能通达天下人的心志。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">同人卦是和合团结之卦。上乾为天，下离为火——天与火都有向上的光明之性，所以能同心协力。卦辞"同人于野"把心胸开阔到在郊野都能找到同伴——格局决定了你能团结多少人。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说：同人的关键在心胸。"同人于宗，吝"——只在宗族小圈子内团结人是狭隘的。真正的同人应该跨越门户之见，在更广阔的天地中寻找志同道合者。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>解释"同人先号咷而后笑"——真正的团结不是一开始就一团和气，而是经历过分歧、争吵、眼泪之后仍然选择在一起。没有经历过考验的同人不是真正的同人。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者当前事宜通过团队合作、寻求同盟来完成。打开心胸，在更广阔的范围内寻找合作伙伴。不要局限于小圈子。</p></div>`},
+  // 14. 火天大有
+  '3-1': {tuanOriginal:'彖曰：大有，柔得尊位，大中而上下应之，曰大有。其德刚健而文明，应乎天而时行，是以元亨。',tuanTranslation:'彖传说：大有卦，柔顺得到尊贵的位置，大中而上下响应，所以叫大有。它的德性刚健而又文明，顺应天道而按时行动，所以大为亨通。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">大有卦是丰收富足之卦。上离为火为明，下乾为天为健——光明在上而刚健在下，天下丰收的景象。"元亨"是大有卦唯一的判词——但只有一个"元亨"反而意味深长：丰收的时刻最考验品德。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说大有卦的核心在一个"有"字——拥有之后的德行。"匪其彭"——不要盛气凌人、不要炫富。"厥孚交如，威如"——与人交往既要有诚信又要有威严，这是富人的修养。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>强调"自天祐之，吉无不利"——真正的大有不是靠自己争来的，而是顺天应人得来的。当你的德行配得上你的财富时，天都会帮你。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者可能正处于收获期或拥有较好的资源。不要炫耀、不要骄傲，以诚信和谦逊对待身边的人。德行配位才会长久。</p></div>`},
+  // 15. 地山谦
+  '8-7': {tuanOriginal:'彖曰：谦亨。天道下济而光明，地道卑而上行。天道亏盈而益谦，地道变盈而流谦，鬼神害盈而福谦，人道恶盈而好谦。谦尊而光，卑而不可逾，君子之终也。',tuanTranslation:'彖传说：谦卦亨通。天道向下济助万物而更加光明，地道处于卑下而向上运行。天道的规律是亏损满盈而增益谦虚，地道的规律是改变满盈而流向谦虚，鬼神降灾满盈而赐福谦虚，人道的规律是厌恶满盈而喜欢谦虚。谦虚是尊贵而光明的，处于卑下却不可逾越，这是君子的最终归宿。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">谦卦是六十四卦中唯一六爻皆吉的卦。上坤为地，下艮为山——巍巍高山甘居大地之下，这是谦的极致。"天道亏盈而益谦"——天地鬼神人五道都站在谦虚这一边。谦不是软弱，是力量最高级的表现形式。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>特别推崇谦卦："谦谦君子"是谦而又谦，"鸣谦"是以谦德闻名，"劳谦"是有大功而仍谦虚——三个层次一个比一个高。他引用老子"上善若水"的精神来解释谦卦。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>倪海厦</strong>说：医生最需要谦。"劳谦"就是治好很多病人但从不吹嘘自己。医学无止境，自以为天下第一的医生迟早出事。<span class="source-tag">倪海厦《天纪》</span></p><p class="text-block"><strong>曾仕强</strong>说中国人最懂谦：越有本事越说自己"哪里哪里""不敢当"。这不是虚伪，而是保护自己。木秀于林风必摧之，谦逊是最好的自我保护。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">无论当前处境如何，保持谦逊都是最有利的策略。有功不居功，有才不炫才，这才是真正的君子之风。</p></div>`},
+  // 16. 雷地豫
+  '4-8': {tuanOriginal:'彖曰：豫，刚应而志行，顺以动，豫。豫顺以动，故天地如之，而况建侯行师乎？天地以顺动，故日月不过而四时不忒。圣人以顺动，则刑罚清而民服。豫之时义大矣哉。',tuanTranslation:'彖传说：豫卦，阳刚得到响应而志向得以实行，顺势而动，这就是豫。豫卦顺势而动，所以天地都是这样，何况建立诸侯和行军出征呢？天地因为顺势而动，所以日月运行不会过头、四季变化不会差错。圣人顺势而动，就会刑罚清明而人民信服。豫卦所蕴含的时机意义真是太伟大了。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">豫卦象征愉悦安乐。上震为雷为动，下坤为地为顺——顺势而动，所以愉悦。但豫卦暗藏危机：在欢愉中容易迷失。"鸣豫，凶"——最禁忌的就是得意忘形、自鸣得意。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>指出豫卦的两面性：一方面"由豫，大有得"——在欢乐中确能凝聚人心、获得成功。另一方面"冥豫"——沉醉于暗昧的享乐则是自取灭亡。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>说豫卦是"居安思危"四个字的最好注解。"介于石"是豫卦最正的一爻——不为享乐所动，坚如磐石。一个人在所有人都沉溺于享乐的环境中还能保持清醒，才是真本事。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者当前环境可能有欢愉享乐的诱惑。享受生活的美好无可厚非，但切不可得意忘形。保持内在的清醒和坚韧。</p></div>`},
+  // 17. 泽雷随
+  '2-4': {tuanOriginal:'彖曰：随，刚来而下柔，动而说，随。大亨贞无咎，而天下随时。随时之义大矣哉。',tuanTranslation:'彖传说：随卦，阳刚来到柔顺的下面，行动而又愉悦，这就是随。大为亨通，守正没有灾祸，天下万物都顺应时机。顺应时机的意义真是大啊。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">随卦是顺应跟随之卦。上兑为泽为悦，下震为雷为动——因动而悦，因悦而从。随的核心是"随时"——不是没有主见地盲从，而是根据时机的变化灵活调整。"出门交有功"提示主动与人交往会有收获。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>强调选择的智慧："系小子，失丈夫"——跟错了人，因小失大；"系丈夫，失小子"——跟对了人，虽然可能失去一些次要的东西但主方向对了。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>说随卦告诉我们：人可以随大流但要随对方向。"随有获，贞凶"——跟着大伙儿一起赚钱看起来好，但如果失去了原则就是凶。随不是放弃独立思考。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者适合顺势而为、随机应变。选择正确的跟随对象很重要。保持独立思考能力，不要因小失大。</p></div>`},
+  // 18. 山风蛊
+  '7-5': {tuanOriginal:'彖曰：蛊，刚上而柔下，巽而止，蛊。蛊元亨而天下治也。利涉大川，往有事也。先甲三日，后甲三日，终则有始，天行也。',tuanTranslation:'彖传说：蛊卦，阳刚在上而阴柔在下，巽顺而止息，这就是蛊。蛊卦大为亨通而天下能得到治理。适宜渡大河，是因为前往有事可做。甲日前三天后三天，结束了又重新开始，这是天道的运行。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">蛊卦是整治积弊之卦。上艮为山为止，下巽为风为入——风入山中被止息，腐败滋生。蛊卦要义在"干蛊"——勇于纠正前人留下来的问题和弊端。"先甲三日，后甲三日"意味着在整治前后反复推敲。傅佩荣说这是改朝换代之后重整山河的姿态。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>曾仕强</strong>认为蛊卦是企业"接班"的学问。"干父之蛊"——新领导上任要清理前任留下的烂摊子，但要注意方法："干母之蛊，不可贞"——处理更复杂的遗留问题时不能太死板。<span class="source-tag">曾仕强《易经的智慧》</span></p><p class="text-block"><strong>倪海厦</strong>将此卦理解为慢性病的治疗——多年积攒的病根需要系统调理，不能急于求成。<span class="source-tag">倪海厦《天纪》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者可能需要面对并解决一些积压已久的问题。勇于整改但讲究方法。功成之后可"不事王侯"——超然物外。</p></div>`},
+  // 19. 地泽临
+  '8-2': {tuanOriginal:'彖曰：临，刚浸而长，说而顺，刚中而应。大亨以正，天之道也。至于八月有凶，消不久也。',tuanTranslation:'彖传说：临卦，阳刚逐步增长，喜悦而又柔顺，阳刚居中而上下相应。大为亨通是因为行正道，这是天的道。到了八月会有凶险，是因为消退不久就要到来。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">临卦是居高临下治理之卦。上坤为地为顺，下兑为泽为悦——以喜悦柔顺的态度亲临治理。"咸临"是以感召的方式领导，"知临"是以智慧来治理，"敦临"是以敦厚待人。曾仕强说这是三种领导风格：感性的、理性的、德性的。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>特别提醒"至于八月有凶"——临卦阳气最旺时反而是转折的预警。在顺境中保持警惕才能避免"八月"的凶。<span class="source-tag">傅佩荣《易经入门》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者处于主动有利的位置。以感召而非强制的态度去影响他人。顺境之中不忘防患于未然。</p></div>`},
+  // 20. 风地观
+  '5-8': {tuanOriginal:'彖曰：大观在上，顺而巽，中正以观天下。观，盥而不荐，有孚颙若，下观而化也。观天之神道，而四时不忒。圣人以神道设教，而天下服矣。',tuanTranslation:'彖传说：伟大的观示在上面，柔顺而巽入，用中正之道来观察天下。观卦说洗手而不进献，心存诚信仰望，在下面观察的人会被感化。观察天道的运行，四季变化从不差错。圣人用天道的规律来施行教化，天下人都信服。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">观卦是观察省思之卦。上巽为风，下坤为地——风行大地，遍览万象。"盥而不荐"——洗手而不急于献祭，强调的是虔诚恭敬的观望心态。傅佩荣说从"童观"（幼稚观察）到"观我生"（反观自身）再到"观其生"（观察他人），眼界不断提升。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>曾仕强</strong>将观卦解释为管理中的"走动式管理"——高层要亲临一线观察实情。"观国之光"——去观察国家的光华、观察更广阔的世界，提升格局。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者当前最需要的是多看、多学、多思考，而非急于行动。提升自己的观察力和格局，时机在观察中自然明朗。</p></div>`},
+  // 21. 火雷噬嗑
+  '3-4': {tuanOriginal:'彖曰：颐中有物，曰噬嗑。噬嗑而亨，刚柔分，动而明，雷电合而章。柔得中而上行，虽不当位，利用狱也。',tuanTranslation:'彖传说：口中有东西，就叫噬嗑。噬嗑之所以亨通，是因为刚柔分明，行动而又光明，雷电交合而彰显。柔顺得到中位而向上运行，虽然不在正当的位置上，但适宜用刑狱之道。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">噬嗑卦象征咬合阻碍、清除障碍。上离为火为明，下震为雷为动——雷电交击，以雷霆手段清除口中之物。"利用狱"不是说要用刑罚，而是要有果断决断的魄力来清除障碍。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说噬嗑的核心是一个"咬"字——啃硬骨头。"噬干胏，得金矢"——咬开带骨的干肉反而发现了铜箭头（意外收获），说明在艰难处往往埋着宝藏。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>比喻为企业兼并中的"吞并"——一口咬下去可能是美味（合并成功）也可能是毒（消化不良）。关键在于"刚柔分"——硬的时候要狠，软的时候要有耐心。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者遇到了需要果断清除的障碍。拖而不决不如一口咬下去。在果断行动的过程中可能会有意外发现。</p></div>`},
+  // 22. 山火贲
+  '7-3': {tuanOriginal:'彖曰：贲亨。柔来而文刚，故亨。分刚上而文柔，故小利有攸往。天文也。文明以止，人文也。观乎天文以察时变，观乎人文以化成天下。',tuanTranslation:'彖传说：贲卦亨通。柔顺来文饰刚健，所以亨通。分出刚健向上来文饰柔顺，所以稍有前往即可获利。这是天文的纹饰。用文明来安止，这是人文的纹饰。观察天文来审察时世的变化，观察人文来教化成就天下。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">贲卦是文饰美化之卦。上艮为山为止，下离为火为明——山下有火，映照万物之美。贲卦从"贲其趾"（装饰脚趾）到"白贲"（素白质朴），讲述了文饰从华丽到返璞归真的全过程。傅佩荣认为"白贲，无咎"是全卦精要——最高级的美是回归质朴。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>曾仕强</strong>把贲卦理解为品牌包装——适度的包装能提升价值（小利有攸往），但过度包装反而失去信任。"贲如濡如"就是恰到好处的光泽，最终"白贲"回归本质。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者可能需要在形象、包装、表达上做些优化。适度的文饰可以加分，但不要喧宾夺主。最终回归质朴才是最持久的。</p></div>`},
+  // 23. 山地剥
+  '7-8': {tuanOriginal:'彖曰：剥，剥也，柔变刚也。不利有攸往，小人长也。顺而止之，观象也。君子尚消息盈虚，天行也。',tuanTranslation:'彖传说：剥卦，是剥落的意思，柔顺在改变刚健。不适宜有所前往，是因为小人的势力在增长。顺势而止步，这是观察卦象得到的启示。君子崇尚消长盈虚的规律，这是天道运行的自然法则。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">剥卦是衰退剥落之卦。上艮为山，下坤为地——山在地上被风雨侵蚀而剥落。五阴在下、一阳在上，阳气仅存一丝。"不利有攸往"——这时候往前走只会更快崩塌。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说剥卦虽然凶险但暗含希望。"硕果不食"——最后一颗硕果不吃掉它，留着做种子，来年还能发芽。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>认为剥卦是企业衰退期的典型——市场在萎缩、人心在涣散。这时候"顺而止之"（顺势停下来）比逆势猛冲要好一百倍。保存最后的火种就是最大的胜利。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者正经历下行周期。不宜扩张，优先保存资源。危机中仍有一线生机——珍惜仅存的资源等待复苏。</p></div>`},
+  // 24. 地雷复
+  '8-4': {tuanOriginal:'彖曰：复亨，刚反。动而以顺行，是以出入无疾，朋来无咎。反复其道，七日来复，天行也。利有攸往，刚长也。复，其见天地之心乎。',tuanTranslation:'彖传说：复卦亨通，因为阳刚返回了。行动而又顺势而行，所以出入没有疾病，朋友来了也没有灾祸。回到自己的正道上，七天一个周期循环，这是天道的运行。适宜有所前往，是因为阳刚在增长。复卦，大概可以看到天地的核心意旨吧。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">复卦是剥极而复、一阳来复之卦。上坤为地，下震为雷——阴寒的大地之下已有雷声隐隐，阳刚的力量正在归来。"七日来复"对应七天周期循环（从姤卦一阴生到复卦一阳生正好七个卦），是宇宙间最根本的节奏。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说复卦最动人的是"不远复"——走错了路还没走远就回头，这才是真智慧。不怕犯错，就怕错了不回头。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>倪海厦</strong>指出复卦在中医里对应疾病初愈——热退后阳气回来，是好转的开始。但"频复"——反复发热说明正气还不稳固，需要继续调养。<span class="source-tag">倪海厦《天纪》</span></p><p class="text-block"><strong>曾仕强</strong>将复卦理解为犯错后改过自新的过程。"休复"是愉快地改正，"敦复"是踏踏实实改，"迷复"是执迷不悟——同样是"复"，不同态度导致不同结果。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者正在走出低谷。一阳复始，万象更新。关键在"不远复"——及时回头改正之前的错误，不要一条道走到黑。</p></div>`},
+  // 25. 天雷无妄
+  '1-4': {tuanOriginal:'彖曰：无妄，刚自外来而为主于内。动而健，刚中而应。大亨以正，天之命也。其匪正有眚，不利有攸往。无妄之往，何之矣？天命不祐，行矣哉。',tuanTranslation:'彖传说：无妄卦，阳刚从外部来而在内部做主。行动而又刚健，阳刚居中而有应。大为亨通是因为走正道，这是天命。如果不走正道就有灾祸，不适宜有所前往。不妄为地前往，又能去到哪里呢？天命不再护佑的时候，还能走多远呢？',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">无妄卦是"不妄为"之卦。上乾为天，下震为雷——天下有雷，本是最自然不过的事情。无妄的智慧在于：顺其自然、不投机取巧。"无妄之疾，勿药有喜"——不妄为时得的小毛病不用吃药自己会好。傅佩荣说无妄不是什么都不做，而是不做不应当做的事。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>曾仕强</strong>说无妄卦最难理解的是六三"无妄之灾"——明明什么都没做错却遭了灾。这种飞来横祸恰恰是考验人的时候。面对无妄之灾，最好的应对是保持内心的平静。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者应当保持真诚务实的态度，不投机、不妄为。即使遭遇无妄之灾也不要慌乱，安守正道自能等来转机。</p></div>`},
+  // 26. 山天大畜
+  '7-1': {tuanOriginal:'彖曰：大畜，刚健笃实辉光，日新其德。刚上而尚贤，能止健，大正也。不家食吉，养贤也。利涉大川，应乎天也。',tuanTranslation:'彖传说：大畜卦，刚健笃实，发出辉光，每日更新自己的德行。阳刚在上而崇尚贤德之人，能安止刚健，这是大正之道。不在家吃闲饭是吉利的，因为要供养贤德之人。适宜渡大川，是因为顺应天道。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">大畜卦是积蓄厚积之卦。上艮为山，下乾为天——山包容天，气象万千。"利涉大川"表明已经积蓄了足够的力量可以跨越大河。傅佩荣说从"有厉利已"（有危险就停下来）到"何天之衢"（承载通天大道），大畜讲述了如何从积蓄走向爆发的过程。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>曾仕强</strong>说大畜是企业蓄能扩张前的准备阶段。"童牛之牿"——把隐患扼杀在摇篮里；"豮豕之牙"——用柔和手段化解潜在的对抗。大畜的核心不是躺在资源上睡觉，而是为下一次腾飞做足功课。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者拥有较为充裕的资源储备。当前的重心是积蓄能量、完善布局，为未来的大动作做好准备。</p></div>`},
+  // 27. 山雷颐
+  '7-4': {tuanOriginal:'彖曰：颐，贞吉。养正则吉也。观颐，观其所养也。自求口实，观其自养也。天地养万物，圣人养贤以及万民。颐之时大矣哉。',tuanTranslation:'彖传说：颐卦，守正则吉。养生养德走正道就吉利。观察养生之道，是看他所养的东西。自己求取食物，是观察他如何自己养自己。天地养育万物，圣人养育贤人以及万民。颐卦所蕴含的时机意义真大啊。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">颐卦是养生养德之卦。上艮为山，下震为雷——山下有雷，万物萌动，正是滋养生长之时。"自求口实"是全卦核心——要靠自己的努力创造价值，不能总指望被喂食。傅佩荣说"舍尔灵龟，观我朵颐"是讽刺——放弃自己拥有的好东西去羡慕别人嘴里咀嚼的东西，是人性的弱点。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>曾仕强</strong>强调颐卦要求"养正"——不仅是要吃饱，更是要养生养德。他提醒不要"颠颐"——把养和被养的关系搞颠倒了。独立谋生是基本尊严。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者应重视养生养德，靠自己创造价值。不要羡慕别人的捷径，珍惜自己的优势，独立自主地走自己的路。</p></div>`},
+  // 28. 泽风大过
+  '2-5': {tuanOriginal:'彖曰：大过，大者过也。栋桡，本末弱也。刚过而中，巽而说行，利有攸往，乃亨。大过之时大矣哉。',tuanTranslation:'彖传说：大过卦，大为过越。栋梁弯曲，是因为两端太弱。阳刚过越却居守中位，巽顺而喜悦地行动，适宜有所前往，于是亨通。大过卦所蕴含的时机意义真大啊。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">大过卦是"大为过越"之卦。上兑为泽，下巽为风——泽水淹没木舟，非常之象。"栋桡"——主梁弯曲，暗示事物已经到了不得不变革的临界点。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说大过就是用非常手段处理非常问题。"藉用白茅"——最细小的地方也不马虎，因为非常时期一点疏忽就会酿成大祸。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>把大过解释为金融危机中的救市措施——平时不用的极端手段、非常规举措在关键时刻必须果断使用。"枯杨生稊"就是老树发新芽——看上去不合常理，但在大过之时反而能救急。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者可能面临非常规的局面。大胆的举措可能是必要的，但细节决定成败。非常时期需要用非常手段。</p></div>`},
+  // 29. 坎为水
+  '6-6': {tuanOriginal:'彖曰：习坎，重险也。水流而不盈，行险而不失其信。维心亨，乃以刚中也。行有尚，往有功也。天险不可升也，地险山川丘陵也。王公设险以守其国。坎之时用大矣哉。',tuanTranslation:'彖传说：习坎，是重重危险。水流而不满盈，行动在险境中不失去诚信。内心亨通，是因为刚健守中。行动值得推崇，是因为前往能立功。天险是无法攀登的，地险就是山川丘陵。王公设置险要来守卫自己的国家。坎卦的时机功用太大了。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">坎卦是双重的坎险——上坎下坎，险而又险，是六十四卦中最凶险的卦之一。但坎卦的智慧恰恰是"有孚，维心亨"——在重重险阻中只要内心保持诚信和通畅，就能找到出路。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说坎卦不讳言危险："坎有险，求小得"——在险境中不贪大只求小有所得，是最明智的策略。"樽酒簋贰"——用最朴素真诚的方式示好比任何华丽的表演都有穿透力。<span class="source-tag">傅佩荣《易经入门》</span></p><p class="text-block"><strong>曾仕强</strong>说人生不可能一帆风顺，坎卦就是教你如何与危险共存。"坎不盈"——陷阱没有满溢出来，说明还有周旋的余地。在低谷时保持冷静，比什么都重要。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者正经历艰难。在险境中保持内心的诚信和冷静。不求大功，先从小的突破做起。真诚朴素胜过华丽包装。</p></div>`},
+  // 30. 离为火
+  '3-3': {tuanOriginal:'彖曰：离，丽也。日月丽乎天，百谷草木丽乎土。重明以丽乎正，乃化成天下。柔丽乎中正，故亨。是以畜牝牛吉也。',tuanTranslation:'彖传说：离卦，是依附的意思。日月依附于天空，百谷草木依附于土地。双重的光明依附于正道，于是能够教化成就天下万物。柔顺依附于中正之位，所以亨通。因此畜养母牛是吉利的。',
+  commentary:`<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">离卦为纯火之卦，象征光明与依附。六二六五两阴爻居中，上离下离形成"重明"——光明重叠照耀。"畜牝牛吉"——柔顺地依附正道就像养母牛一样踏实温顺。傅佩荣说离卦的核心在"丽"——美丽的光辉需要依附于正确的对象才能照亮世界。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>曾仕强</strong>说离卦是依附的智慧：人要找到正确的平台、正确的领导、正确的方向。依附不是没骨气，而是在合适的位置上发光发热。"日昃之离"——太阳偏西时美丽而短暂，所以要珍惜当下的光明。<span class="source-tag">曾仕强《易经的智慧》</span></p><h4>【综合断卦建议】</h4><p class="text-block">问卦者需要找到一个好的平台或引导者来发挥自己的能力。柔顺而坚定地依附正道，光明自会照耀前方。</p></div>`},
+
+// 31. 泽山咸
+'2-7':{tuanOriginal:'彖曰：咸，感也。柔上而刚下，二气感应以相与。止而说，男下女，是以亨利贞，取女吉也。天地感而万物化生，圣人感人心而天下和平。观其所感，而天地万物之情可见矣。',tuanTranslation:'彖传说：咸是感应的意思。柔顺在上而刚健在下，阴阳二气相互感应而结合。安止而喜悦，男子谦居于女子之下，所以亨通适宜正固，娶妻吉利。天地相互感应则万物化育生长，圣人感化人心则天下和平。观察感应之道，天地万物的真情就可以看懂了。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">咸卦是感应的情卦。上兑少女下艮少男——少男追求少女，是六十四卦中的恋爱卦。从"咸其拇"（感应到脚趾）到"咸其辅颊舌"（感应在口舌面颊），描绘了爱情从萌芽到表白的完整过程。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>傅佩荣</strong>说咸卦精义在"感应"二字——男女之间真正的默契不是靠言语，而是超越言语的心灵感应。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+// 32-40 compact entries
+'4-5':{tuanOriginal:'彖曰：恒，久也。刚上而柔下，雷风相与，巽而动，刚柔皆应，恒。恒亨无咎，利贞，久于其道也。天地之道，恒久而不已也。利有攸往，终则有始也。日月得天而能久照，四时变化而能久成，圣人久于其道而天下化成。观其所恒，而天地万物之情可见矣。',tuanTranslation:'彖传说：恒是长久的意思。阳刚在上而柔顺在下，雷与风相互配合，巽顺而行动，刚柔全都相应，这就是恒。恒久亨通没有灾祸，适宜正固，是因为长久地走在自己的道路上。天地的道，永恒不息。适宜有所前往，是因为终结之后又有新的开始。日月在天上能长久照耀，四季变化能长久成就万物，圣人长久持守正道而天下教化成就。观察恒久之道，天地万物的真情就可以看懂了。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">恒卦是长久之卦。上震为雷下巽为风——雷风相薄，相辅相成。"不恒其德，或承之羞"——不能长期坚持自己的品德，就可能承受羞耻。曾仕强说恒卦是婚姻最好的注解——持久的爱情不是轰轰烈烈，而是日复一日的坚持。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'1-7':{tuanOriginal:'彖曰：遁亨，遁而亨也。刚当位而应，与时行也。小利贞，浸而长也。遁之时义大矣哉。',tuanTranslation:'彖传说：遁卦亨通，是因为退避而亨通。阳刚正当其位而有所响应，是顺应时势而行。小利于守正，是阴柔之气在逐渐增长。遁卦所蕴含的时机意义真大啊。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">遁卦是退避之卦。上乾为天下艮为山——山高入天却懂得退避隐藏。"好遁，君子吉"——喜欢退隐的人才是真正的君子。傅佩荣说遁卦不是教人逃跑，而是教人在不利的局面中全身而退以待时机。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'4-1':{tuanOriginal:'彖曰：大壮，大者壮也。刚以动，故壮。大壮利贞，大者正也。正大而天地之情可见矣。',tuanTranslation:'彖传说：大壮是大为强壮的意思。阳刚而行动，所以强壮。大壮适宜正固，大的事物必须行正道。正道宏大，天地的真情就可以看到了。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">大壮是强盛之卦。四阳在下二阴在上，力量极盛。"羝羊触藩"——公羊以角顶撞篱笆反而伤了自己的角，说明力量不加控制反而会伤己。曾仕强说大壮教人：越是强大的时候越要学会自制。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'3-8':{tuanOriginal:'彖曰：晋，进也。明出地上，顺而丽乎大明，柔进而上行，是以康侯用锡马蕃庶，昼日三接也。',tuanTranslation:'彖传说：晋是前进的意思。光明出现在大地上面，柔顺而依附于伟大的光明，柔顺前进而向上运行，所以康侯被赏赐众多良马，一天之内三次接见。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">晋卦是前进上升之卦。上离为火下坤为地——光明出现在大地上，旭日东升的景象。傅佩荣说"晋如摧如"——前进中遇到挫折很正常，只要守正就能渡过。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'8-3':{tuanOriginal:'彖曰：明入地中，明夷。内文明而外柔顺，以蒙大难，文王以之。利艰贞，晦其明也。内难而能正其志，箕子以之。',tuanTranslation:'彖传说：光明进入地中，这就是明夷卦。内心文明而外表柔顺，以此来蒙受大难，周文王就是这样做的。适宜在艰难中守正，是隐藏自己的光明。身陷内部危难而能端正自己的志向，箕子就是这样做的。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">明夷是黑暗之卦。上坤为地下离为火——太阳落入地中，大地一片黑暗。文王被纣王囚禁、箕子装疯避祸，都是明夷的经典案例。曾仕强说：在最黑暗的时刻，聪明人会把光芒隐藏起来。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'5-3':{tuanOriginal:'彖曰：家人，女正位乎内，男正位乎外。男女正，天地之大义也。家人有严君焉，父母之谓也。父父子子兄兄弟弟夫夫妇妇而家道正。正家而天下定矣。',tuanTranslation:'彖传说：家人卦，女子在内部端正自己的位置，男子在外部端正自己的位置。男女各正其位，这是天地间的大道。家中有威严的君主，这就是父母。父子兄弟夫妇各安其位，家道就走上正轨了。家道正了，天下也就安定了。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">家人卦专论家庭伦理。上巽为风下离为火——风火相生，家道兴旺。傅佩荣说此卦对现代家庭仍有现实意义："闲有家"——从建立家风家规入手；"富家，大吉"——家庭富裕是好事但不是全部。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'3-2':{tuanOriginal:'彖曰：睽，火动而上，泽动而下。二女同居，其志不同行。说而丽乎明，柔进而上行，得中而应乎刚，是以小事吉。天地睽而其事同也，男女睽而其志通也，万物睽而其事类也。睽之时用大矣哉。',tuanTranslation:'彖传说：睽卦，火向上燃烧，泽向下流动。两个女子住在一起，但心意不一致。喜悦而依附于光明，柔顺前进而向上，得到中位而与阳刚相应，所以小事吉利。天地之间虽有乖离但生化之事相同，男女之间虽有差异但心意相通，万物之间虽有分别但功能类似。睽卦的时机功用真大啊。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">睽卦是乖离之卦。上火下泽，二者各走各路。傅佩荣说睽卦教人"求同存异"——大事上暂时有分歧不妨碍小事上的合作。"遇主于巷"——在非正式场合反而更容易化解矛盾。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'6-7':{tuanOriginal:'彖曰：蹇，难也，险在前也。见险而能止，知矣哉。蹇利西南，往得中也。不利东北，其道穷也。利见大人，往有功也。当位贞吉，以正邦也。蹇之时用大矣哉。',tuanTranslation:'彖传说：蹇是艰难的意思，危险就在前面。看到危险就能停下来，这是智慧啊。蹇卦适宜往西南，是因为前往可以得到中道。不适宜往东北，是因为那条路走到了尽头。适宜拜见大人，是因为前往可以立功。当位守正则吉，可以此来匡正国家。蹇卦的时机功用真大啊。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">蹇卦是艰难险阻之卦。上坎为水下艮为山——水在山上，举步维艰。"大蹇朋来"——最困难的时候朋友会来帮忙。曾仕强说蹇卦告诉我们：该停就停，不要硬闯。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'4-6':{tuanOriginal:'彖曰：解，险以动，动而免乎险，解。解利西南，往得众也。其来复吉，乃得中也。有攸往夙吉，往有功也。天地解而雷雨作，雷雨作而百果草木皆甲坼。解之时大矣哉。',tuanTranslation:'彖传说：解卦，在危险中行动，行动就能免除危险，这就是解。解卦适宜西南，是因为前往可以得到众人的支持。回来重新开始就吉，是因为得到了中道。有所前往及早行动就吉，是因为前往可以立功。天地解冻就会雷雨兴起，雷雨兴起则百果草木都破壳发芽。解卦所蕴含的时机真伟大啊。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">解卦是困难解除之卦。上震为雷下坎为水——雷雨大作，冲刷一切障碍。傅佩荣说"田获三狐"——困难解除后会收获满满。倪海厦说解卦在中医里对应病邪外解——出出汗把邪气排出去。<span class="source-tag">中华书局《周易》</span></p></div>'},
+'7-2':{tuanOriginal:'彖曰：损，损下益上，其道上行。损而有孚，元吉无咎可贞，利有攸往。曷之用，二簋可用享。二簋应有时，损刚益柔有时。损益盈虚，与时偕行。',tuanTranslation:'彖传说：损卦，减损下面的来增益上面的，这是向上运行的道。减损而有诚信，最为吉祥没有灾祸可以守正，适宜有所前往。用什么来表示呢？两碗简单的供品就可以行祭祀之礼。两碗的简朴有它的时机，减损刚健增益柔顺也有它的时机。减损增益、满盈亏虚，都要顺应时机而行。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">损卦是减损之卦。"损下益上"——将基层的资源集中到核心项目上。"三人行，则损一人。一人行，则得其友"——有时一个人行动反而比三人同行更高效。傅佩荣说损卦教我们做减法——去掉多余的，反而收获更多。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'5-4':{tuanOriginal:'彖曰：益，损上益下，民说无疆。自上下下，其道大光。利有攸往，中正有庆。利涉大川，木道乃行。益动而巽，日进无疆。天施地生，其益无方。凡益之道，与时偕行。',tuanTranslation:'彖传说：益卦，减损上面的来增益下面的，人民的喜悦无边。从上到下惠及下层，这个道大放光明。适宜有所前往，是因为居中守正有喜庆。适宜渡大河，是因为木道得以实行。益卦行动而柔顺，每天进步没有止境。天施予、地生长，其中的增益没有固定的方式。所有增益之道，都要顺应时机而行。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">益卦是增益之卦。"损上益下"——上位者把利益分享给下层。"利用为大作，元吉"——有了资源后要用来做大事。曾仕强说损和益相辅相成：有时你以为是损，其实是益；有时你以为是益，长久看反而是损。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'2-1':{tuanOriginal:'彖曰：夬，决也，刚决柔也。健而说，决而和。扬于王庭，柔乘五刚也。孚号有厉，其危乃光也。告自邑，不利即戎，所尚乃穷也。利有攸往，刚长乃终也。',tuanTranslation:'彖传说：夬是决断的意思，阳刚决去阴柔。刚健而喜悦，决断而和谐。在王庭上公开宣告，是因为阴柔凌驾于五个阳刚之上。诚信呼号有危险，但危难反而使光明彰显。从自己的城邑发布告示，不适宜立即动武，因为崇尚武力会走入绝境。适宜有所前往，是因为阳刚增长最终会成功。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">夬卦是决断之卦。五阳在下决去最上一阴，已经到了一决胜负的时刻。"不利即戎"——不主张武力解决。傅佩荣说最厲害的决断不是硬碰硬，而是在公开透明的环境下有底气地做出选择。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'1-5':{tuanOriginal:'彖曰：姤，遇也，柔遇刚也。勿用取女，不可与长也。天地相遇，品物咸章也。刚遇中正，天下大行也。姤之时义大矣哉。',tuanTranslation:'彖传说：姤是相遇的意思，柔顺遇到刚健。不可娶这样的女子，是因为不能和她长久相处。天地相遇，各类事物都显明彰著。刚健遇到中正之位，天下大道畅行。姤卦所蕴含的时机意义真大啊。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">姤卦是邂逅相遇之卦。一阴在下五阳在上——不期而遇的邂逅。"系于金柅"提醒遇到机会后要控制好节奏。"有陨自天"——意外的惊喜或打击都可能从天而降。傅佩荣说姤卦是缘分卦。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'2-8':{tuanOriginal:'彖曰：萃，聚也。顺以说，刚中而应，故聚也。王假有庙，致孝享也。利见大人，亨，聚以正也。用大牲吉，利有攸往，顺天命也。观其所聚，而天地万物之情可见矣。',tuanTranslation:'彖传说：萃是聚集的意思。柔顺而喜悦，刚健居中而有所响应，所以能聚集。君王亲临宗庙，是为了表达孝心祭祀祖先。适宜拜见大人，亨通，是因为聚集以正道。用大牲祭祀吉利，适宜有所前往，是顺应天命。观察聚集的道理，天地万物的真情就可以见到了。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">萃聚聚集之卦。泽在地上水流汇合——人气聚集。傅佩荣说"引吉"——被朋友引荐是最靠谱的社交方式。曾仕强提醒：聚集在一起的人心如果不齐，好事反而会变成叹息。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'8-5':{tuanOriginal:'彖曰：柔以时升，巽而顺，刚中而应，是以大亨。用见大人，勿恤，有庆也。南征吉，志行也。',tuanTranslation:'彖传说：柔顺顺应时机上升，巽入而柔顺，刚健居中而有所响应，所以大为亨通。适宜拜见大人，不必担忧，会有喜庆。往南方出征吉利，是志向可以实行。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">升卦是上升之卦。地中生木，节节向上。"允升，大吉"——得到认可后的上升最稳妥。曾仕强说"升阶"——一步一个台阶地上升，是普通人最可靠的升迁路径。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'2-6':{tuanOriginal:'彖曰：困，刚揜也。险以说，困而不失其所，亨，其唯君子乎。贞大人吉，以刚中也。有言不信，尚口乃穷也。',tuanTranslation:'彖传说：困卦，阳刚被掩蔽了。在危险中仍然喜悦，处于困境而不失去自己的操守，亨通——大概只有君子能做到吧。守正大人吉利，是因为刚健居中。说话没人相信，是因为崇尚口舌之辩反而走向绝路。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">困卦是困境之卦。上兑为泽下坎为水——泽中无水，干涸受困。"有言不信"——在困境中说得再多也没用。傅佩荣说困卦最打动人的是"困而不失其所"——在困境中不丢失自己的本心和操守，这才是君子的底色。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'6-5':{tuanOriginal:'彖曰：巽乎水而上水，井。井，养而不穷也。改邑不改井，乃以刚中也。汔至亦未繘井，未有功也。羸其瓶，是以凶也。',tuanTranslation:'彖传说：顺着水的特性而把水汲取上来，这就是井。井滋养万物而不会枯竭。城池可以改变而水井不变，是因为刚健居中。快到水面了还没有把井绳全部提出，说明还没有成功。打破了汲水的瓶子，所以凶险。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">井卦是供养之卦。上坎为水下巽为风——水在木上，如同井水被汲上来。"改邑不改井"——周围环境可以变，但根本的东西不能变。傅佩荣说专业能力就是你的"井"，不断深挖才能取之不竭。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'2-3':{tuanOriginal:'彖曰：革，水火相息，二女同居其志不相得，曰革。己日乃孚，革而信之。文明以说，大亨以正，革而当，其悔乃亡。天地革而四时成，汤武革命，顺乎天而应乎人。革之时大矣哉。',tuanTranslation:'彖传说：革是变革，水和火相互熄灭，两个女子住在一起心意不相合，这叫变革。到了变革之日才能获得信任，变革才能被信服。文明而喜悦，大为亨通以正道，变革得当，悔恨就消除了。天地变革而形成四季，汤武革了夏桀商纣的命是顺天应人的。革卦的时机意义真大啊。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">革卦是变革之卦。上兑为泽下离为火——水火不容，非变不可。傅佩荣说"巩用黄牛之革"——变革之前先巩固自身的根基。"大人虎变"——真正彻底的变革是有气魄的、不可逆转的。曾仕强说改革最忌半途而废。<span class="source-tag">中华书局《周易》</span></p></div>'},
+'3-5':{tuanOriginal:'彖曰：鼎，象也。以木巽火，亨饪也。圣人亨以享上帝，而大亨以养圣贤。巽而耳目聪明，柔进而上行，得中而应乎刚，是以元亨。',tuanTranslation:'彖传说：鼎是取象于鼎器。把木柴放进火里，这是烹饪。圣人烹饪来祭祀上帝，而丰盛的烹饪用来供养圣贤。柔顺而耳目聪明，柔顺前进而向上运行，得中位而与刚健相应，所以大为亨通。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">鼎卦是鼎新之卦。上离为火下巽为风——以木入火，烹饪鼎食。"鼎颠趾，利出否"——先把鼎倒过来倒掉残渣，再装入新鲜食材。傅佩荣说这就是除旧布新。"鼎折足，覆公餗"——鼎的腿断了把粥倾覆了，是"才不配位"的警示。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'4-4':{tuanOriginal:'彖曰：震，亨。震来虩虩，恐致福也。笑言哑哑，后有则也。震惊百里，惊远而惧迩也。不丧匕鬯，出可以守宗庙社稷，以为祭主也。',tuanTranslation:'彖传说：震卦，亨通。雷声震动令人恐惧，恐惧可以带来福祉。后来有说有笑，是因为有了应对的法度。雷声震惊百里，使远处的人惊恐、近处的人畏惧。在震动中不丢失手中的祭祀器具，这样的人可以出去守护宗庙社稷，成为祭祀的主持者。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">震卦是震动之卦。上下皆震——雷声叠加，天地震动。"震惊百里，不丧匕鬯"——在最大的震动中不丢掉手中的汤匙和香酒，这才是大将风范。傅佩荣说震卦考验的是定力——在突发事件面前能否保持冷静。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'7-7':{tuanOriginal:'彖曰：艮，止也。时止则止，时行则行，动静不失其时，其道光明。艮其止，止其所也。上下敌应，不相与也。是以不获其身，行其庭不见其人，无咎也。',tuanTranslation:'彖传说：艮是停止的意思。该停的时候就停，该走的时候就走，动静都不失时机，这条道路是光明的。艮卦的止，是止于应该停的地方。上下互相敌对不相应，不互相给予。所以感觉不到自身的存在，在庭院中行走也看不见那个人，没有灾祸。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">艮卦是停止之卦。上下皆艮——山上有山，当止则止。"艮其背，不获其身"——把背对着诱惑，连自己的存在都忘了，这就是最彻底的停止。曾仕强说艮卦是"舍得"的智慧——知道什么时候该收手比知道什么时候该出手更难。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'5-7':{tuanOriginal:'彖曰：渐之进也，女归吉也。进得位，往有功也。进以正，可以正邦也。其位刚得中也。止而巽，动不穷也。',tuanTranslation:'彖传说：渐是渐进的意思，女子出嫁吉利。前进得到正确的位置，前往会有功绩。以正道前进，可以以此来匡正邦国。这个位置是阳刚居于中位的。安止而柔顺地行动，就不会陷入困境。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">渐卦是循序渐进之卦。上巽为风下艮为山——风行山上，缓步推进。"鸿渐于干"→"鸿渐于磐"→"鸿渐于陆"→"鸿渐于木"→"鸿渐于陵"——大雁从水边一级级飞向高空，缺一步都不行。傅佩荣说渐卦最适合急性子的人细品。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'4-2':{tuanOriginal:'彖曰：归妹，天地之大义也。天地不交而万物不兴。归妹，人之终始也。说以动，所归妹也。征凶，位不当也。无攸利，柔乘刚也。',tuanTranslation:'彖传说：女子出嫁这是天地间的大义。天地不相交万物就不能兴起。嫁女是一个人生阶段的终结和新生活的开始。因喜悦而行动，这就促成了出嫁。出征凶险是因为位置不当。没有好处是因为柔顺凌驾在刚健之上。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">归妹卦是婚嫁之卦。"征凶，无攸利"——女子出嫁本是好事，但归妹卦不是正常婚配而是陪嫁或变通婚姻。傅佩荣说此卦提醒"名分"的重要性——关系不正便会处处不顺。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'4-3':{tuanOriginal:'彖曰：丰，大也。明以动，故丰。王假之，尚大也。勿忧宜日中，宜照天下也。日中则昃，月盈则食，天地盈虚，与时消息，而况于人乎，况于鬼神乎。',tuanTranslation:'彖传说：丰是盛大的意思。光明而行动，所以盛大。君王亲临治理，是崇尚盛大的事业。不要担忧，适宜如日中天之时，是宜于照耀天下万物。太阳到了正午就会偏西，月亮圆满之后就会亏缺，天地的满盈亏虚都顺应着时机的消长，更何况人呢？更何况鬼神呢？',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">丰卦是盛大之卦。上震为雷下离为火——雷电交加、光明灿烂。"日中见斗"——大中午看到北斗星，说明太阳被乌云遮蔽了。傅佩荣说这是最发人深省的画面——最光明的时刻也可能有短暂的黑暗。"丰其屋，蔀其家"——屋子装潢得无比丰盛，却把自己关在里面与世隔绝。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'3-7':{tuanOriginal:'彖曰：旅，小亨。柔得中乎外而顺乎刚，止而丽乎明，是以小亨旅贞吉也。旅之时义大矣哉。',tuanTranslation:'彖传说：旅卦，小有亨通。柔顺在外面得到中位而顺从刚健，安止而依附于光明，所以小有亨通，旅居在外守正则吉。旅卦所蕴含的时机意义真大啊。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">旅卦是旅居之卦。上离为火下艮为山——山上有火，旅人举火夜行。"旅琐琐，斯其所取灾"——出门在外斤斤计较是招来灾祸的原因。傅佩荣特别指出"旅人先笑后号咷"——乐极生悲是旅卦最痛的教训。倪海厦将此卦对应人生如寄旅——我们都是地球的过客，认真但不执着。<span class="source-tag">倪海厦《天纪》</span></p></div>'},
+'5-5':{tuanOriginal:'彖曰：重巽以申命。刚巽乎中正而志行，柔皆顺乎刚，是以小亨，利有攸往，利见大人。',tuanTranslation:'彖传说：双重的巽顺是为了反复申明教令。刚健以巽顺的方式居于中正之位而志向得以实行，阴柔都顺承阳刚，所以小有亨通，适宜有所前往，适宜拜见大人。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">巽为风上下皆风——风随风行，无孔不入，是顺从之卦。"进退，利武人之贞"——在进退之间要有军人的果断。傅佩荣说巽顺不是懦弱，而是像风一样柔韧而有力。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'2-2':{tuanOriginal:'彖曰：兑，说也。刚中而柔外，说以利贞，是以顺乎天而应乎人。说以先民，民忘其劳。说以犯难，民忘其死。说之大，民劝矣哉。',tuanTranslation:'彖传说：兑是喜悦的意思。阳刚居中而柔顺在外，喜悦而适宜正固，所以是顺从天理而又顺应人心的。以喜悦来引导人民，人民就会忘记劳累。以喜悦来面对困难，人民就会忘记死亡。喜悦的力量之大，能劝勉人民啊。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">兑为泽上下皆泽——两个湖泽相连，水乳交融的喜悦之卦。"孚兑，吉"——以发自内心真诚的喜悦与人相处最吉。"来兑，凶"——刻意逢迎献媚反而是凶的。傅佩荣说兑卦的核心是"和"——和谐、平和、喜悦的交流。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'5-6':{tuanOriginal:'彖曰：涣，亨。刚来而不穷，柔得位乎外而上同。王假有庙，王乃在中也。利涉大川，乘木有功也。',tuanTranslation:'彖传说：涣卦，亨通。刚健到来而不会穷尽，柔顺在外面得到位置而向上同心。君王亲临宗庙，是君王居于中位。适宜渡过大河，是凭借木行之道而有功绩。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">涣卦是涣散后重聚之卦。上巽为风下坎为水——风行水上，浪花四溅。"涣其群，元吉。涣有丘，匪夷所思"——解散了小团体却不散乱，反而凝聚成一座大山。傅佩荣说涣卦是"破而后立"的智慧——有时候先要打破旧格局才能迎来新的聚合。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'6-2':{tuanOriginal:'彖曰：节，亨。刚柔分而刚得中。苦节不可贞，其道穷也。说以行险，当位以节，中正以通。天地节而四时成。节以制度，不伤财，不害民。',tuanTranslation:'彖传说：节卦亨通。刚柔分明而刚健居于中位。苦涩严苛的节制不可以长久坚持，因为那是穷途末路的做法。以喜悦的态度来涉险行事，居当位而能有节度，中正而能通达。天地有节制就形成了四季。用制度来实行节制，就不会浪费财物，不会伤害人民。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">节卦是节制之卦。"安节，亨"——舒适平和的节制最亨通；"苦节，贞凶"——苦涩严苛的节制会把人压垮。曾仕强说中国人讲究"中庸"，节卦就是"度"的哲学——不多不少、恰到好处。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'5-2':{tuanOriginal:'彖曰：中孚，柔在内而刚得中。说而巽，孚乃化邦也。豚鱼吉，信及豚鱼也。利涉大川，乘木舟虚也。中孚以利贞，乃应乎天也。',tuanTranslation:'彖传说：中孚卦，柔顺在内而刚健居于中位。喜悦而巽顺，诚信就能教化整个邦国。用小猪和鱼祭祀吉祥，是因为诚信连小猪和鱼都能感受到。适宜渡过大河，是因为乘坐的木船是空的。中孚卦适宜守正，这是顺应天道的结果。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">中孚是诚信之卦。"鸣鹤在阴，其子和之"——白鹤在树荫下鸣叫，小鹤就会回应。这是《周易》最动人的画面——真诚的呼唤一定会得到真实的回应。傅佩荣说中孚是《易经》中最美的一卦。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'4-7':{tuanOriginal:'彖曰：小过，小者过而亨也。过以利贞，与时行也。柔得中，是以小事吉也。刚失位而不中，是以不可大事也。有飞鸟之象焉。飞鸟遗之音，不宜上宜下，大吉，上逆而下顺也。',tuanTranslation:'彖传说：小过卦，小有过越反而亨通。过越而适宜守正，这是顺应时机而行。柔顺居中，所以小事吉利。刚健失去位置又不居中，所以不可做大事。有飞鸟的象征。飞鸟飞过留下的声音提示：此时不宜向上，适宜向下，大吉——向上是违逆的，向下才是顺应的。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">小过是小有过越之卦。"可小事，不可大事"——小事上稍微过分一点是好的（比如多努力一点），但在大方向上绝不能出轨。曾仕强说小过卦是对完美主义者的劝告——在细节上可以挑剔，但不要在大事上执着到钻牛角尖。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+'6-3':{tuanOriginal:'彖曰：既济亨，小者亨也。利贞，刚柔正而位当也。初吉，柔得中也。终止则乱，其道穷也。',tuanTranslation:'彖传说：既济卦亨通，是小事的亨通。适宜正固，因为刚柔都得正而且位置恰当。起初吉利，是因为柔顺居于中位。到了终点就混乱了，是因为道路走到了尽头。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">既济是万事已经完成之卦。"初吉终乱"四个字是全卦要害——成功只是暂时的。"曳其轮"——成功后马上拉住自己的车轮放慢速度，这是最清醒的选择。傅佩荣说既济是《易经》最后一卦（未济反而排在后面），寓意极深——以为完成了其实才刚刚开始。<span class="source-tag">傅佩荣《易经入门》</span></p></div>'},
+'3-6':{tuanOriginal:'彖曰：未济亨，柔得中也。小狐汔济，濡其尾，无攸利，不续终也。虽不当位，刚柔应也。',tuanTranslation:'彖传说：未济卦亨通，是因为柔顺得到了中位。小狐狸快要过河了，尾巴被沾湿了，没有优势可言，因为不能坚持到终点。虽然位置不太恰当，但刚柔之间还能相应。',commentary:'<div class="commentary-section"><h4>【卦义总论】</h4><p class="text-block">未济是万事尚未完成之卦。以"未济"作为六十四卦的终点而不是"既济"，是《周易》最深的智慧——世间事永远没有真正的终点。"小狐汔济，濡其尾"——小狐狸快要过河了差一点湿了尾巴——就差这最后一步！傅佩荣说《易经》以未济结束，告诉我们人生永远在路上。<span class="source-tag">中华书局《周易》</span></p><p class="text-block"><strong>曾仕强</strong>最喜欢未济卦：它给所有人希望——"未济"说明还能继续努力，还有机会改变。如果到"既济"就结束了，那才是真正的绝望。<span class="source-tag">曾仕强《易经的智慧》</span></p></div>'},
+};
+
+// --- Build hexagram lookup from HEXAGRAM_DATA ---
+const HEXAGRAMS = {};
+(function initData() {
+  for (const h of HEXAGRAM_DATA) {
+    const [id, upper, lower, name, judgment, judgmentTrans, lines] = h;
+    const key = upper + '-' + lower;
+    const symbol = TRIGRAMS[upper].symbol + TRIGRAMS[lower].symbol;
+    HEXAGRAMS[key] = {
+      id, upper, lower, name,
+      fullName: name + '卦',
+      symbol,
+      judgment: judgment,
+      judgmentTranslation: judgmentTrans,
+      lines: lines.map((l, i) => ({
+        original: l.o,
+        translation: l.t,
+        position: i // 0=初爻, ..., 5=上爻
+      }))
+    };
+  }
+})();
+
+// --- Helper: get remainder for trigram (div 8, 0→8) ---
+function trigramRemainder(n) {
+  const r = n % 8;
+  return r === 0 ? 8 : r;
+}
+
+// --- Helper: get remainder for moving line (div 6, 0→6) ---
+function lineRemainder(n) {
+  const r = n % 6;
+  return r === 0 ? 6 : r;
+}
+
+// --- Compute changed hexagram ---
+// Flip one bit in the 6-line bitmap at movingLine position (1-indexed from bottom)
+// Then map the upper 3 bits (lines 4,5,6) and lower 3 bits (lines 1,2,3) back to trigram numbers
+function getChangedHexagram(hexagram, movingLine) {
+  // Build 6-bit bitmap: lines[0]=初爻(bottom), ..., lines[5]=上爻(top)
+  const upperT = hexagram.upper;
+  const lowerT = hexagram.lower;
+  const upperBits = TRIGRAM_BITS[upperT]; // [上,中,下] of upper trigram
+  const lowerBits = TRIGRAM_BITS[lowerT]; // [上,中,下] of lower trigram
+
+  // 6-bit: line 6(top)=upper[0], 5=upper[1], 4=upper[2], 3=lower[0], 2=lower[1], 1=lower[2]
+  const bits = [
+    upperBits[0], // line 6 (上爻)
+    upperBits[1], // line 5
+    upperBits[2], // line 4
+    lowerBits[0], // line 3
+    lowerBits[1], // line 2
+    lowerBits[2]  // line 1 (初爻)
+  ];
+
+  // Flip the moving line (movingLine is 1-indexed from bottom = line 1=初爻)
+  const idx = 6 - movingLine; // convert to 0-indexed array position
+  bits[idx] = bits[idx] === 1 ? 0 : 1;
+
+  // Reconstruct upper and lower trigram bits
+  const newUpperBits = [bits[0], bits[1], bits[2]];
+  const newLowerBits = [bits[3], bits[4], bits[5]];
+
+  // Find trigram numbers from bits
+  function bitsToTrigram(bits) {
+    const key = bits.join(',');
+    for (const [tNum, tBits] of Object.entries(TRIGRAM_BITS)) {
+      if (tBits[0] === bits[0] && tBits[1] === bits[1] && tBits[2] === bits[2]) {
+        return parseInt(tNum);
+      }
+    }
+    return null;
+  }
+
+  const newUpper = bitsToTrigram(newUpperBits);
+  const newLower = bitsToTrigram(newLowerBits);
+  const key = newUpper + '-' + newLower;
+  return HEXAGRAMS[key] || null;
+}
+
+// --- UI Helpers ---
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+}
+
+function shakeElement(el) {
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 300);
+}
+
+// --- Validation ---
+function validateInput(id) {
+  const el = document.getElementById(id);
+  const val = el.value.trim();
+  if (val === '') {
+    showToast('请输入三位数（100-999）');
+    shakeElement(el);
+    el.focus();
+    return false;
+  }
+  if (!/^\d+$/.test(val)) {
+    showToast('请输入有效整数');
+    shakeElement(el);
+    el.focus();
+    return false;
+  }
+  const n = parseInt(val, 10);
+  if (n < 100 || n > 999) {
+    showToast('请输入 100-999 之间的整数');
+    shakeElement(el);
+    el.focus();
+    return false;
+  }
+  return n;
+}
+
+// --- Tab switching ---
+function initTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const targetId = 'tab-' + this.dataset.tab;
+      // Remove active from all tabs & contents
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      // Activate clicked tab and corresponding content
+      this.classList.add('active');
+      document.getElementById(targetId).classList.add('active');
+    });
+  });
+}
+
+// --- Enter key support ---
+function initKeyboard() {
+  document.querySelectorAll('#num1, #num2, #num3').forEach(input => {
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doDivination();
+      }
+    });
+    // Auto-focus next input
+    input.addEventListener('input', function() {
+      if (this.value.length === 3 && this.id !== 'num3') {
+        const nextMap = { num1: 'num2', num2: 'num3' };
+        document.getElementById(nextMap[this.id]).focus();
+      }
+    });
+  });
+}
+
+// --- Main divination function ---
+function doDivination() {
+  const n1 = validateInput('num1');
+  const n2 = validateInput('num2');
+  const n3 = validateInput('num3');
+  if (n1 === false || n2 === false || n3 === false) return;
+
+  // Step 1: Calculate
+  const lowerNum = trigramRemainder(n1);
+  const upperNum = trigramRemainder(n2);
+  const moveLine = lineRemainder(n3);
+
+  const lowerTri = TRIGRAMS[lowerNum];
+  const upperTri = TRIGRAMS[upperNum];
+
+  const hexaKey = upperNum + '-' + lowerNum;
+  const hexagram = HEXAGRAMS[hexaKey];
+
+  if (!hexagram) {
+    showToast('卦象数据未找到，请联系开发者补充');
+    return;
+  }
+
+  const changedHexagram = getChangedHexagram(hexagram, moveLine);
+  const movingLineData = hexagram.lines[moveLine - 1];
+
+  // Step 2: Render calculation steps
+  const q1 = Math.floor(n1 / 8);
+  const r1 = n1 % 8;
+  const q2 = Math.floor(n2 / 8);
+  const r2 = n2 % 8;
+  const q3 = Math.floor(n3 / 6);
+  const r3 = n3 % 6;
+
+  document.getElementById('calcSteps').innerHTML = `
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <span class="formula">${n1} ÷ 8 = ${q1} … 余 <span class="highlight">${r1}</span></span>
+        → 余数 ${r1 === 0 ? '<span class="highlight">0 → 取坤卦（8）</span>' : r1}，
+        对应 <span class="highlight">${lowerTri.symbol} ${lowerTri.name}卦（${lowerTri.element}）</span> —— <strong>下卦</strong>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <span class="formula">${n2} ÷ 8 = ${q2} … 余 <span class="highlight">${r2}</span></span>
+        → 余数 ${r2 === 0 ? '<span class="highlight">0 → 取坤卦（8）</span>' : r2}，
+        对应 <span class="highlight">${upperTri.symbol} ${upperTri.name}卦（${upperTri.element}）</span> —— <strong>上卦</strong>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <span class="formula">${n3} ÷ 6 = ${q3} … 余 <span class="highlight">${r3}</span></span>
+        → 余数 ${r3 === 0 ? '<span class="highlight">0 → 第六爻（上爻）动</span>' : r3 + ' → ' + LINE_NAMES[r3 - 1] + '动'}，
+        对应 <span class="highlight">${LINE_NAMES[moveLine - 1]}为动爻</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        上卦 <span class="highlight">${upperTri.symbol}${upperTri.name}</span> + 下卦 <span class="highlight">${lowerTri.symbol}${lowerTri.name}</span>
+        → 本卦：<span class="highlight">${hexagram.symbol} ${hexagram.fullName}</span>，${LINE_NAMES[moveLine - 1]}动
+      </div>
+    </div>
+  `;
+
+  // Step 3: Render hexagram display
+  const lineDisplays = [];
+  for (let i = 5; i >= 0; i--) {
+    const isMoving = (i === moveLine - 1);
+    const lineName = LINE_NAMES[i];
+    const isYang = YANG_TRIGRAMS.has(i >= 3 ? upperNum : lowerNum);
+    // Actually we should use the bitmap approach
+    const upperBits = TRIGRAM_BITS[upperNum];
+    const lowerBits = TRIGRAM_BITS[lowerNum];
+    const bits = [upperBits[0], upperBits[1], upperBits[2], lowerBits[0], lowerBits[1], lowerBits[2]];
+    const yang = bits[5 - i] === 1;
+    const lineSymbol = yang ? '━━━━━' : '━   ━';
+    lineDisplays.push({ name: lineName, symbol: lineSymbol, isMoving, yang });
+  }
+
+  let lineDisplayHTML = lineDisplays.map((l, idx) => {
+    const movingClass = l.isMoving ? ' style="color:#c0392b;font-weight:700;"' : '';
+    const movingDot = l.isMoving ? ' <span style="color:#c0392b;font-size:0.75rem;">◀ 动爻</span>' : '';
+    return `<div${movingClass} style="font-family:monospace;font-size:1.3rem;line-height:1.6;">${l.symbol}  <span style="font-size:0.8rem;">${l.name}${movingDot}</span></div>`;
+  }).join('');
+
+  document.getElementById('hexaDisplay').innerHTML = `
+    <div style="margin-bottom:8px;">${lineDisplayHTML}</div>
+    <div class="hexa-symbol">${hexagram.symbol}</div>
+    <div class="hexa-name">${hexagram.fullName}</div>
+    <div class="hexa-detail">${upperTri.element}上${lowerTri.element}下 · ${upperTri.nature}而${lowerTri.nature}</div>
+    <div class="hexa-moving">⚡ ${LINE_NAMES[moveLine - 1]}动（${movingLineData.original.substring(0, 8)}…）</div>
+  `;
+
+  // Step 4: Render changed hexagram row
+  if (changedHexagram && changedHexagram.id !== hexagram.id) {
+    document.getElementById('changedRow').innerHTML = `
+      <div class="changed-mini">
+        <div class="symbol">${hexagram.symbol}</div>
+        <div class="name">本卦 · ${hexagram.fullName}</div>
+      </div>
+      <div class="changed-arrow">→</div>
+      <div class="changed-mini">
+        <div class="symbol">${changedHexagram.symbol}</div>
+        <div class="name">变卦 · ${changedHexagram.fullName}</div>
+      </div>
+    `;
+  } else {
+    document.getElementById('changedRow').innerHTML = `
+      <div style="text-align:center;color:var(--text-secondary);font-size:0.9rem;">
+        动爻变动后本卦不变（阴阳未改），仍为 ${hexagram.fullName}
+      </div>
+    `;
+  }
+
+  // Step 5: Render interpretation tabs
+
+  // Get Tuanzhuan data
+  const tuanData = TUANZHUAN_DATA[hexaKey];
+  const tuanO = tuanData ? tuanData.tuanOriginal : '';
+  const tuanT = tuanData ? tuanData.tuanTranslation : '';
+  const commentary = tuanData ? tuanData.commentary : '';
+  const sourceNote = `<p style="font-size:0.72rem;color:#b0a590;margin-top:8px;">译文来源：中华书局《周易》（杨天才、张善文译注），参考傅佩荣《易经入门》、倪海厦《天纪》、曾仕强《易经的智慧》</p>`;
+
+  // Tab 1: 卦辞 · 彖传
+  document.getElementById('tab-judgment').innerHTML = `
+    <div class="quote-block">
+      <div class="quote-original">【卦辞原文】${hexagram.judgment}</div>
+      <div class="quote-translation">【白话】${hexagram.judgmentTranslation}</div>
+    </div>
+    <div class="quote-block">
+      <div class="quote-original">【彖传原文】${tuanO || '（数据收集中）'}</div>
+      <div class="quote-translation">【彖传白话】${tuanT || '（数据收集中）'}</div>
+    </div>
+    <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.8;">
+      本卦为<strong>${hexagram.fullName}</strong>，上${upperTri.symbol}${upperTri.name}（${upperTri.element}，性${upperTri.nature}）下${lowerTri.symbol}${lowerTri.name}（${lowerTri.element}，性${lowerTri.nature}）。
+      彖传是孔子对卦辞的系统阐述，从卦体、卦德、卦象三个层面解释整个卦的核心义理。
+    </p>
+    ${sourceNote}
+  `;
+
+  // Tab 2: 专家详解
+  document.getElementById('tab-expert').innerHTML = commentary
+    ? commentary + sourceNote
+    : `<div class="quote-block"><div class="quote-translation">该卦的专家详解正在整理中，请参考卦辞原文和彖传理解卦义。</div></div>`;
+
+  // Tab 3: 动爻爻辞
+  document.getElementById('tab-line').innerHTML = `
+    <div class="quote-block">
+      <div class="quote-original">【爻辞原文 · ${LINE_NAMES[moveLine - 1]}】${movingLineData.original}</div>
+      <div class="quote-translation">【白话】${movingLineData.translation}</div>
+    </div>
+    <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.8;">
+      动爻是整卦的机要所在。${LINE_NAMES[moveLine - 1]}爻动，意味着当前事情的变化关键点集中在<strong>${['初始阶段','内部积蓄期','初步行动期','中间过渡期','高位成熟期','最终末尾阶段'][moveLine - 1]}</strong>。
+      请重点关注动爻爻辞并结合本卦卦辞综合解读。
+    </p>
+    ${sourceNote}
+  `;
+
+  // Dimension readings
+  const dim = DIMENSION_READINGS[hexaKey];
+  if (dim) {
+    document.getElementById('tab-dimensions').innerHTML = `
+      <div class="dimension-grid">
+        <div class="dimension-card">
+          <div class="dim-icon">💼</div>
+          <div class="dim-title">事业 / 工作发展</div>
+          <div class="dim-text">${dim.career}</div>
+        </div>
+        <div class="dimension-card">
+          <div class="dim-icon">❤️</div>
+          <div class="dim-title">身体健康状况</div>
+          <div class="dim-text">${dim.health}</div>
+        </div>
+        <div class="dimension-card">
+          <div class="dim-icon">💰</div>
+          <div class="dim-title">财运起伏</div>
+          <div class="dim-text">${dim.wealth}</div>
+        </div>
+        <div class="dimension-card">
+          <div class="dim-icon">💕</div>
+          <div class="dim-title">姻缘感情走势</div>
+          <div class="dim-text">${dim.romance}</div>
+        </div>
+      </div>
+      <p style="font-size:0.78rem;color:#b0a590;margin-top:16px;text-align:center;">以上断语结合本卦卦德与爻位时势综合推演，仅供思悟参考。</p>
+    `;
+  } else {
+    document.getElementById('tab-dimensions').innerHTML = '<p style="color:var(--text-secondary);">该卦的断语数据正在完善中，请以卦辞和爻辞为主要参考。</p>';
+  }
+
+  // Changed hexagram reference
+  document.getElementById('tab-changed').innerHTML = `
+    <div class="quote-block">
+      <div class="quote-original">📌 变卦：${changedHexagram ? changedHexagram.fullName : '（不变）'}</div>
+      <div class="quote-translation">
+        ${changedHexagram && changedHexagram.id !== hexagram.id
+          ? `动爻变动后，<strong>${hexagram.fullName}</strong> 的 ${LINE_NAMES[moveLine - 1]} 由${YANG_TRIGRAMS.has(moveLine <= 3 ? lowerNum : upperNum) ? (moveLine <= 3 ? (TRIGRAM_BITS[lowerNum][2 - (moveLine - 1)] === 1 ? '阳' : '阴') : (TRIGRAM_BITS[upperNum][2 - (moveLine - 4)] === 1 ? '阳' : '阴')) : (moveLine <= 3 ? (TRIGRAM_BITS[lowerNum][2 - (moveLine - 1)] === 1 ? '阳' : '阴') : (TRIGRAM_BITS[upperNum][2 - (moveLine - 4)] === 1 ? '阳' : '阴'))}变${(() => { const bits = [...TRIGRAM_BITS[upperNum], ...TRIGRAM_BITS[lowerNum]]; const idx = 5 - (moveLine - 1); bits[idx] = bits[idx] === 1 ? 0 : 1; return bits[idx] === 1 ? '阳' : '阴'; })()}，从而转为 <strong>${changedHexagram.fullName}（${changedHexagram.symbol}）</strong>。`
+          : `动爻的阴阳变化未改变上下卦的卦体，故本卦不变。这意味着${LINE_NAMES[moveLine - 1]}爻的变动在当前格局中属于内部调整，不影响整体卦象定位。`
+        }
+      </div>
+    </div>
+    ${changedHexagram && changedHexagram.id !== hexagram.id ? `
+    <div class="quote-block">
+      <div class="quote-original">【变卦卦辞】${changedHexagram.judgment}</div>
+      <div class="quote-translation">【白话】${changedHexagram.judgmentTranslation}</div>
+    </div>
+    <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.8;">
+      <strong>变卦反映的是事物发展的趋势与走向。</strong>从 ${hexagram.fullName} 变为 ${changedHexagram.fullName}，
+      提示你所问之事在经历 ${LINE_NAMES[moveLine - 1]} 所示的关键变动之后，整体格局将向 ${changedHexagram.fullName} 的方向演进。
+      请将本卦（当下之象）与变卦（未来之势）结合起来理解。
+    </p>
+    ` : ''}
+  `;
+
+  // Step 6: Disclaimer
+  document.getElementById('disclaimerArea').innerHTML = `
+    <strong>⚖️ 理性提示：</strong>易经占卜为中华传统文化遗产，以上卦辞、爻辞及断语仅供文化参考与心理指引，
+    不构成任何形式的绝对宿命判定。生活中的重大决策，请结合理性思考与现实情况综合判断，不可盲信占卜结果。
+  `;
+
+  // Show results, scroll to them
+  const results = document.getElementById('results');
+  results.style.display = 'block';
+  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Re-initialize tabs
+  initTabs();
+}
+
+// --- Reset ---
+function doReset() {
+  document.getElementById('num1').value = '';
+  document.getElementById('num2').value = '';
+  document.getElementById('num3').value = '';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('num1').focus();
+  // Reset tabs
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  const firstTab = document.querySelector('.tab[data-tab="judgment"]');
+  if (firstTab) firstTab.classList.add('active');
+  const firstContent = document.getElementById('tab-judgment');
+  if (firstContent) firstContent.classList.add('active');
+}
+
+// --- Initialize ---
+document.addEventListener('DOMContentLoaded', function() {
+  initKeyboard();
+  initTabs();
+  document.getElementById('num1').focus();
+});
+</script>
+</body>
+</html>
