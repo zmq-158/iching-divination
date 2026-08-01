@@ -238,7 +238,7 @@ const TRIGRAMS = {
 const YANG_TRIGRAMS = new Set([1,4,6,7]);
 const YIN_TRIGRAMS = new Set([2,3,5,8]);
 
-// 三爻二进制位元 [上,中,下]
+// 三爻二进制位元 [下,中,上]（bottom→top，即初爻→中爻→上爻）
 const TRIGRAM_BITS = { 1:[1,1,1], 2:[1,1,0], 3:[1,0,1], 4:[1,0,0], 5:[0,1,1], 6:[0,1,0], 7:[0,0,1], 8:[0,0,0] };
 
 const LINE_NAMES = ['初爻','二爻','三爻','四爻','五爻','上爻'];
@@ -292,33 +292,28 @@ function lineRemainder(n) {
 // Flip one bit in the 6-line bitmap at movingLine position (1-indexed from bottom)
 // Then map the upper 3 bits (lines 4,5,6) and lower 3 bits (lines 1,2,3) back to trigram numbers
 function getChangedHexagram(hexagram, movingLine) {
-  // Build 6-bit bitmap: lines[0]=初爻(bottom), ..., lines[5]=上爻(top)
   const upperT = hexagram.upper;
   const lowerT = hexagram.lower;
-  const upperBits = TRIGRAM_BITS[upperT]; // [上,中,下] of upper trigram
-  const lowerBits = TRIGRAM_BITS[lowerT]; // [上,中,下] of lower trigram
+  const upperBits = TRIGRAM_BITS[upperT]; // [下,中,上]
+  const lowerBits = TRIGRAM_BITS[lowerT]; // [下,中,上]
 
-  // 6-bit: line 6(top)=upper[0], 5=upper[1], 4=upper[2], 3=lower[0], 2=lower[1], 1=lower[2]
+  // 6-bit: line 6(上爻), 5, 4, 3, 2, line 1(初爻)
   const bits = [
-    upperBits[0], // line 6 (上爻)
-    upperBits[1], // line 5
-    upperBits[2], // line 4
-    lowerBits[0], // line 3
-    lowerBits[1], // line 2
-    lowerBits[2]  // line 1 (初爻)
+    upperBits[2], // line 6 = upper trigram top
+    upperBits[1], // line 5 = upper trigram middle
+    upperBits[0], // line 4 = upper trigram bottom
+    lowerBits[2], // line 3 = lower trigram top
+    lowerBits[1], // line 2 = lower trigram middle
+    lowerBits[0]  // line 1 = lower trigram bottom (初爻)
   ];
 
   // Flip the moving line (movingLine is 1-indexed from bottom = line 1=初爻)
   const idx = 6 - movingLine; // convert to 0-indexed array position
   bits[idx] = bits[idx] === 1 ? 0 : 1;
 
-  // Reconstruct upper and lower trigram bits
-  const newUpperBits = [bits[0], bits[1], bits[2]];
-  const newLowerBits = [bits[3], bits[4], bits[5]];
-
-  // Find trigram numbers from bits
+  // Reconstruct new trigram numbers directly from flipped bits
+  // bitsToTrigram expects [下,中,上] format
   function bitsToTrigram(bits) {
-    const key = bits.join(',');
     for (const [tNum, tBits] of Object.entries(TRIGRAM_BITS)) {
       if (tBits[0] === bits[0] && tBits[1] === bits[1] && tBits[2] === bits[2]) {
         return parseInt(tNum);
@@ -327,8 +322,10 @@ function getChangedHexagram(hexagram, movingLine) {
     return null;
   }
 
-  const newUpper = bitsToTrigram(newUpperBits);
-  const newLower = bitsToTrigram(newLowerBits);
+  // newUpper: lines 6,5,4 → [下=line4, 中=line5, 上=line6]
+  const newUpper = bitsToTrigram([bits[2], bits[1], bits[0]]);
+  // newLower: lines 3,2,1 → [下=line1, 中=line2, 上=line3]
+  const newLower = bitsToTrigram([bits[5], bits[4], bits[3]]);
   const key = newUpper + '-' + newLower;
   return HEXAGRAMS[key] || null;
 }
